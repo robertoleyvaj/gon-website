@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../supabase';
 
 export default function Admin() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -7,22 +8,29 @@ export default function Admin() {
   const [pass, setPass] = useState('');
   const [error, setError] = useState('');
   const [section, setSection] = useState('dashboard');
-  const [frames, setFrames] = useState([
-    { id: 1, nombre: 'Gafas Cloud', forma: 'Redondo', genero: 'Unisex', stock: 12, badge: 'Novedad', activo: true },
-    { id: 2, nombre: 'Visión Perfecta', forma: 'Cuadrado', genero: 'Mujer', stock: 8, badge: 'Bestseller', activo: true },
-    { id: 3, nombre: 'Sol Elegante', forma: 'Aviador', genero: 'Hombre', stock: 3, badge: 'Oferta', activo: true },
-  ]);
+  const [frames, setFrames] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editFrame, setEditFrame] = useState<any>(null);
   const [form, setForm] = useState({ nombre: '', forma: 'Redondo', genero: 'Unisex', stock: '', badge: '', activo: true });
+  const [msg, setMsg] = useState('');
 
   const login = () => {
     if (user === 'admin@verlyoptical.com' && pass === 'verly2024') {
       setLoggedIn(true);
       setError('');
+      loadFrames();
     } else {
       setError('Usuario o contraseña incorrectos');
     }
+  };
+
+  const loadFrames = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from('armazones').select('*').order('id');
+    if (data) setFrames(data);
+    if (error) console.error(error);
+    setLoading(false);
   };
 
   const openNew = () => {
@@ -33,22 +41,28 @@ export default function Admin() {
 
   const openEdit = (f: any) => {
     setEditFrame(f);
-    setForm({ nombre: f.nombre, forma: f.forma, genero: f.genero, stock: String(f.stock), badge: f.badge, activo: f.activo });
+    setForm({ nombre: f.nombre, forma: f.forma, genero: f.genero, stock: String(f.stock), badge: f.badge || '', activo: f.activo });
     setShowModal(true);
   };
 
-  const saveFrame = () => {
+  const saveFrame = async () => {
     if (!form.nombre) return;
+    const data = { nombre: form.nombre, forma: form.forma, genero: form.genero, stock: Number(form.stock), badge: form.badge, activo: form.activo };
     if (editFrame) {
-      setFrames(frames.map(f => f.id === editFrame.id ? { ...f, ...form, stock: Number(form.stock) } : f));
+      await supabase.from('armazones').update(data).eq('id', editFrame.id);
+      setMsg('Armazón actualizado ✓');
     } else {
-      setFrames([...frames, { id: Date.now(), ...form, stock: Number(form.stock) }]);
+      await supabase.from('armazones').insert(data);
+      setMsg('Armazón agregado ✓');
     }
     setShowModal(false);
+    loadFrames();
+    setTimeout(() => setMsg(''), 3000);
   };
 
-  const deleteFrame = (id: number) => {
-    setFrames(frames.filter(f => f.id !== id));
+  const deleteFrame = async (id: number) => {
+    await supabase.from('armazones').delete().eq('id', id);
+    loadFrames();
   };
 
   if (!loggedIn) return (
@@ -76,7 +90,6 @@ export default function Admin() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'sans-serif' }}>
-      {/* SIDEBAR */}
       <div style={{ width: '220px', background: '#1A2535', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
         <div style={{ padding: '1.25rem', borderBottom: '1px solid rgba(255,255,255,.08)' }}>
           <div style={{ fontSize: '16px', fontWeight: 800, color: '#2BBFB3' }}>Verly <span style={{ color: '#F5C518', fontSize: '9px', letterSpacing: '2px' }}>OPTICAL</span></div>
@@ -88,7 +101,7 @@ export default function Admin() {
           { id: 'customers', label: '👤 Clientes' },
           { id: 'prices', label: '💰 Precios' },
         ].map(s => (
-          <div key={s.id} onClick={() => setSection(s.id)} style={{ padding: '.7rem 1.25rem', cursor: 'pointer', color: section === s.id ? 'white' : 'rgba(255,255,255,.6)', background: section === s.id ? '#243044' : 'none', borderLeft: section === s.id ? '3px solid #2BBFB3' : '3px solid transparent', fontSize: '13px', fontWeight: 500 }}>
+          <div key={s.id} onClick={() => { setSection(s.id); if(s.id==='frames') loadFrames(); }} style={{ padding: '.7rem 1.25rem', cursor: 'pointer', color: section === s.id ? 'white' : 'rgba(255,255,255,.6)', background: section === s.id ? '#243044' : 'none', borderLeft: section === s.id ? '3px solid #2BBFB3' : '3px solid transparent', fontSize: '13px', fontWeight: 500 }}>
             {s.label}
           </div>
         ))}
@@ -97,9 +110,7 @@ export default function Admin() {
         </div>
       </div>
 
-      {/* MAIN */}
       <div style={{ flex: 1, background: '#F4F6F9' }}>
-        {/* TOPBAR */}
         <div style={{ background: 'white', borderBottom: '1px solid #E2E8F0', padding: '.875rem 1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: '17px', fontWeight: 700 }}>
             {section === 'dashboard' && 'Dashboard'}
@@ -113,22 +124,23 @@ export default function Admin() {
           )}
         </div>
 
+        {msg && <div style={{ background: '#E0F7F4', color: '#1a9990', padding: '12px 1.75rem', fontSize: '14px', fontWeight: 600 }}>{msg}</div>}
+
         <div style={{ padding: '1.5rem 1.75rem' }}>
 
-          {/* DASHBOARD */}
           {section === 'dashboard' && (
             <div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
                 {[
-                  { label: 'Ventas (mes)', val: '$1,840', change: '↑ 12%', up: true },
-                  { label: 'Pedidos', val: '24', change: '↑ 8 nuevos', up: true },
-                  { label: 'Armazones', val: String(frames.length), change: 'activos', up: true },
-                  { label: 'Clientes', val: '18', change: '↑ 5 nuevos', up: true },
+                  { label: 'Ventas (mes)', val: '$1,840', change: '↑ 12%' },
+                  { label: 'Pedidos', val: '24', change: '↑ 8 nuevos' },
+                  { label: 'Armazones', val: String(frames.length), change: 'en base de datos' },
+                  { label: 'Clientes', val: '18', change: '↑ 5 nuevos' },
                 ].map((s, i) => (
                   <div key={i} style={{ background: 'white', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '1.1rem' }}>
                     <div style={{ fontSize: '11px', fontWeight: 700, color: '#8A97A8', textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: '.5rem' }}>{s.label}</div>
-                    <div style={{ fontSize: '24px', fontWeight: 800, marginBottom: '.25rem', color: s.label === 'Ventas (mes)' ? '#2BBFB3' : '#1A1A2E' }}>{s.val}</div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, color: s.up ? '#38A169' : '#E53E3E' }}>{s.change}</div>
+                    <div style={{ fontSize: '24px', fontWeight: 800, marginBottom: '.25rem', color: i === 0 ? '#2BBFB3' : '#1A1A2E' }}>{s.val}</div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#38A169' }}>{s.change}</div>
                   </div>
                 ))}
               </div>
@@ -156,9 +168,16 @@ export default function Admin() {
             </div>
           )}
 
-          {/* ARMAZONES */}
           {section === 'frames' && (
             <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
+              {loading && <div style={{ padding: '2rem', textAlign: 'center', color: '#8A97A8' }}>Cargando...</div>}
+              {!loading && frames.length === 0 && (
+                <div style={{ padding: '3rem', textAlign: 'center', color: '#8A97A8' }}>
+                  <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>👓</div>
+                  <div style={{ fontWeight: 600, marginBottom: '8px' }}>No hay armazones todavía</div>
+                  <div style={{ fontSize: '13px' }}>Haz clic en "+ Nuevo Armazón" para agregar el primero</div>
+                </div>
+              )}
               {frames.map(f => (
                 <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '.875rem 1.25rem', borderBottom: '1px solid #E2E8F0' }}>
                   <div style={{ width: '50px', height: '34px', borderRadius: '8px', background: '#E0F7F4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>👓</div>
@@ -175,51 +194,22 @@ export default function Admin() {
             </div>
           )}
 
-          {/* PEDIDOS */}
           {section === 'orders' && (
-            <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
-              {[
-                { id: '#1024', cliente: 'María García', ciudad: 'Los Ángeles, CA', producto: 'Gafas Cloud + Monofocal + Blue Light', total: '$167', estado: 'Pagado', color: '#E6F4EA', tc: '#1e7e34' },
-                { id: '#1023', cliente: 'Carlos Ruiz', ciudad: 'Fresno, CA', producto: 'Visión Perfecta + Progresivo + AR Premium', total: '$192', estado: 'Enviado', color: '#E0F7F4', tc: '#1a9990' },
-                { id: '#1022', cliente: 'Ana López', ciudad: 'San Diego, CA', producto: 'Marco Retro + Bifocal + CR-39', total: '$138', estado: 'Pendiente', color: '#FFF3CC', tc: '#856404' },
-              ].map(o => (
-                <div key={o.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '.875rem 1.25rem', borderBottom: '1px solid #E2E8F0', fontSize: '13px' }}>
-                  <div style={{ color: '#2BBFB3', fontWeight: 700, minWidth: '60px' }}>{o.id}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600 }}>{o.cliente}</div>
-                    <div style={{ fontSize: '11px', color: '#8A97A8' }}>{o.ciudad}</div>
-                  </div>
-                  <div style={{ flex: 2, color: '#4A5568' }}>{o.producto}</div>
-                  <div style={{ fontWeight: 700, minWidth: '60px' }}>{o.total}</div>
-                  <span style={{ background: o.color, color: o.tc, fontSize: '10px', fontWeight: 700, padding: '3px 9px', borderRadius: '10px' }}>{o.estado}</span>
-                </div>
-              ))}
+            <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '2rem', textAlign: 'center', color: '#8A97A8' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📦</div>
+              <div style={{ fontWeight: 600 }}>Pedidos próximamente</div>
+              <div style={{ fontSize: '13px', marginTop: '8px' }}>Se conectará con Stripe cuando integremos los pagos</div>
             </div>
           )}
 
-          {/* CLIENTES */}
           {section === 'customers' && (
-            <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #E2E8F0', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead><tr>{['Nombre', 'Email', 'Ciudad', 'Pedidos', 'Total'].map(h => <th key={h} style={{ fontSize: '11px', fontWeight: 700, color: '#8A97A8', textTransform: 'uppercase', padding: '.6rem 1.25rem', textAlign: 'left', borderBottom: '1px solid #E2E8F0', background: '#FAFBFC' }}>{h}</th>)}</tr></thead>
-                <tbody>
-                  {[
-                    { nombre: 'María García', email: 'maria@email.com', ciudad: 'Los Ángeles, CA', pedidos: 3, total: '$421' },
-                    { nombre: 'Carlos Ruiz', email: 'carlos@email.com', ciudad: 'Fresno, CA', pedidos: 1, total: '$192' },
-                    { nombre: 'Ana López', email: 'ana@email.com', ciudad: 'San Diego, CA', pedidos: 2, total: '$276' },
-                  ].map((c, i) => (
-                    <tr key={i}>
-                      {[c.nombre, c.email, c.ciudad, c.pedidos, c.total].map((v, j) => (
-                        <td key={j} style={{ padding: '.7rem 1.25rem', fontSize: '13px', borderBottom: '1px solid #E2E8F0', color: j === 0 ? '#1A1A2E' : '#4A5568', fontWeight: j === 0 ? 600 : 400 }}>{v}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div style={{ background: 'white', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '2rem', textAlign: 'center', color: '#8A97A8' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>👤</div>
+              <div style={{ fontWeight: 600 }}>Clientes próximamente</div>
+              <div style={{ fontSize: '13px', marginTop: '8px' }}>Se mostrará cuando los clientes empiecen a comprar</div>
             </div>
           )}
 
-          {/* PRECIOS */}
           {section === 'prices' && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               {[
@@ -244,19 +234,14 @@ export default function Admin() {
         </div>
       </div>
 
-      {/* MODAL */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.45)', zIndex: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: 'white', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '500px', position: 'relative' }}>
+          <div style={{ background: 'white', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '500px' }}>
             <div style={{ fontSize: '17px', fontWeight: 800, marginBottom: '1.5rem' }}>{editFrame ? 'Editar Armazón' : 'Nuevo Armazón'}</div>
-            {[
-              { label: 'Nombre', key: 'nombre', type: 'text', placeholder: 'Ej: Gafas Cloud' },
-            ].map(f => (
-              <div key={f.key} style={{ marginBottom: '1rem' }}>
-                <label style={{ fontSize: '11px', fontWeight: 700, color: '#4A5568', display: 'block', marginBottom: '5px', textTransform: 'uppercase' }}>{f.label}</label>
-                <input value={form[f.key as keyof typeof form] as string} onChange={e => setForm({ ...form, [f.key]: e.target.value })} placeholder={f.placeholder} style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E2E8F0', borderRadius: '9px', fontSize: '13px', fontFamily: 'sans-serif', outline: 'none' }} />
-              </div>
-            ))}
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ fontSize: '11px', fontWeight: 700, color: '#4A5568', display: 'block', marginBottom: '5px', textTransform: 'uppercase' }}>Nombre</label>
+              <input value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} placeholder="Ej: Gafas Cloud" style={{ width: '100%', padding: '10px 12px', border: '1.5px solid #E2E8F0', borderRadius: '9px', fontSize: '13px', fontFamily: 'sans-serif', outline: 'none' }} />
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div>
                 <label style={{ fontSize: '11px', fontWeight: 700, color: '#4A5568', display: 'block', marginBottom: '5px', textTransform: 'uppercase' }}>Forma</label>
