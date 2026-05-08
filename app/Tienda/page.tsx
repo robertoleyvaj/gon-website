@@ -1,190 +1,222 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import { useLang } from '../components/LanguageContext';
+import { supabase } from '../supabase';
 
-const visionOpts = [
-  { id: 'mono', nombre: 'Monofocal', desc: 'Para ver de lejos o cerca (una sola distancia).', precio: 5 },
-  { id: 'bi', nombre: 'Bifocal', desc: 'Con línea visible, para lejos y cerca.', precio: 13 },
-  { id: 'prog', nombre: 'Progresivo', desc: 'Sin línea, ve lejos, intermedio y cerca.', precio: 48 },
-];
+type Armazon = {
+  id: number;
+  nombre: string;
+  forma: string;
+  genero: string;
+  stock: number;
+  badge: string | null;
+  activo: boolean;
+  precio: number;
+  color: string;
+  imagen_url?: string;
+};
 
-const materialOpts = [
-  { id: 'cr39', nombre: 'CR-39', desc: 'Plástico básico, económico.', precio: 0 },
-  { id: 'poly', nombre: 'PolyPlus', desc: 'Policarbonato, más resistente.', precio: 29 },
-  { id: 'hd', nombre: 'HD Vision', desc: 'Más claro y delgado que CR-39.', precio: 39 },
-  { id: 'hi', nombre: 'Hi-Index 1.67', desc: 'Para graduaciones altas.', precio: 59 },
-  { id: 'shi', nombre: 'Súper Hi-Index 1.74', desc: 'El más delgado y estético.', precio: 89 },
-];
+function LenteSVG({ color, forma }: { color: string; forma: string }) {
+  const rx = forma === 'ovalada' ? '30' : forma === 'rectangular' ? '8' : '14';
+  return (
+    <svg width="160" height="90" viewBox="0 0 160 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="12" width="64" height="66" rx={rx} fill="white" stroke={color} strokeWidth="4"/>
+      <rect x="92" y="12" width="64" height="66" rx={rx} fill="white" stroke={color} strokeWidth="4"/>
+      <path d="M68 38 C72 32, 88 32, 92 38" stroke={color} strokeWidth="3" fill="none" strokeLinecap="round"/>
+      <line x1="4" y1="36" x2="-6" y2="30" stroke={color} strokeWidth="3" strokeLinecap="round"/>
+      <line x1="156" y1="36" x2="166" y2="30" stroke={color} strokeWidth="3" strokeLinecap="round"/>
+      <ellipse cx="26" cy="36" rx="10" ry="6" fill={color} opacity="0.08"/>
+      <ellipse cx="114" cy="36" rx="10" ry="6" fill={color} opacity="0.08"/>
+    </svg>
+  );
+}
 
-const filtroOpts = [
-  { id: 'ar', nombre: 'AR Normal', desc: 'Antirreflejante estándar.', precio: 9 },
-  { id: 'blue', nombre: 'Blue Light', desc: 'Protección contra pantallas.', precio: 17 },
-  { id: 'foto', nombre: 'Fotocromático', desc: 'Se oscurece con el sol.', precio: 39 },
-  { id: 'anti', nombre: 'Antiempañante', desc: 'Evita que se empañen.', precio: 15 },
-  { id: 'pol', nombre: 'Polarizado', desc: 'Ideal para manejar.', precio: 89 },
-  { id: 'tinte', nombre: 'Tinte estético', desc: 'Colores (gris, café, etc.)', precio: 28 },
-];
+export default function Tienda() {
+  const { t } = useLang();
+  const [armazones, setArmazones] = useState<Armazon[]>([]);
+  const [filtro, setFiltro] = useState('todos');
+  const [loading, setLoading] = useState(true);
 
-export default function Configurador() {
-  const [paso, setPaso] = useState(1);
-  const [vision, setVision] = useState('');
-  const [material, setMaterial] = useState('');
-  const [filtros, setFiltros] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const precioArmazon = 43;
-  const precioVision = visionOpts.find(v => v.id === vision)?.precio || 0;
-  const precioMaterial = materialOpts.find(m => m.id === material)?.precio || 0;
-  const precioFiltros = filtroOpts.filter(f => filtros.includes(f.id)).reduce((a, f) => a + f.precio, 0);
-  const total = precioArmazon + precioVision + precioMaterial + precioFiltros;
-
-  const toggleFiltro = (id: string) => {
-    setFiltros(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
-  };
-
-  const handlePago = async () => {
-    setLoading(true);
-    try {
-      const v = visionOpts.find(x => x.id === vision)?.nombre || '';
-      const m = materialOpts.find(x => x.id === material)?.nombre || '';
-      const fs = filtroOpts.filter(f => filtros.includes(f.id)).map(f => f.nombre).join(', ');
-      const items = `${v} + ${m}${fs ? ' + ' + fs : ''}`;
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, total }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Error al procesar el pago. Intenta de nuevo.');
-        setLoading(false);
-      }
-    } catch (error) {
-      alert('Error al procesar el pago. Intenta de nuevo.');
+  useEffect(() => {
+    async function cargar() {
+      const { data } = await supabase
+        .from('armazones')
+        .select('*')
+        .eq('activo', true)
+        .order('id');
+      setArmazones(data || []);
       setLoading(false);
     }
-  };
+    cargar();
+  }, []);
 
-  const pasos = ['Visión', 'Material', 'Filtros', 'Resumen'];
+  const categorias = [
+    { id: 'todos', es: 'Todos', en: 'All' },
+    { id: 'hombre', es: 'Hombre', en: 'Men' },
+    { id: 'mujer', es: 'Mujer', en: 'Women' },
+    { id: 'unisex', es: 'Unisex', en: 'Unisex' },
+  ];
+
+  const filtrados = filtro === 'todos'
+    ? armazones
+    : armazones.filter(a => a.genero === filtro);
+
+  const labelGenero = (g: string) =>
+    g === 'hombre' ? t('Hombre', 'Men')
+    : g === 'mujer' ? t('Mujer', 'Women')
+    : 'Unisex';
 
   return (
-    <main style={{fontFamily: 'sans-serif', background: '#FAF7F2', minHeight: '100vh'}}>
-      <nav style={{background: 'white', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem', height: '66px', position: 'sticky', top: 0, zIndex: 100}}>
-        <a href="/" style={{textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px'}}>
-          <span style={{fontSize: '20px', fontWeight: 800, color: '#2BBFB3'}}>Verly</span>
-          <span style={{fontSize: '10px', fontWeight: 700, color: '#F5C518', letterSpacing: '2px'}}>OPTICAL</span>
-        </a>
-        <div style={{display: 'flex', gap: '2rem'}}>
-          <a href="/" style={{color: '#2BBFB3', textDecoration: 'none', fontWeight: 500}}>Inicio</a>
-          <a href="/Tienda" style={{color: '#2BBFB3', textDecoration: 'none', fontWeight: 500}}>Tienda</a>
-        </div>
-      </nav>
+    <main style={{ fontFamily: 'var(--font-jakarta), sans-serif', background: '#FAFAFA', minHeight: '100vh', color: '#1A1A2E' }}>
+      <Navbar />
 
-      <div style={{maxWidth: '700px', margin: '0 auto', padding: '2rem'}}>
-        <h1 style={{fontSize: '1.8rem', fontWeight: 800, color: '#2BBFB3', textAlign: 'center', marginBottom: '0.5rem'}}>Arma tus Lentes</h1>
-        <p style={{color: '#4A5568', textAlign: 'center', marginBottom: '2rem'}}>Paso a paso — elige lo que mejor te quede</p>
+      {/* HEADER */}
+      <div style={{
+        background: 'white', borderBottom: '1px solid #EAECF0',
+        padding: '3rem 2rem 2rem', textAlign: 'center',
+      }}>
+        <p style={{
+          fontSize: '11px', fontWeight: 700, letterSpacing: '2px',
+          textTransform: 'uppercase', color: '#2BBFB3', marginBottom: '0.5rem',
+        }}>
+          {t('Catálogo', 'Catalog')}
+        </p>
+        <h1 style={{
+          fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
+          fontWeight: 800, letterSpacing: '-0.025em', marginBottom: '0.5rem',
+        }}>
+          {t('Nuestros Armazones', 'Our Frames')}
+        </h1>
+        <p style={{ color: '#7A8494', fontSize: '15px' }}>
+          {t('Elige el que más te guste y personaliza tus micas.', 'Choose your favorite and customize your lenses.')}
+        </p>
+      </div>
 
-        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem'}}>
-          {pasos.map((p, i) => (
-            <div key={i} style={{display: 'flex', alignItems: 'center'}}>
-              <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px'}}>
-                <div style={{width: '36px', height: '36px', borderRadius: '50%', background: paso > i + 1 ? '#2BBFB3' : 'white', border: paso >= i + 1 ? '2.5px solid #2BBFB3' : '2.5px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '14px', color: paso > i + 1 ? 'white' : paso === i + 1 ? '#2BBFB3' : '#8A97A8'}}>
-                  {paso > i + 1 ? '✓' : i + 1}
-                </div>
-                <span style={{fontSize: '10px', fontWeight: 600, color: paso >= i + 1 ? '#2BBFB3' : '#8A97A8'}}>{p}</span>
-              </div>
-              {i < pasos.length - 1 && <div style={{width: '60px', height: '2px', background: paso > i + 1 ? '#2BBFB3' : '#E2E8F0', marginBottom: '18px'}}></div>}
-            </div>
-          ))}
-        </div>
+      {/* FILTROS */}
+      <div style={{
+        background: 'white', borderBottom: '1px solid #EAECF0',
+        padding: '1rem 2rem',
+        display: 'flex', justifyContent: 'center', gap: '0.5rem', flexWrap: 'wrap',
+      }}>
+        {categorias.map(c => (
+          <button key={c.id} onClick={() => setFiltro(c.id)} style={{
+            padding: '8px 20px', borderRadius: '6px', border: '1.5px solid',
+            borderColor: filtro === c.id ? '#2BBFB3' : '#EAECF0',
+            background: filtro === c.id ? '#2BBFB3' : 'white',
+            color: filtro === c.id ? 'white' : '#5A6478',
+            fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+            fontFamily: 'var(--font-jakarta), sans-serif',
+          }}>
+            {t(c.es, c.en)}
+          </button>
+        ))}
+      </div>
 
-        {paso === 1 && (
-          <div style={{background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '1.5rem'}}>
-            <h2 style={{fontSize: '16px', fontWeight: 700, marginBottom: '4px'}}>Paso 1: Tipo de Visión</h2>
-            <p style={{fontSize: '13px', color: '#4A5568', marginBottom: '1.25rem'}}>¿Cómo ves? Elige la opción que mejor te describe.</p>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-              {visionOpts.map(o => (
-                <div key={o.id} onClick={() => setVision(o.id)} style={{border: vision === o.id ? '2px solid #2BBFB3' : '2px solid #E2E8F0', borderRadius: '12px', padding: '1rem', cursor: 'pointer', background: vision === o.id ? '#E0F7F4' : 'white'}}>
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <div><div style={{fontSize: '15px', fontWeight: 700}}>{o.nombre}</div><div style={{fontSize: '12px', color: '#4A5568', marginTop: '2px'}}>{o.desc}</div></div>
-                    <div style={{fontSize: '15px', fontWeight: 700, color: '#2BBFB3'}}>+${o.precio}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '1.5rem'}}>
-              <button onClick={() => vision && setPaso(2)} style={{background: vision ? '#2BBFB3' : '#E2E8F0', color: vision ? 'white' : '#8A97A8', border: 'none', borderRadius: '24px', padding: '11px 28px', fontSize: '14px', fontWeight: 700, cursor: vision ? 'pointer' : 'not-allowed', fontFamily: 'sans-serif'}}>Siguiente →</button>
-            </div>
+      {/* GRID */}
+      <div style={{ maxWidth: '1180px', margin: '0 auto', padding: '3rem 2rem' }}>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '4rem', color: '#7A8494' }}>
+            {t('Cargando armazones...', 'Loading frames...')}
           </div>
-        )}
-
-        {paso === 2 && (
-          <div style={{background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '1.5rem'}}>
-            <h2 style={{fontSize: '16px', fontWeight: 700, marginBottom: '4px'}}>Paso 2: Material de la Mica</h2>
-            <p style={{fontSize: '13px', color: '#4A5568', marginBottom: '1.25rem'}}>El material afecta el grosor y peso de tu lente.</p>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-              {materialOpts.map(o => (
-                <div key={o.id} onClick={() => setMaterial(o.id)} style={{border: material === o.id ? '2px solid #2BBFB3' : '2px solid #E2E8F0', borderRadius: '12px', padding: '1rem', cursor: 'pointer', background: material === o.id ? '#E0F7F4' : 'white'}}>
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <div><div style={{fontSize: '15px', fontWeight: 700}}>{o.nombre}</div><div style={{fontSize: '12px', color: '#4A5568', marginTop: '2px'}}>{o.desc}</div></div>
-                    <div style={{fontSize: '15px', fontWeight: 700, color: '#2BBFB3'}}>{o.precio === 0 ? 'Incluido' : `+$${o.precio}`}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '1.5rem'}}>
-              <button onClick={() => setPaso(1)} style={{background: 'none', border: '1.5px solid #E2E8F0', borderRadius: '24px', padding: '10px 22px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', color: '#4A5568', fontFamily: 'sans-serif'}}>← Atrás</button>
-              <button onClick={() => material && setPaso(3)} style={{background: material ? '#2BBFB3' : '#E2E8F0', color: material ? 'white' : '#8A97A8', border: 'none', borderRadius: '24px', padding: '11px 28px', fontSize: '14px', fontWeight: 700, cursor: material ? 'pointer' : 'not-allowed', fontFamily: 'sans-serif'}}>Siguiente →</button>
-            </div>
-          </div>
-        )}
-
-        {paso === 3 && (
-          <div style={{background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '1.5rem'}}>
-            <h2 style={{fontSize: '16px', fontWeight: 700, marginBottom: '4px'}}>Paso 3: Filtros y Protecciones</h2>
-            <p style={{fontSize: '13px', color: '#4A5568', marginBottom: '1.25rem'}}>Opcionales. Puedes elegir uno o más.</p>
-            <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem'}}>
-              {filtroOpts.map(o => (
-                <div key={o.id} onClick={() => toggleFiltro(o.id)} style={{border: filtros.includes(o.id) ? '2px solid #2BBFB3' : '2px solid #E2E8F0', borderRadius: '12px', padding: '1rem', cursor: 'pointer', background: filtros.includes(o.id) ? '#E0F7F4' : 'white'}}>
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                      <div style={{width: '20px', height: '20px', borderRadius: '4px', border: '2px solid', borderColor: filtros.includes(o.id) ? '#2BBFB3' : '#E2E8F0', background: filtros.includes(o.id) ? '#2BBFB3' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '12px', fontWeight: 700}}>
-                        {filtros.includes(o.id) ? '✓' : ''}
-                      </div>
-                      <div><div style={{fontSize: '14px', fontWeight: 700}}>{o.nombre}</div><div style={{fontSize: '12px', color: '#4A5568'}}>{o.desc}</div></div>
+        ) : (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: '1.5rem',
+          }}>
+            {filtrados.map(a => (
+              <a key={a.id} href={`/armazon/${a.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div style={{
+                  background: 'white', borderRadius: '12px',
+                  border: '1px solid #EAECF0', overflow: 'hidden',
+                  transition: 'box-shadow 0.2s, transform 0.2s', cursor: 'pointer',
+                }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 40px rgba(0,0,0,0.10)';
+                    (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+                    (e.currentTarget as HTMLDivElement).style.transform = 'none';
+                  }}
+                >
+                  {/* Imagen */}
+                  <div style={{
+                    height: '200px', background: '#F5F5F3',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    position: 'relative',
+                  }}>
+                    {a.imagen_url ? (
+                      <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                    ) : (
+                      <LenteSVG color={a.color || '#2BBFB3'} forma={a.forma || 'cuadrada'}/>
+                    )}
+                    {/* Badge genero */}
+                    <div style={{
+                      position: 'absolute', top: '12px', left: '12px',
+                      background: 'white', color: '#5A6478',
+                      padding: '4px 10px', borderRadius: '4px',
+                      fontSize: '11px', fontWeight: 600, border: '1px solid #EAECF0',
+                    }}>
+                      {labelGenero(a.genero)}
                     </div>
-                    <div style={{fontSize: '14px', fontWeight: 700, color: '#2BBFB3'}}>+${o.precio}</div>
+                    {/* Badge especial (Nuevo, Popular, etc) */}
+                    {a.badge && (
+                      <div style={{
+                        position: 'absolute', top: '12px', right: '12px',
+                        background: '#F5C518', color: '#1A1A2E',
+                        padding: '4px 10px', borderRadius: '4px',
+                        fontSize: '11px', fontWeight: 700,
+                      }}>
+                        {a.badge}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div style={{ padding: '1.25rem' }}>
+                    <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '4px' }}>{a.nombre}</div>
+                    <div style={{ fontSize: '13px', color: '#7A8494', marginBottom: '1rem', textTransform: 'capitalize' }}>
+                      {t(`Forma ${a.forma}`, `${a.forma} frame`)}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <span style={{ fontSize: '20px', fontWeight: 800 }}>${a.precio}</span>
+                        <span style={{ fontSize: '12px', color: '#7A8494', marginLeft: '4px' }}>USD</span>
+                      </div>
+                      <div style={{
+                        background: '#1A1A2E', color: 'white',
+                        padding: '10px 20px', borderRadius: '6px',
+                        fontSize: '13px', fontWeight: 700,
+                      }}>
+                        {t('Ver más', 'View')}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-            <div style={{display: 'flex', justifyContent: 'space-between', marginTop: '1.5rem'}}>
-              <button onClick={() => setPaso(2)} style={{background: 'none', border: '1.5px solid #E2E8F0', borderRadius: '24px', padding: '10px 22px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', color: '#4A5568', fontFamily: 'sans-serif'}}>← Atrás</button>
-              <button onClick={() => setPaso(4)} style={{background: '#2BBFB3', color: 'white', border: 'none', borderRadius: '24px', padding: '11px 28px', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'sans-serif'}}>Ver Resumen →</button>
-            </div>
-          </div>
-        )}
-
-        {paso === 4 && (
-          <div style={{background: 'white', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '1.5rem'}}>
-            <h2 style={{fontSize: '16px', fontWeight: 700, marginBottom: '1.25rem'}}>Paso 4: Resumen de tu Pedido</h2>
-            <div style={{display: 'flex', flexDirection: 'column'}}>
-              <div style={{display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #E2E8F0', fontSize: '14px'}}><span>Armazón</span><span style={{fontWeight: 600}}>${precioArmazon}</span></div>
-              <div style={{display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #E2E8F0', fontSize: '14px'}}><span>Visión: {visionOpts.find(v => v.id === vision)?.nombre}</span><span style={{fontWeight: 600}}>+${precioVision}</span></div>
-              <div style={{display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #E2E8F0', fontSize: '14px'}}><span>Material: {materialOpts.find(m => m.id === material)?.nombre}</span><span style={{fontWeight: 600}}>{precioMaterial === 0 ? 'Incluido' : `+$${precioMaterial}`}</span></div>
-              {filtroOpts.filter(f => filtros.includes(f.id)).map(f => (
-                <div key={f.id} style={{display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #E2E8F0', fontSize: '14px'}}><span>{f.nombre}</span><span style={{fontWeight: 600}}>+${f.precio}</span></div>
-              ))}
-              <div style={{display: 'flex', justifyContent: 'space-between', padding: '14px 0', fontSize: '18px', fontWeight: 800, color: '#2BBFB3'}}><span>TOTAL</span><span>${total} USD</span></div>
-            </div>
-            <button onClick={handlePago} disabled={loading} style={{width: '100%', background: loading ? '#8A97A8' : '#2BBFB3', color: 'white', border: 'none', borderRadius: '28px', padding: '15px', fontSize: '15px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'sans-serif', marginTop: '0.5rem'}}>
-              {loading ? 'Procesando...' : '💳 Pagar con Tarjeta →'}
-            </button>
-            <button onClick={() => setPaso(3)} style={{width: '100%', background: 'none', border: '1.5px solid #E2E8F0', borderRadius: '28px', padding: '13px', fontSize: '14px', fontWeight: 600, cursor: 'pointer', color: '#4A5568', marginTop: '10px', fontFamily: 'sans-serif'}}>← Volver</button>
+              </a>
+            ))}
           </div>
         )}
       </div>
+
+      {/* BANNER INFERIOR */}
+      <div style={{
+        background: '#F0FBF8', borderTop: '1px solid #D0F0EC',
+        padding: '3rem 2rem', textAlign: 'center',
+      }}>
+        <p style={{ fontSize: '15px', color: '#5A6478', marginBottom: '0.5rem' }}>
+          {t('¿No sabes cuál elegir?', "Can't decide?")}
+        </p>
+        <p style={{ fontSize: '17px', fontWeight: 700, color: '#1A1A2E', marginBottom: '0.5rem' }}>
+          {t('Verly te ayuda a encontrar el armazón perfecto.', 'Verly helps you find the perfect frame.')}
+        </p>
+        <p style={{ fontSize: '13px', color: '#7A8494' }}>
+          {t('Abre el chat de Verly abajo a la derecha →', 'Open the Verly chat on the bottom right →')}
+        </p>
+      </div>
+
     </main>
   );
 }
