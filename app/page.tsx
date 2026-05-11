@@ -99,15 +99,6 @@ export default function Home() {
               }}>
                 {t('Explorar Lentes', 'Explore Frames')}
               </a>
-              <a href="/receta" style={{
-                background: 'transparent', color: '#1A1A2E',
-                border: '1.5px solid #C8CDD6',
-                padding: '15px 32px', borderRadius: '6px',
-                fontSize: '14px', fontWeight: 600, textDecoration: 'none',
-                letterSpacing: '0.5px',
-              }}>
-                {t('Ingresar mi Receta', 'Enter My Prescription')}
-              </a>
             </div>
           </div>
 
