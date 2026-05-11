@@ -9,26 +9,37 @@ export async function POST(req: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      mode: 'payment',
       line_items: [
         {
           price_data: {
             currency: 'usd',
             product_data: {
               name: 'Verly Optical — Lentes graduados',
-              description: items,
+              description: String(items),
             },
-            unit_amount: Math.round(total * 100),
+            unit_amount: Math.round(Number(total) * 100),
           },
           quantity: 1,
         },
       ],
-      mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_URL || 'https://www.verlyoptical.com'}/gracias`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL || 'https://www.verlyoptical.com'}/configurador2`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/gracias`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/configurador2`,
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({
+      url: session.url,
+    });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Stripe error:', error);
+
+    return NextResponse.json(
+      {
+        error: error.message,
+      },
+      {
+        status: 500,
+      }
+    );
   }
 }
