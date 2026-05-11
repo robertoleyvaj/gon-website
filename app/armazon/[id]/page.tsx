@@ -64,7 +64,6 @@ const AXIS_OPTS = range(1, 180, 1);
 const ADD_OPTS = range(0.75, 3.50, 0.25);
 const DP_OPTS = range(35, 79, 0.5);
 
-// ── CELDA DROPDOWN CON BÚSQUEDA ───────────────────────────────────────────────
 function CeldaReceta({ value, onChange, options, disabled, unit }: {
   value: number | null;
   onChange: (v: number | null) => void;
@@ -79,7 +78,6 @@ function CeldaReceta({ value, onChange, options, disabled, unit }: {
   const listRef = useRef<HTMLDivElement>(null);
   const [abreArriba, setAbreArriba] = useState(false);
 
-  // Detectar si hay espacio abajo o debe abrir arriba
   useEffect(() => {
     if (open && ref.current) {
       const rect = ref.current.getBoundingClientRect();
@@ -128,7 +126,6 @@ function CeldaReceta({ value, onChange, options, disabled, unit }: {
       })()
     : options;
 
-  // ADD y DP usan cuadrícula
   const usarGrid = unit === 'add' || unit === 'dp';
   const isEmpty = value === null;
 
@@ -156,88 +153,39 @@ function CeldaReceta({ value, onChange, options, disabled, unit }: {
       {open && !disabled && (
         <div style={{
           position: 'absolute',
-          ...(abreArriba
-            ? { bottom: 'calc(100% + 4px)', top: 'auto' }
-            : { top: 'calc(100% + 4px)', bottom: 'auto' }),
-          left: '50%',
-          transform: 'translateX(-50%)',
+          ...(abreArriba ? { bottom: 'calc(100% + 4px)', top: 'auto' } : { top: 'calc(100% + 4px)', bottom: 'auto' }),
+          left: '50%', transform: 'translateX(-50%)',
           width: usarGrid ? '200px' : '130px',
           background: 'white', borderRadius: '10px', zIndex: 500,
           boxShadow: '0 8px 32px rgba(0,0,0,0.16)', border: '1.5px solid #E0F7F4',
           overflow: 'hidden', animation: 'dropDown 0.15s ease-out',
         }}>
-          {/* Buscador */}
           <div style={{ padding: '6px', borderBottom: '1px solid #F0F0F0', background: '#FAFAFA' }}>
-            <input
-              ref={inputRef}
-              type="text"
+            <input ref={inputRef} type="text"
               placeholder={unit === 'axis' ? 'Ej: 90' : unit === 'dp' ? 'Ej: 63' : 'Ej: -1.25'}
-              value={busqueda}
-              onChange={e => setBusqueda(e.target.value)}
-              style={{
-                width: '100%', padding: '5px 8px', borderRadius: '6px',
-                border: '1.5px solid #E0F7F4', fontSize: '12px',
-                fontFamily: 'var(--font-jakarta), sans-serif',
-                outline: 'none', boxSizing: 'border-box', textAlign: 'center',
-              }}
+              value={busqueda} onChange={e => setBusqueda(e.target.value)}
+              style={{ width: '100%', padding: '5px 8px', borderRadius: '6px', border: '1.5px solid #E0F7F4', fontSize: '12px', fontFamily: 'var(--font-jakarta), sans-serif', outline: 'none', boxSizing: 'border-box', textAlign: 'center' }}
             />
           </div>
-
-          {/* Opción ninguno */}
-          <div
-            onClick={() => { onChange(null); setOpen(false); }}
-            style={{
-              padding: '7px', cursor: 'pointer', fontSize: '13px',
-              color: '#AAB4C0', fontWeight: 600, textAlign: 'center',
-              borderBottom: '1px solid #F0F0F0',
-              background: isEmpty ? '#F0FBF8' : 'white',
-            }}
-          >—</div>
-
-          {/* Lista o cuadrícula */}
+          <div onClick={() => { onChange(null); setOpen(false); }} style={{ padding: '7px', cursor: 'pointer', fontSize: '13px', color: '#AAB4C0', fontWeight: 600, textAlign: 'center', borderBottom: '1px solid #F0F0F0', background: isEmpty ? '#F0FBF8' : 'white' }}>—</div>
           {usarGrid ? (
-            <div ref={listRef} style={{
-              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '2px', padding: '6px', maxHeight: '200px', overflowY: 'auto',
-            }}>
+            <div ref={listRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', padding: '6px', maxHeight: '200px', overflowY: 'auto' }}>
               {opcionesFiltradas.map(opt => (
-                <div
-                  key={opt}
-                  data-val={opt}
-                  onClick={() => { onChange(opt); setOpen(false); setBusqueda(''); }}
-                  style={{
-                    padding: '8px 4px', cursor: 'pointer', textAlign: 'center',
-                    fontSize: '12px', fontWeight: value === opt ? 800 : 500,
-                    color: value === opt ? 'white' : '#1A1A2E',
-                    background: value === opt ? '#2BBFB3' : '#F8F9FA',
-                    borderRadius: '6px', transition: 'all 0.1s',
-                  }}
+                <div key={opt} data-val={opt} onClick={() => { onChange(opt); setOpen(false); setBusqueda(''); }}
+                  style={{ padding: '8px 4px', cursor: 'pointer', textAlign: 'center', fontSize: '12px', fontWeight: value === opt ? 800 : 500, color: value === opt ? 'white' : '#1A1A2E', background: value === opt ? '#2BBFB3' : '#F8F9FA', borderRadius: '6px', transition: 'all 0.1s' }}
                   onMouseEnter={e => { if (value !== opt) (e.currentTarget as HTMLDivElement).style.background = '#E0F7F4'; }}
                   onMouseLeave={e => { if (value !== opt) (e.currentTarget as HTMLDivElement).style.background = '#F8F9FA'; }}
-                >
-                  {formatVal(opt)}
-                </div>
+                >{formatVal(opt)}</div>
               ))}
             </div>
           ) : (
             <div ref={listRef} style={{ maxHeight: '200px', overflowY: 'auto' }}>
               {opcionesFiltradas.map(opt => (
-                <div
-                  key={opt}
-                  data-val={opt}
-                  onClick={() => { onChange(opt); setOpen(false); setBusqueda(''); }}
-                  style={{
-                    padding: '8px', cursor: 'pointer', textAlign: 'center',
-                    fontSize: '13px', fontWeight: value === opt ? 800 : 500,
-                    color: value === opt ? '#2BBFB3' : '#1A1A2E',
-                    background: value === opt ? '#E0F7F4' : 'white',
-                    borderBottom: '1px solid #F8F9FA', transition: 'background 0.1s',
-                  }}
+                <div key={opt} data-val={opt} onClick={() => { onChange(opt); setOpen(false); setBusqueda(''); }}
+                  style={{ padding: '8px', cursor: 'pointer', textAlign: 'center', fontSize: '13px', fontWeight: value === opt ? 800 : 500, color: value === opt ? '#2BBFB3' : '#1A1A2E', background: value === opt ? '#E0F7F4' : 'white', borderBottom: '1px solid #F8F9FA', transition: 'background 0.1s' }}
                   onMouseEnter={e => { if (value !== opt) (e.currentTarget as HTMLDivElement).style.background = '#F0FBF8'; }}
                   onMouseLeave={e => { if (value !== opt) (e.currentTarget as HTMLDivElement).style.background = 'white'; }}
-                >
-                  {formatVal(opt)}
-                </div>
+                >{formatVal(opt)}</div>
               ))}
             </div>
           )}
@@ -246,21 +194,17 @@ function CeldaReceta({ value, onChange, options, disabled, unit }: {
     </div>
   );
 }
-// ── FORMULARIO RECETA ESTILO TABLA ────────────────────────────────────────────
+
 function FormReceta({ receta, onChange, errores, t }: {
-  receta: RecetaData;
-  onChange: (r: RecetaData) => void;
-  errores: string[];
-  t: (es: string, en: string) => string;
+  receta: RecetaData; onChange: (r: RecetaData) => void;
+  errores: string[]; t: (es: string, en: string) => string;
 }) {
   const cylOdActivo = receta.cyl_od !== null && receta.cyl_od !== 0;
   const cylOsActivo = receta.cyl_os !== null && receta.cyl_os !== 0;
 
   return (
-   <div style={{ background: 'white', borderRadius: '14px', border: '1.5px solid #E0F7F4', overflow: 'visible', boxShadow: '0 2px 12px rgba(43,191,179,0.06)' }}>
-
-      {/* TABLA */}
-    <table style={{ width: '100%', borderCollapse: 'collapse', overflow: 'visible' }}>
+    <div style={{ background: 'white', borderRadius: '14px', border: '1.5px solid #E0F7F4', overflow: 'visible', boxShadow: '0 2px 12px rgba(43,191,179,0.06)' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', overflow: 'visible' }}>
         <thead>
           <tr style={{ background: '#F0FBF8' }}>
             <th style={{ padding: '10px 8px', width: '52px', borderBottom: '1.5px solid #E0F7F4' }}></th>
@@ -270,42 +214,27 @@ function FormReceta({ receta, onChange, errores, t }: {
           </tr>
         </thead>
         <tbody>
-          {/* OD */}
           <tr style={{ borderBottom: '1px solid #F0F0F0' }}>
             <td style={{ padding: '8px', textAlign: 'center' }}>
               <span style={{ background: '#2BBFB3', color: 'white', padding: '3px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 800, display: 'block', marginBottom: '2px' }}>OD</span>
               <span style={{ fontSize: '9px', color: '#7A8494' }}>{t('Der.', 'Right')}</span>
             </td>
-            <td style={{ padding: '6px 4px' }}>
-              <CeldaReceta value={receta.sph_od} onChange={v => onChange({ ...receta, sph_od: v })} options={SPH_OPTS} unit="sph"/>
-            </td>
-            <td style={{ padding: '6px 4px' }}>
-              <CeldaReceta value={receta.cyl_od} onChange={v => onChange({ ...receta, cyl_od: v, axis_od: (!v || v === 0) ? null : receta.axis_od })} options={CYL_OPTS} unit="cyl"/>
-            </td>
-            <td style={{ padding: '6px 4px' }}>
-              <CeldaReceta value={cylOdActivo ? receta.axis_od : null} onChange={v => onChange({ ...receta, axis_od: v })} options={AXIS_OPTS} disabled={!cylOdActivo} unit="axis"/>
-            </td>
+            <td style={{ padding: '6px 4px' }}><CeldaReceta value={receta.sph_od} onChange={v => onChange({ ...receta, sph_od: v })} options={SPH_OPTS} unit="sph"/></td>
+            <td style={{ padding: '6px 4px' }}><CeldaReceta value={receta.cyl_od} onChange={v => onChange({ ...receta, cyl_od: v, axis_od: (!v || v === 0) ? null : receta.axis_od })} options={CYL_OPTS} unit="cyl"/></td>
+            <td style={{ padding: '6px 4px' }}><CeldaReceta value={cylOdActivo ? receta.axis_od : null} onChange={v => onChange({ ...receta, axis_od: v })} options={AXIS_OPTS} disabled={!cylOdActivo} unit="axis"/></td>
           </tr>
-          {/* OS */}
           <tr>
             <td style={{ padding: '8px', textAlign: 'center' }}>
               <span style={{ background: '#E08A2A', color: 'white', padding: '3px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 800, display: 'block', marginBottom: '2px' }}>OS</span>
               <span style={{ fontSize: '9px', color: '#7A8494' }}>{t('Izq.', 'Left')}</span>
             </td>
-            <td style={{ padding: '6px 4px' }}>
-              <CeldaReceta value={receta.sph_os} onChange={v => onChange({ ...receta, sph_os: v })} options={SPH_OPTS} unit="sph"/>
-            </td>
-            <td style={{ padding: '6px 4px' }}>
-              <CeldaReceta value={receta.cyl_os} onChange={v => onChange({ ...receta, cyl_os: v, axis_os: (!v || v === 0) ? null : receta.axis_os })} options={CYL_OPTS} unit="cyl"/>
-            </td>
-            <td style={{ padding: '6px 4px' }}>
-              <CeldaReceta value={cylOsActivo ? receta.axis_os : null} onChange={v => onChange({ ...receta, axis_os: v })} options={AXIS_OPTS} disabled={!cylOsActivo} unit="axis"/>
-            </td>
+            <td style={{ padding: '6px 4px' }}><CeldaReceta value={receta.sph_os} onChange={v => onChange({ ...receta, sph_os: v })} options={SPH_OPTS} unit="sph"/></td>
+            <td style={{ padding: '6px 4px' }}><CeldaReceta value={receta.cyl_os} onChange={v => onChange({ ...receta, cyl_os: v, axis_os: (!v || v === 0) ? null : receta.axis_os })} options={CYL_OPTS} unit="cyl"/></td>
+            <td style={{ padding: '6px 4px' }}><CeldaReceta value={cylOsActivo ? receta.axis_os : null} onChange={v => onChange({ ...receta, axis_os: v })} options={AXIS_OPTS} disabled={!cylOsActivo} unit="axis"/></td>
           </tr>
         </tbody>
       </table>
 
-      {/* ADD y DP compartidos */}
       <div style={{ padding: '10px 8px', background: '#FAFAFA', borderTop: '1.5px solid #F0F0F0', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
         <div>
           <div style={{ fontSize: '10px', fontWeight: 700, color: '#7A8494', letterSpacing: '0.5px', textAlign: 'center', marginBottom: '5px' }}>
@@ -321,33 +250,20 @@ function FormReceta({ receta, onChange, errores, t }: {
         </div>
       </div>
 
-      {/* Prisma */}
       <div style={{ padding: '8px 10px', borderTop: '1px solid #F0F0F0' }}>
-        <div style={{ fontSize: '10px', fontWeight: 700, color: '#AAB4C0', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>
-          {t('Prisma / Notas', 'Prism / Notes')}
-        </div>
-        <input
-          type="text"
-          placeholder={t('Ej: 1.0 base OUT OD', 'Ex: 1.0 base OUT OD')}
-          value={receta.prisma}
+        <div style={{ fontSize: '10px', fontWeight: 700, color: '#AAB4C0', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>{t('Prisma / Notas', 'Prism / Notes')}</div>
+        <input type="text" placeholder={t('Ej: 1.0 base OUT OD', 'Ex: 1.0 base OUT OD')} value={receta.prisma}
           onChange={e => onChange({ ...receta, prisma: e.target.value })}
-          style={{
-            width: '100%', padding: '8px 10px', borderRadius: '8px',
-            border: '1.5px solid #EAECF0', fontSize: '12px', color: '#1A1A2E',
-            fontFamily: 'var(--font-jakarta), sans-serif', outline: 'none', boxSizing: 'border-box',
-          }}
+          style={{ width: '100%', padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #EAECF0', fontSize: '12px', color: '#1A1A2E', fontFamily: 'var(--font-jakarta), sans-serif', outline: 'none', boxSizing: 'border-box' }}
           onFocus={e => (e.currentTarget.style.borderColor = '#2BBFB3')}
           onBlur={e => (e.currentTarget.style.borderColor = '#EAECF0')}
         />
       </div>
 
-      {/* Errores */}
       {errores.length > 0 && (
         <div style={{ padding: '8px 10px', borderTop: '1px solid #FFE0E0', background: '#FFF5F5' }}>
           {errores.map((e, i) => (
-            <div key={i} style={{ fontSize: '12px', color: '#E05A5A', fontWeight: 600, marginBottom: i < errores.length - 1 ? '3px' : 0 }}>
-              ⚠ {e}
-            </div>
+            <div key={i} style={{ fontSize: '12px', color: '#E05A5A', fontWeight: 600, marginBottom: i < errores.length - 1 ? '3px' : 0 }}>⚠ {e}</div>
           ))}
         </div>
       )}
@@ -355,58 +271,40 @@ function FormReceta({ receta, onChange, errores, t }: {
   );
 }
 
-// ── CÁLCULO DE PAQUETE ────────────────────────────────────────────────────────
 function calcularPaquete(r: RecetaData, lang: 'es' | 'en'): PaqueteVerly {
-  const sph_od = r.sph_od ?? 0;
-  const sph_os = r.sph_os ?? 0;
-  const cyl_od = r.cyl_od ?? 0;
-  const cyl_os = r.cyl_os ?? 0;
+  const sph_od = r.sph_od ?? 0, sph_os = r.sph_os ?? 0;
+  const cyl_od = r.cyl_od ?? 0, cyl_os = r.cyl_os ?? 0;
   const add = r.add ?? 0;
-
   const eq = Math.max(Math.abs(sph_od + cyl_od / 2), Math.abs(sph_os + cyl_os / 2));
   const cyl = Math.max(Math.abs(cyl_od), Math.abs(cyl_os));
   const astigmatismo = cyl >= 0.75;
 
   let vision = visionOpts[0];
   if (add > 0) vision = visionOpts[2];
-
   let material = materialOpts[1];
   if (eq > 4.0) material = materialOpts[4];
   else if (eq > 2.0) material = materialOpts[3];
-
   let filtroBase = astigmatismo || add > 0 ? filtroOpts[4] : filtroOpts[2];
 
   let condicion = '', explicacion = '';
   if (add > 0) {
     condicion = lang === 'es' ? 'Presbicia' : 'Presbyopia';
-    explicacion = lang === 'es'
-      ? `Tienes adición (ADD +${add.toFixed(2)}), indicando presbicia. El Progresivo corrige todas las distancias sin línea visible.`
-      : `You have an addition (ADD +${add.toFixed(2)}), indicating presbyopia. Progressive lenses correct all distances without a visible line.`;
+    explicacion = lang === 'es' ? `Tienes adición (ADD +${add.toFixed(2)}), indicando presbicia. El Progresivo corrige todas las distancias sin línea visible.` : `You have an addition (ADD +${add.toFixed(2)}), indicating presbyopia. Progressive lenses correct all distances without a visible line.`;
   } else if (cyl >= 1.50) {
     condicion = lang === 'es' ? 'Astigmatismo alto' : 'High astigmatism';
-    explicacion = lang === 'es'
-      ? `Tu CYL de ${cyl_od >= 0 ? '+' : ''}${cyl_od.toFixed(2)} indica astigmatismo alto. Tu córnea tiene curvatura irregular causando halos nocturnos. El AR Premium los elimina.`
-      : `Your CYL of ${cyl_od >= 0 ? '+' : ''}${cyl_od.toFixed(2)} indicates high astigmatism. AR Premium eliminates halos and night glare.`;
+    explicacion = lang === 'es' ? `Tu CYL de ${cyl_od >= 0 ? '+' : ''}${cyl_od.toFixed(2)} indica astigmatismo alto. El AR Premium elimina halos nocturnos.` : `Your CYL of ${cyl_od >= 0 ? '+' : ''}${cyl_od.toFixed(2)} indicates high astigmatism. AR Premium eliminates halos and night glare.`;
   } else if (astigmatismo) {
     condicion = lang === 'es' ? 'Astigmatismo' : 'Astigmatism';
-    explicacion = lang === 'es'
-      ? `Tienes astigmatismo (CYL ${cyl_od >= 0 ? '+' : ''}${cyl_od.toFixed(2)}). El AR Premium mejora la calidad visual eliminando reflejos.`
-      : `You have astigmatism (CYL ${cyl_od >= 0 ? '+' : ''}${cyl_od.toFixed(2)}). AR Premium improves visual quality.`;
+    explicacion = lang === 'es' ? `Tienes astigmatismo (CYL ${cyl_od >= 0 ? '+' : ''}${cyl_od.toFixed(2)}). El AR Premium mejora la calidad visual.` : `You have astigmatism (CYL ${cyl_od >= 0 ? '+' : ''}${cyl_od.toFixed(2)}). AR Premium improves visual quality.`;
   } else if (eq > 4.0) {
     condicion = lang === 'es' ? 'Graduación muy alta' : 'Very high prescription';
-    explicacion = lang === 'es'
-      ? `Con equivalente esférico ${eq.toFixed(2)}, el Súper Hi-Index 1.74 hará tus lentes delgados y elegantes.`
-      : `With spherical equivalent ${eq.toFixed(2)}, Super Hi-Index 1.74 makes your lenses thin and elegant.`;
+    explicacion = lang === 'es' ? `Con equivalente esférico ${eq.toFixed(2)}, el Súper Hi-Index 1.74 hará tus lentes delgados y elegantes.` : `With spherical equivalent ${eq.toFixed(2)}, Super Hi-Index 1.74 makes your lenses thin and elegant.`;
   } else if (eq > 2.0) {
     condicion = lang === 'es' ? 'Graduación alta' : 'High prescription';
-    explicacion = lang === 'es'
-      ? `El Hi-Index 1.67 reducirá el grosor de tus lentes hasta un 30%.`
-      : `Hi-Index 1.67 will reduce lens thickness by up to 30%.`;
+    explicacion = lang === 'es' ? `El Hi-Index 1.67 reducirá el grosor de tus lentes hasta un 30%.` : `Hi-Index 1.67 will reduce lens thickness by up to 30%.`;
   } else {
     condicion = lang === 'es' ? 'Graduación moderada' : 'Moderate prescription';
-    explicacion = lang === 'es'
-      ? `El PolyPlus es más resistente y el Fotocromático te da protección solar automática.`
-      : `PolyPlus is more durable and Photochromic gives automatic sun protection.`;
+    explicacion = lang === 'es' ? `El PolyPlus es más resistente y el Fotocromático te da protección solar automática.` : `PolyPlus is more durable and Photochromic gives automatic sun protection.`;
   }
 
   const precioOriginal = PRECIO_ARMAZON + vision.precio + material.precio + filtroBase.precio;
@@ -580,7 +478,6 @@ export default function DetalleArmazon() {
   const [irResumen, setIrResumen] = useState(false);
   const [errores, setErrores] = useState<string[]>([]);
 
-  // ESTADOS DEL DRAWER
   type DrawerEstado = 'receta' | 'manual' | 'resumen';
   const [drawerEstado, setDrawerEstado] = useState<DrawerEstado>('receta');
   const [recetaGuardada, setRecetaGuardada] = useState(false);
@@ -598,6 +495,15 @@ export default function DetalleArmazon() {
   const [filtros, setFiltros] = useState<string[]>([]);
   const [loadingPago, setLoadingPago] = useState(false);
 
+  // ── RESPONSIVE ──────────────────────────────────────────────────────────────
+  const [esMobil, setEsMobil] = useState(false);
+  useEffect(() => {
+    const check = () => setEsMobil(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const precioArmazon = armazon?.precio || 43;
   const precioVision = visionOpts.find(v => v.id === vision)?.precio || 0;
   const precioMaterial = materialOpts.find(m => m.id === material)?.precio || 0;
@@ -608,15 +514,9 @@ export default function DetalleArmazon() {
 
   const validarReceta = (): string[] => {
     const errs: string[] = [];
-    if (receta.sph_od === null && receta.sph_os === null) {
-      errs.push(t('Ingresa al menos el SPH de un ojo', 'Enter at least the SPH for one eye'));
-    }
-    if (receta.cyl_od !== null && receta.cyl_od !== 0 && receta.axis_od === null) {
-      errs.push(t('EJE requerido para OD cuando hay CYL', 'AXIS required for OD when CYL is set'));
-    }
-    if (receta.cyl_os !== null && receta.cyl_os !== 0 && receta.axis_os === null) {
-      errs.push(t('EJE requerido para OS cuando hay CYL', 'AXIS required for OS when CYL is set'));
-    }
+    if (receta.sph_od === null && receta.sph_os === null) errs.push(t('Ingresa al menos el SPH de un ojo', 'Enter at least the SPH for one eye'));
+    if (receta.cyl_od !== null && receta.cyl_od !== 0 && receta.axis_od === null) errs.push(t('EJE requerido para OD cuando hay CYL', 'AXIS required for OD when CYL is set'));
+    if (receta.cyl_os !== null && receta.cyl_os !== 0 && receta.axis_os === null) errs.push(t('EJE requerido para OS cuando hay CYL', 'AXIS required for OS when CYL is set'));
     return errs;
   };
 
@@ -698,11 +598,7 @@ export default function DetalleArmazon() {
       <Navbar />
 
       {verlyModal && paqueteVerly && (
-        <VerlyModalPaquete
-          paquete={paqueteVerly} armazonNombre={armazon.nombre}
-          onAceptar={aceptarPaquete} onManual={elegirManual}
-          lang={lang || 'es'}
-        />
+        <VerlyModalPaquete paquete={paqueteVerly} armazonNombre={armazon.nombre} onAceptar={aceptarPaquete} onManual={elegirManual} lang={lang || 'es'}/>
       )}
 
       {drawerOpen && <div onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 200, backdropFilter: 'blur(2px)' }}/>}
@@ -710,7 +606,6 @@ export default function DetalleArmazon() {
       {/* DRAWER */}
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', maxWidth: '100vw', background: 'white', zIndex: 201, boxShadow: '-8px 0 40px rgba(0,0,0,0.15)', transform: drawerOpen ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.35s cubic-bezier(0.4,0,0.2,1)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
 
-        {/* Header */}
         <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #EAECF0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'white', zIndex: 1 }}>
           <div>
             <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#2BBFB3', margin: 0 }}>{t('Personalizando', 'Customizing')}</p>
@@ -719,8 +614,8 @@ export default function DetalleArmazon() {
           <button onClick={() => setDrawerOpen(false)} style={{ background: '#F5F5F3', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '20px', color: '#5A6478', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-jakarta), sans-serif' }}>×</button>
         </div>
 
-        {/* ── ESTADO: RECETA ── */}
-        {(drawerEstado === 'receta') && (
+        {/* ESTADO: RECETA */}
+        {drawerEstado === 'receta' && (
           <div style={{ padding: '1.5rem', flex: 1 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
               <label style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A2E' }}>{t('Tu receta óptica', 'Your optical prescription')}</label>
@@ -758,10 +653,9 @@ export default function DetalleArmazon() {
           </div>
         )}
 
-        {/* ── ESTADO: MANUAL O RESUMEN ── */}
+        {/* ESTADO: MANUAL O RESUMEN */}
         {(drawerEstado === 'manual' || drawerEstado === 'resumen') && (
           <>
-            {/* Receta guardada mini — solo si se guardó */}
             {recetaGuardada && (
               <div style={{ padding: '10px 1.5rem', background: '#E0F7F4', borderBottom: '1px solid #2BBFB330', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#2BBFB3', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', flexShrink: 0 }}>✓</div>
@@ -777,7 +671,6 @@ export default function DetalleArmazon() {
               </div>
             )}
 
-            {/* Stepper */}
             <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid #EAECF0' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {pasos.map((p, i) => (
@@ -794,7 +687,6 @@ export default function DetalleArmazon() {
               </div>
             </div>
 
-            {/* Contenido pasos */}
             <div style={{ padding: '1.5rem', flex: 1 }}>
               <VerlyTip mensaje={verlyTips[paso] || ''} />
 
@@ -889,7 +781,6 @@ export default function DetalleArmazon() {
               )}
             </div>
 
-            {/* Footer navegación */}
             {paso < 4 && (
               <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid #EAECF0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', bottom: 0, background: 'white' }}>
                 {paso > 1
@@ -917,11 +808,12 @@ export default function DetalleArmazon() {
         <span style={{ color: '#1A1A2E', fontWeight: 600 }}>{armazon.nombre}</span>
       </div>
 
-      {/* DETALLE */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '3rem 2rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'start' }}>
-        <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #EAECF0', padding: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '360px', position: 'sticky', top: '90px' }}>
+      {/* DETALLE — responsive con esMobil */}
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: esMobil ? '1rem' : '3rem 2rem', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: esMobil ? '1rem' : '4rem', alignItems: 'start' }}>
+        <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #EAECF0', padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '260px' }}>
           {armazon.imagen_url ? <img src={armazon.imagen_url} alt={armazon.nombre} style={{ width: '100%', maxHeight: '300px', objectFit: 'contain' }}/> : <LenteSVG color={armazon.color || '#2BBFB3'} forma={armazon.forma} size="large"/>}
         </div>
+
         <div>
           <div style={{ display: 'flex', gap: '8px', marginBottom: '1rem', flexWrap: 'wrap' }}>
             <span style={{ background: '#F0FBF8', color: '#2BBFB3', padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}>

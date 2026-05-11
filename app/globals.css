@@ -18,3 +18,8 @@ a {
 button {
   font-family: var(--font-jakarta), sans-serif;
 }
+:root { --cols-detalle: 1fr 1fr; }
+
+@media (max-width: 768px) {
+  :root { --cols-detalle: 1fr; }
+}
