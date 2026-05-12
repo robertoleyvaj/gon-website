@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    const shipping = session.shipping_details;
+    const shipping = (session as any).shipping_details;
     const customerEmail = session.customer_details?.email || '';
     const customerName = session.customer_details?.name || '';
     const customerPhone = session.customer_details?.phone || '';
