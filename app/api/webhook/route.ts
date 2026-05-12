@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const customerEmail = session.customer_details?.email || '';
     const customerName = session.customer_details?.name || '';
     const customerPhone = session.customer_details?.phone || '';
-    const descripcion = session.display_items?.[0]?.custom?.description
+    const descripcion = (session as any).display_items?.[0]?.custom?.description
       || (session as any).line_items?.data?.[0]?.description
       || '';
 
