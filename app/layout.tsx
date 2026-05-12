@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import VerlyBot from "./components/verlybot";
 import { LangProvider } from "./components/LanguageContext";
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -21,8 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${jakarta.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col" style={{fontFamily: 'var(--font-jakarta), sans-serif'}}>
+    <html lang="es" className={`${cormorant.variable} ${dmSans.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col" style={{ fontFamily: 'var(--font-dm), sans-serif' }}>
         <LangProvider>
           {children}
           <VerlyBot />

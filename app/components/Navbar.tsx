@@ -1,150 +1,290 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useLang } from './LanguageContext';
+// app/components/Navbar.tsx
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useLang } from "./LanguageContext";
+
+function LangSwitcher() {
+  const { lang, setLang } = useLang();
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+      {(["es", "en"] as const).map((l) => (
+        <button
+          key={l}
+          onClick={() => setLang(l)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontFamily: "var(--font-sans)",
+            fontSize: "0.65rem",
+            fontWeight: lang === l ? 600 : 400,
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            color: lang === l ? "var(--charcoal)" : "var(--warm-gray)",
+            padding: "4px 6px",
+            transition: "color 0.2s ease",
+            borderBottom: lang === l ? "1px solid var(--charcoal)" : "1px solid transparent",
+          }}
+        >
+          {l}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function Navbar() {
-  const { t, lang, setLang } = useLang() as any;
+  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [esMobil, setEsMobil] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const check = () => setEsMobil(window.innerWidth <= 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const links = [
-    { href: '/', label: t('Inicio', 'Home') },
-    { href: '/Tienda', label: t('Tienda', 'Store') },
-    { href: '/FAQ', label: 'FAQ' },
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
+  const navLinks = [
+    { href: "/Tienda", label: "Eyeglasses" },
+    { href: "/sunglasses", label: "Sunglasses" },
   ];
+
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
   return (
     <>
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        background: 'white', borderBottom: '1px solid #EAECF0',
-        fontFamily: 'var(--font-jakarta), sans-serif',
-      }}>
-        <div style={{
-          maxWidth: '1100px', margin: '0 auto',
-          padding: '0 1.25rem', height: '60px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <a href="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
-            <img src="/logo-trasparente.png.png" alt="Verly Optical" style={{ height: '40px', width: 'auto' }}/>
-          </a>
+      <header
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          transition: "background 0.4s ease, box-shadow 0.4s ease",
+          background: scrolled ? "rgba(247, 244, 239, 0.92)" : "transparent",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
+          boxShadow: scrolled ? "0 1px 0 var(--border)" : "none",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1280px",
+            margin: "0 auto",
+            padding: "0 2rem",
+            height: scrolled ? "64px" : "80px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            transition: "height 0.4s ease",
+          }}
+        >
+          {/* Logo */}
+          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <img
+              src="/logo-trasparente.png"
+              alt="Verly Optical"
+              style={{
+                height: scrolled ? "36px" : "44px",
+                width: "auto",
+                transition: "height 0.4s ease",
+                objectFit: "contain",
+              }}
+            />
+          </Link>
 
-          {!esMobil && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-              {links.map(l => (
-                <a key={l.href} href={l.href} style={{ fontSize: '14px', fontWeight: 600, color: '#1A1A2E', textDecoration: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#2BBFB3')}
-                  onMouseLeave={e => (e.currentTarget.style.color = '#1A1A2E')}
-                >
-                  {l.label}
-                </a>
-              ))}
-              <div style={{ display: 'flex', background: '#F0FBF8', borderRadius: '20px', padding: '3px' }}>
-                {(['es', 'en'] as const).map(l => (
-                  <button key={l} onClick={() => setLang(l)} style={{
-                    padding: '4px 12px', borderRadius: '16px', border: 'none',
-                    background: lang === l ? '#2BBFB3' : 'transparent',
-                    color: lang === l ? 'white' : '#5A6478',
-                    fontSize: '12px', fontWeight: 700, cursor: 'pointer',
-                    fontFamily: 'var(--font-jakarta), sans-serif',
-                    transition: 'all 0.15s', textTransform: 'uppercase',
-                  }}>
-                    {l}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {esMobil && (
-            <button onClick={() => setMenuOpen(true)} style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              padding: '8px', borderRadius: '8px',
-              display: 'flex', flexDirection: 'column', gap: '5px',
-            }} aria-label="Abrir menú">
-              <span style={{ display: 'block', width: '22px', height: '2px', background: '#1A1A2E', borderRadius: '2px' }}/>
-              <span style={{ display: 'block', width: '22px', height: '2px', background: '#1A1A2E', borderRadius: '2px' }}/>
-              <span style={{ display: 'block', width: '16px', height: '2px', background: '#1A1A2E', borderRadius: '2px' }}/>
-            </button>
-          )}
-        </div>
-      </nav>
-
-      {menuOpen && (
-        <div onClick={() => setMenuOpen(false)} style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)',
-          zIndex: 200, backdropFilter: 'blur(2px)',
-        }}/>
-      )}
-
-      <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0,
-        width: '280px', maxWidth: '85vw',
-        background: 'white', zIndex: 201,
-        boxShadow: '-4px 0 24px rgba(0,0,0,0.12)',
-        transform: menuOpen ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 0.3s cubic-bezier(0.4,0,0.2,1)',
-        display: 'flex', flexDirection: 'column',
-        fontFamily: 'var(--font-jakarta), sans-serif',
-      }}>
-        <div style={{
-          padding: '1.25rem 1.5rem',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          borderBottom: '1px solid #EAECF0',
-        }}>
-          <img src="/logo-trasparente.png.png" alt="Verly Optical" style={{ height: '36px', width: 'auto' }}/>
-          <button onClick={() => setMenuOpen(false)} style={{
-            background: '#F5F5F3', border: 'none', borderRadius: '50%',
-            width: '32px', height: '32px', cursor: 'pointer',
-            fontSize: '18px', color: '#5A6478',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>×</button>
-        </div>
-
-        <div style={{ flex: 1, padding: '1rem 0' }}>
-          {links.map((l, i) => (
-            <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)} style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '1rem 1.5rem', textDecoration: 'none',
-              color: '#1A1A2E', fontSize: '16px', fontWeight: 600,
-              borderBottom: i < links.length - 1 ? '1px solid #F5F5F3' : 'none',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F0FBF8')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              {l.label}
-              <span style={{ color: '#2BBFB3', fontSize: '18px' }}>›</span>
-            </a>
-          ))}
-        </div>
-
-        <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid #EAECF0' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: '#7A8494', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '10px' }}>
-            {t('Idioma', 'Language')}
-          </p>
-          <div style={{ display: 'flex', background: '#F0FBF8', borderRadius: '20px', padding: '3px', width: 'fit-content' }}>
-            {(['es', 'en'] as const).map(l => (
-              <button key={l} onClick={() => setLang(l)} style={{
-                padding: '6px 20px', borderRadius: '16px', border: 'none',
-                background: lang === l ? '#2BBFB3' : 'transparent',
-                color: lang === l ? 'white' : '#5A6478',
-                fontSize: '13px', fontWeight: 700, cursor: 'pointer',
-                fontFamily: 'var(--font-jakarta), sans-serif',
-                transition: 'all 0.15s', textTransform: 'uppercase',
-              }}>
-                {l}
-              </button>
+          {/* Desktop Nav */}
+          <nav
+            className="desktop-nav"
+            style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}
+          >
+            {navLinks.map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="nav-link"
+                style={{
+                  fontFamily: "var(--font-sans)",
+                  fontSize: "0.78rem",
+                  fontWeight: 400,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: isActive(href) ? "var(--sage)" : "var(--charcoal)",
+                  textDecoration: "none",
+                  position: "relative",
+                  paddingBottom: "2px",
+                  transition: "color 0.2s ease",
+                }}
+              >
+                {label}
+                <span
+                  className="nav-underline"
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "1px",
+                    background: "var(--sage)",
+                    transform: isActive(href) ? "scaleX(1)" : "scaleX(0)",
+                    transformOrigin: "left",
+                    transition: "transform 0.3s ease",
+                  }}
+                />
+              </Link>
             ))}
+          </nav>
+
+          {/* Right side */}
+          <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+            <LangSwitcher />
+
+            <Link
+              href="/Tienda"
+              className="cta-btn desktop-nav"
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontSize: "0.72rem",
+                fontWeight: 500,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "var(--cream)",
+                background: "var(--charcoal)",
+                padding: "0.55rem 1.25rem",
+                borderRadius: "2px",
+                textDecoration: "none",
+                transition: "background 0.2s ease",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Shop Now
+            </Link>
+
+            {/* Hamburger */}
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              aria-label="Toggle menu"
+              className="hamburger"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "4px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+                alignItems: "flex-end",
+              }}
+            >
+              <span style={{ display: "block", width: "22px", height: "1px", background: "var(--charcoal)", transition: "transform 0.3s ease, opacity 0.3s ease", transform: menuOpen ? "translateY(6px) rotate(45deg)" : "none" }}/>
+              <span style={{ display: "block", width: "16px", height: "1px", background: "var(--charcoal)", transition: "transform 0.3s ease, opacity 0.3s ease", opacity: menuOpen ? 0 : 1 }}/>
+              <span style={{ display: "block", width: "22px", height: "1px", background: "var(--charcoal)", transition: "transform 0.3s ease, opacity 0.3s ease", transform: menuOpen ? "translateY(-6px) rotate(-45deg)" : "none" }}/>
+            </button>
           </div>
         </div>
+      </header>
+
+      {/* Mobile Menu */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 99,
+          background: "var(--cream)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: "2rem",
+          opacity: menuOpen ? 1 : 0,
+          pointerEvents: menuOpen ? "all" : "none",
+          transition: "opacity 0.35s ease",
+        }}
+      >
+        <nav style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+          {navLinks.map(({ href, label }, i) => (
+            <Link
+              key={href}
+              href={href}
+              style={{
+                fontFamily: "var(--font-serif)",
+                fontSize: "clamp(2.5rem, 10vw, 4rem)",
+                fontWeight: 300,
+                color: isActive(href) ? "var(--sage)" : "var(--charcoal)",
+                textDecoration: "none",
+                borderBottom: "1px solid var(--border)",
+                paddingBottom: "1rem",
+                paddingTop: i === 0 ? 0 : "1rem",
+                letterSpacing: "-0.01em",
+                opacity: menuOpen ? 1 : 0,
+                transform: menuOpen ? "translateY(0)" : "translateY(16px)",
+                transition: `opacity 0.4s ease ${i * 0.08 + 0.1}s, transform 0.4s ease ${i * 0.08 + 0.1}s`,
+              }}
+            >
+              {label}
+            </Link>
+          ))}
+
+          <Link
+            href="/Tienda"
+            style={{
+              marginTop: "2.5rem",
+              fontFamily: "var(--font-sans)",
+              fontSize: "0.78rem",
+              fontWeight: 500,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--cream)",
+              background: "var(--charcoal)",
+              padding: "1rem 2rem",
+              textDecoration: "none",
+              textAlign: "center",
+              borderRadius: "2px",
+              opacity: menuOpen ? 1 : 0,
+              transition: "opacity 0.4s ease 0.35s",
+            }}
+          >
+            Shop Now
+          </Link>
+
+          {/* Lang switcher mobile */}
+          <div style={{
+            marginTop: "2rem",
+            opacity: menuOpen ? 1 : 0,
+            transition: "opacity 0.4s ease 0.4s",
+          }}>
+            <LangSwitcher />
+          </div>
+        </nav>
+
+        <p style={{ position: "absolute", bottom: "2.5rem", left: "2rem", fontFamily: "var(--font-sans)", fontSize: "0.7rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--warm-gray)" }}>
+          Verly Optical — Tijuana
+        </p>
       </div>
+
+      <style jsx global>{`
+        .nav-link:hover span.nav-underline { transform: scaleX(1) !important; }
+        .nav-link:hover { color: var(--sage) !important; }
+        .cta-btn:hover { background: var(--sage) !important; }
+        @media (min-width: 768px) {
+          .hamburger { display: none !important; }
+          .desktop-nav { display: flex !important; }
+        }
+        @media (max-width: 767px) {
+          .desktop-nav { display: none !important; }
+          .hamburger { display: flex !important; }
+        }
+      `}</style>
     </>
   );
 }

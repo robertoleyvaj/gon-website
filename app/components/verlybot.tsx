@@ -1,5 +1,7 @@
+// app/components/verlybot.tsx
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { useLang } from './LanguageContext';
 
 type Expresion = 'neutral' | 'feliz' | 'pensando' | 'recomendando' | 'sorprendida';
@@ -30,7 +32,7 @@ const PRECIOS_FILTRO: Record<string, number> = {
   'AR Normal': 9, 'Blue Light': 17, 'Fotocromático': 39, 'Antiempañante': 15,
   'AR Premium': 39, 'Polarizado': 89, 'Tinte estético': 28,
 };
-const PRECIO_ARMAZON = 43;
+const PRECIO_ARMAZON = 13;
 
 function armarPaquete(receta: Receta, estiloVida: Record<string, boolean>, lang: 'es' | 'en'): Paquete {
   const sph = Math.max(Math.abs(receta.sph_od), Math.abs(receta.sph_oi));
@@ -46,27 +48,19 @@ function armarPaquete(receta: Receta, estiloVida: Record<string, boolean>, lang:
   if (sph > 5) {
     material = 'Súper Hi-Index 1.74';
     condicion = lang === 'es' ? 'Graduación muy alta' : 'Very high prescription';
-    explicacion = lang === 'es'
-      ? `Con graduación alta, el Súper Hi-Index 1.74 es el material más delgado del mercado.`
-      : `With a high prescription, Super Hi-Index 1.74 is the thinnest material available.`;
+    explicacion = lang === 'es' ? 'Con graduación alta, el Súper Hi-Index 1.74 es el material más delgado del mercado.' : 'With a high prescription, Super Hi-Index 1.74 is the thinnest material available.';
   } else if (sph > 3) {
     material = 'Hi-Index 1.67';
     condicion = lang === 'es' ? 'Graduación alta' : 'High prescription';
-    explicacion = lang === 'es'
-      ? `El Hi-Index 1.67 reduce el grosor hasta un 30%.`
-      : `Hi-Index 1.67 reduces thickness up to 30%.`;
+    explicacion = lang === 'es' ? 'El Hi-Index 1.67 reduce el grosor hasta un 30%.' : 'Hi-Index 1.67 reduces thickness up to 30%.';
   } else if (sph > 1.5 || tieneAstigmatismo) {
     material = 'PolyPlus';
     condicion = tieneAstigmatismo ? (lang === 'es' ? 'Astigmatismo' : 'Astigmatism') : (lang === 'es' ? 'Graduación moderada' : 'Moderate prescription');
-    explicacion = lang === 'es'
-      ? `PolyPlus es el punto perfecto entre calidad y precio.`
-      : `PolyPlus hits the sweet spot between quality and price.`;
+    explicacion = lang === 'es' ? 'PolyPlus es el punto perfecto entre calidad y precio.' : 'PolyPlus hits the sweet spot between quality and price.';
   } else {
     material = 'CR-39';
     condicion = lang === 'es' ? 'Graduación baja' : 'Low prescription';
-    explicacion = lang === 'es'
-      ? `CR-39 es perfecto — económico, ligero y excelente calidad óptica.`
-      : `CR-39 is perfect — affordable, light and excellent optical quality.`;
+    explicacion = lang === 'es' ? 'CR-39 es perfecto — económico, ligero y excelente calidad óptica.' : 'CR-39 is perfect — affordable, light and excellent optical quality.';
   }
 
   const filtrosRec: { nombre: string; precio: number }[] = [];
@@ -87,57 +81,60 @@ function armarPaquete(receta: Receta, estiloVida: Record<string, boolean>, lang:
   return { nombre: lang === 'es' ? `Paquete ${condicion}` : `${condicion} Package`, material, precioMaterial, filtros: filtrosRec, precioOriginal, precioFinal, descuento, condicion, explicacion };
 }
 
-function VerlyAvatar({ expresion, size = 56 }: { expresion: Expresion; size?: number }) {
+// ── AVATAR — solo carita con lentes, paleta Verly ─────────────────────────
+function VerlyAvatar({ expresion, size = 48 }: { expresion: Expresion; size?: number }) {
   const ojosAbiertos = expresion !== 'pensando';
   const sonrisa = expresion === 'feliz' || expresion === 'recomendando';
   const cejas = expresion === 'sorprendida' ? -4 : expresion === 'pensando' ? 2 : 0;
   return (
     <svg width={size} height={size} viewBox="0 0 80 80" fill="none" style={{ flexShrink: 0 }}>
-      <ellipse cx="40" cy="70" rx="20" ry="12" fill="white" stroke="#E2E8F0" strokeWidth="1.5"/>
-      <rect x="34" y="60" width="12" height="16" rx="2" fill="white" stroke="#E2E8F0" strokeWidth="1"/>
-      <path d="M34 62 L30 74" stroke="#2BBFB3" strokeWidth="1.5" strokeLinecap="round"/>
-      <path d="M46 62 L50 74" stroke="#2BBFB3" strokeWidth="1.5" strokeLinecap="round"/>
-      <circle cx="40" cy="66" r="1.5" fill="#2BBFB3"/>
-      <circle cx="40" cy="71" r="1.5" fill="#2BBFB3"/>
-      <ellipse cx="40" cy="36" rx="26" ry="28" fill="white" stroke="#2BBFB3" strokeWidth="2.5"/>
-      <ellipse cx="32" cy="22" rx="6" ry="3.5" fill="#E0F7F4" opacity="0.6"/>
-      <path d={`M25 ${26+cejas} Q29 ${23+cejas} 33 ${26+cejas}`} stroke="#1A1A2E" strokeWidth="2" strokeLinecap="round"/>
-      <path d={`M47 ${26+cejas} Q51 ${23+cejas} 55 ${26+cejas}`} stroke="#1A1A2E" strokeWidth="2" strokeLinecap="round"/>
-      <rect x="21" y="29" width="17" height="11" rx="5" fill="white" stroke="#2BBFB3" strokeWidth="2" opacity="0.9"/>
-      <rect x="42" y="29" width="17" height="11" rx="5" fill="white" stroke="#2BBFB3" strokeWidth="2" opacity="0.9"/>
-      <line x1="38" y1="34.5" x2="42" y2="34.5" stroke="#2BBFB3" strokeWidth="1.5"/>
-      <line x1="21" y1="34.5" x2="17" y2="32" stroke="#2BBFB3" strokeWidth="1.5" strokeLinecap="round"/>
-      <line x1="59" y1="34.5" x2="63" y2="32" stroke="#2BBFB3" strokeWidth="1.5" strokeLinecap="round"/>
+      {/* Cara */}
+      <ellipse cx="40" cy="40" rx="34" ry="36" fill="var(--cream)" stroke="var(--border)" strokeWidth="2"/>
+      {/* Brillo */}
+      <ellipse cx="30" cy="24" rx="7" ry="4" fill="white" opacity="0.4"/>
+      {/* Cejas */}
+      <path d={`M22 ${30+cejas} Q27 ${27+cejas} 32 ${30+cejas}`} stroke="var(--charcoal)" strokeWidth="2" strokeLinecap="round"/>
+      <path d={`M48 ${30+cejas} Q53 ${27+cejas} 58 ${30+cejas}`} stroke="var(--charcoal)" strokeWidth="2" strokeLinecap="round"/>
+      {/* Armazones */}
+      <rect x="18" y="33" width="20" height="13" rx="5" fill="white" stroke="var(--charcoal)" strokeWidth="2" opacity="0.95"/>
+      <rect x="42" y="33" width="20" height="13" rx="5" fill="white" stroke="var(--charcoal)" strokeWidth="2" opacity="0.95"/>
+      {/* Puente */}
+      <path d="M38 39 C39 36, 41 36, 42 39" stroke="var(--charcoal)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+      {/* Patillas */}
+      <line x1="18" y1="39" x2="12" y2="36" stroke="var(--charcoal)" strokeWidth="1.5" strokeLinecap="round"/>
+      <line x1="62" y1="39" x2="68" y2="36" stroke="var(--charcoal)" strokeWidth="1.5" strokeLinecap="round"/>
+      {/* Ojos */}
       {ojosAbiertos ? (
         <>
-          <ellipse cx="29.5" cy="34.5" rx="3.5" ry="3.5" fill="#1A1A2E"/>
-          <ellipse cx="50.5" cy="34.5" rx="3.5" ry="3.5" fill="#1A1A2E"/>
-          <circle cx="31" cy="33" r="1" fill="white"/>
-          <circle cx="52" cy="33" r="1" fill="white"/>
+          <ellipse cx="28" cy="39" rx="3.5" ry="3.5" fill="var(--charcoal)"/>
+          <ellipse cx="52" cy="39" rx="3.5" ry="3.5" fill="var(--charcoal)"/>
+          <circle cx="29.5" cy="37.5" r="1" fill="white"/>
+          <circle cx="53.5" cy="37.5" r="1" fill="white"/>
         </>
       ) : (
         <>
-          <path d="M26 34.5 Q29.5 31 33 34.5" stroke="#1A1A2E" strokeWidth="2" fill="none" strokeLinecap="round"/>
-          <path d="M47 34.5 Q50.5 31 54 34.5" stroke="#1A1A2E" strokeWidth="2" fill="none" strokeLinecap="round"/>
+          <path d="M24 39 Q28 35.5 32 39" stroke="var(--charcoal)" strokeWidth="2" fill="none" strokeLinecap="round"/>
+          <path d="M48 39 Q52 35.5 56 39" stroke="var(--charcoal)" strokeWidth="2" fill="none" strokeLinecap="round"/>
         </>
       )}
+      {/* Boca */}
       {sonrisa
-        ? <path d="M33 46 Q40 52 47 46" stroke="#1A1A2E" strokeWidth="2" fill="none" strokeLinecap="round"/>
+        ? <path d="M32 54 Q40 60 48 54" stroke="var(--charcoal)" strokeWidth="2" fill="none" strokeLinecap="round"/>
         : expresion === 'sorprendida'
-        ? <ellipse cx="40" cy="47" rx="4" ry="5" fill="#1A1A2E"/>
-        : <path d="M35 47 Q40 50 45 47" stroke="#1A1A2E" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+        ? <ellipse cx="40" cy="55" rx="4" ry="5" fill="var(--charcoal)"/>
+        : expresion === 'pensando'
+        ? <>
+            <circle cx="34" cy="55" r="1.5" fill="var(--sage)"/>
+            <circle cx="40" cy="53" r="1.5" fill="var(--sage)"/>
+            <circle cx="46" cy="55" r="1.5" fill="var(--sage)"/>
+          </>
+        : <path d="M34 55 Q40 58 46 55" stroke="var(--charcoal)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
       }
-      {(expresion === 'feliz' || expresion === 'recomendando') && (
+      {/* Mejillas */}
+      {(sonrisa) && (
         <>
-          <ellipse cx="23" cy="43" rx="4.5" ry="2.5" fill="#FFB3C6" opacity="0.5"/>
-          <ellipse cx="57" cy="43" rx="4.5" ry="2.5" fill="#FFB3C6" opacity="0.5"/>
-        </>
-      )}
-      {expresion === 'pensando' && (
-        <>
-          <circle cx="36" cy="48" r="1.5" fill="#2BBFB3"/>
-          <circle cx="40" cy="46" r="1.5" fill="#2BBFB3"/>
-          <circle cx="44" cy="48" r="1.5" fill="#2BBFB3"/>
+          <ellipse cx="20" cy="50" rx="5" ry="3" fill="var(--sage-light)" opacity="0.2"/>
+          <ellipse cx="60" cy="50" rx="5" ry="3" fill="var(--sage-light)" opacity="0.2"/>
         </>
       )}
     </svg>
@@ -146,33 +143,33 @@ function VerlyAvatar({ expresion, size = 56 }: { expresion: Expresion; size?: nu
 
 function BurbujaPaquete({ paquete, onAceptar, lang }: { paquete: Paquete; onAceptar: () => void; lang: 'es' | 'en' }) {
   return (
-    <div style={{ background: 'linear-gradient(135deg, #E0F7F4, #F0FBF8)', border: '2px solid #2BBFB3', borderRadius: '12px', padding: '1rem', marginTop: '8px' }}>
-      <div style={{ fontSize: '11px', fontWeight: 800, color: '#2BBFB3', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{paquete.nombre}</div>
-      <div style={{ fontSize: '12px', color: '#1A5C58', marginBottom: '10px', lineHeight: 1.6 }}>{paquete.explicacion}</div>
-      <div style={{ background: 'white', borderRadius: '8px', padding: '0.75rem', marginBottom: '10px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', padding: '4px 0', borderBottom: '1px solid #F0F0F0' }}>
-          <span style={{ color: '#5A6478' }}>{lang === 'es' ? 'Armazón' : 'Frame'}</span>
-          <span style={{ fontWeight: 600 }}>${PRECIO_ARMAZON}</span>
+    <div style={{ background: 'var(--cream-dark)', border: '1px solid var(--border)', borderRadius: '8px', padding: '1rem', marginTop: '8px' }}>
+      <div style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '8px' }}>{paquete.nombre}</div>
+      <div style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--charcoal)', marginBottom: '10px', lineHeight: 1.6 }}>{paquete.explicacion}</div>
+      <div style={{ background: 'white', borderRadius: '6px', padding: '0.75rem', marginBottom: '10px', border: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', padding: '4px 0', borderBottom: '1px solid var(--cream-dark)' }}>
+          <span style={{ color: 'var(--warm-gray)' }}>{lang === 'es' ? 'Armazón' : 'Frame'}</span>
+          <span style={{ fontWeight: 500 }}>${PRECIO_ARMAZON}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', padding: '4px 0', borderBottom: '1px solid #F0F0F0' }}>
-          <span style={{ color: '#5A6478' }}>{paquete.material}</span>
-          <span style={{ fontWeight: 600 }}>{paquete.precioMaterial === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+$${paquete.precioMaterial}`}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', padding: '4px 0', borderBottom: '1px solid var(--cream-dark)' }}>
+          <span style={{ color: 'var(--warm-gray)' }}>{paquete.material}</span>
+          <span style={{ fontWeight: 500 }}>{paquete.precioMaterial === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+$${paquete.precioMaterial}`}</span>
         </div>
         {paquete.filtros.map((f, i) => (
-          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', padding: '4px 0', borderBottom: i < paquete.filtros.length - 1 ? '1px solid #F0F0F0' : 'none' }}>
-            <span style={{ color: '#5A6478' }}>{f.nombre}</span>
-            <span style={{ fontWeight: 600 }}>+${f.precio}</span>
+          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', padding: '4px 0', borderBottom: i < paquete.filtros.length - 1 ? '1px solid var(--cream-dark)' : 'none' }}>
+            <span style={{ color: 'var(--warm-gray)' }}>{f.nombre}</span>
+            <span style={{ fontWeight: 500 }}>+${f.precio}</span>
           </div>
         ))}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
         <div>
-          <div style={{ fontSize: '11px', color: '#7A8494', textDecoration: 'line-through' }}>${paquete.precioOriginal} USD</div>
-          <div style={{ fontSize: '20px', fontWeight: 800, color: '#2BBFB3' }}>${paquete.precioFinal} USD</div>
+          <div style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>${paquete.precioOriginal} USD</div>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--sage)' }}>${paquete.precioFinal} USD</div>
         </div>
-        <div style={{ background: '#F5C518', color: '#1A1A2E', padding: '6px 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 800 }}>-{paquete.descuento}% OFF</div>
+        <div style={{ background: 'var(--sage)', color: 'white', padding: '4px 10px', borderRadius: '4px', fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 500 }}>-{paquete.descuento}% OFF</div>
       </div>
-      <button onClick={onAceptar} style={{ width: '100%', background: '#1A1A2E', color: 'white', border: 'none', borderRadius: '8px', padding: '10px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-jakarta), sans-serif' }}>
+      <button onClick={onAceptar} style={{ width: '100%', background: 'var(--charcoal)', color: 'white', border: 'none', borderRadius: '4px', padding: '10px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, letterSpacing: '0.06em', cursor: 'pointer' }}>
         {lang === 'es' ? 'Quiero este paquete →' : 'I want this package →'}
       </button>
     </div>
@@ -181,22 +178,19 @@ function BurbujaPaquete({ paquete, onAceptar, lang }: { paquete: Paquete; onAcep
 
 export default function VerlyBot() {
   const { lang } = useLang() as { lang: 'es' | 'en'; t: (es: string, en: string) => string };
+  const pathname = usePathname();
   const [abierto, setAbierto] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [expresion, setExpresion] = useState<Expresion>('neutral');
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [input, setInput] = useState('');
-  const [opciones, setOpciones] = useState<string[]>([]);
-  const [burbujaVisible, setBurbujaVisible] = useState(false);
-  const [sesion, setSesion] = useState<SesionPx>({
-    nombre: '', receta: null, estiloVida: {}, paqueteRecomendado: null,
-  });
+  const [sesion, setSesion] = useState<SesionPx>({ nombre: '', receta: null, estiloVida: {}, paqueteRecomendado: null });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const prevPathname = useRef(pathname);
 
   // ── DRAG ──────────────────────────────────────────────────────────────────
   const [pos, setPos] = useState({ x: 28, y: 28 });
-  const dragRef = useRef<{ dragging: boolean; startX: number; startY: number; startPosX: number; startPosY: number }>({
-    dragging: false, startX: 0, startY: 0, startPosX: 28, startPosY: 28,
-  });
+  const dragRef = useRef({ dragging: false, startX: 0, startY: 0, startPosX: 28, startPosY: 28 });
   const hasDragged = useRef(false);
 
   const onMouseDown = (e: React.MouseEvent) => {
@@ -236,54 +230,41 @@ export default function VerlyBot() {
     };
   }, []);
 
-  // ── BURBUJA BIENVENIDA ─────────────────────────────────────────────────────
+  // ── RESET AL CAMBIAR DE PÁGINA ────────────────────────────────────────────
   useEffect(() => {
-    const timer = setTimeout(() => setBurbujaVisible(true), 1500);
-    const hide = setTimeout(() => setBurbujaVisible(false), 6000);
-    return () => { clearTimeout(timer); clearTimeout(hide); };
-  }, []);
-
-  const cargarSesion = (): SesionPx => {
-    if (typeof window === 'undefined') return { nombre: '', receta: null, estiloVida: {}, paqueteRecomendado: null };
-    return JSON.parse(sessionStorage.getItem('verly_sesion') || '{}');
-  };
-
-  const guardarSesion = (s: SesionPx) => {
-    if (typeof window !== 'undefined') sessionStorage.setItem('verly_sesion', JSON.stringify(s));
-  };
-
-  const cambiarExpresion = (e: Expresion, ms = 2500) => {
-    setExpresion(e);
-    setTimeout(() => setExpresion('neutral'), ms);
-  };
-
-  const agregarMensaje = (de: 'verly' | 'px', texto: string, paquete?: Paquete) => {
-    setMensajes(prev => [...prev, { de, texto, paquete }]);
-  };
+    if (pathname !== prevPathname.current) {
+      prevPathname.current = pathname;
+      setVisible(true);
+      setAbierto(false);
+      setMensajes([]);
+    }
+  }, [pathname]);
 
   // ── ESCUCHAR RECETA DESDE DRAWER ──────────────────────────────────────────
   useEffect(() => {
     const onRecetaActualizada = () => {
-      const s = cargarSesion();
+      const s = JSON.parse(sessionStorage.getItem('verly_sesion') || '{}');
       if (s.receta) {
         setSesion(s);
         const paquete = armarPaquete(s.receta, s.estiloVida || {}, lang);
-        cambiarExpresion('recomendando', 4000);
+        setExpresion('recomendando');
+        setTimeout(() => setExpresion('neutral'), 4000);
         agregarMensaje('verly',
           lang === 'es'
             ? '¡Leí tu receta! Te armé un paquete personalizado con 10% de descuento:'
-            : 'I read your prescription! I put together a personalized package with 10% off:',
+            : 'I read your prescription! Here is a personalized package with 10% off:',
           paquete
         );
         const nuevaSesion = { ...s, paqueteRecomendado: paquete };
         setSesion(nuevaSesion);
-        guardarSesion(nuevaSesion);
-        if (!abierto) setAbierto(true);
+        sessionStorage.setItem('verly_sesion', JSON.stringify(nuevaSesion));
+        setVisible(true);
+        setAbierto(true);
       }
     };
     window.addEventListener('verly_receta_actualizada', onRecetaActualizada);
     return () => window.removeEventListener('verly_receta_actualizada', onRecetaActualizada);
-  }, [lang, abierto]);
+  }, [lang]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -291,40 +272,37 @@ export default function VerlyBot() {
 
   useEffect(() => {
     if (abierto && mensajes.length === 0) {
-      setTimeout(() => iniciarConversacion(), 400);
+      setTimeout(() => iniciarConversacion(), 300);
     }
   }, [abierto]);
 
+  const agregarMensaje = (de: 'verly' | 'px', texto: string, paquete?: Paquete) => {
+    setMensajes(prev => [...prev, { de, texto, paquete }]);
+  };
+
   const iniciarConversacion = () => {
-    const s = cargarSesion();
+    const s = JSON.parse(sessionStorage.getItem('verly_sesion') || '{}');
     setSesion(s);
     const nombre = s.nombre || '';
     agregarMensaje('verly',
       lang === 'es'
-        ? (nombre ? `¡Hola de nuevo, ${nombre}! ¿En qué te puedo ayudar?` : '¡Hola! Soy Verly 👋 Tu asistente virtual de Verly Optical. ¿En qué te puedo ayudar hoy?')
-        : (nombre ? `Welcome back, ${nombre}! How can I help you?` : "Hi! I'm Verly 👋 Your virtual assistant at Verly Optical. How can I help you today?")
+        ? (nombre ? `¡Hola de nuevo, ${nombre}! ¿En qué te puedo ayudar?` : '¡Hola! Soy Verly 👋 ¿En qué te puedo ayudar hoy?')
+        : (nombre ? `Welcome back, ${nombre}! How can I help you?` : "Hi! I'm Verly 👋 How can I help you today?")
     );
-    cambiarExpresion('feliz', 3000);
+    setExpresion('feliz');
+    setTimeout(() => setExpresion('neutral'), 3000);
   };
 
-  // ── IA: PROCESAR RESPUESTA ─────────────────────────────────────────────────
   const procesarRespuesta = async (texto: string) => {
     agregarMensaje('px', texto);
-    setOpciones([]);
-    cambiarExpresion('pensando', 2000);
+    setExpresion('pensando');
 
     const historial = [...mensajes, { de: 'px' as const, texto }].map(m => ({
       role: m.de === 'verly' ? 'assistant' : 'user',
       content: m.texto,
     }));
 
-    const s = cargarSesion();
-    if (s.nombre !== sesion.nombre && texto.length < 30 && mensajes.length <= 2) {
-      const nuevaSesion = { ...s, nombre: texto.trim().split(' ')[0] };
-      setSesion(nuevaSesion);
-      guardarSesion(nuevaSesion);
-    }
-
+    const s = JSON.parse(sessionStorage.getItem('verly_sesion') || '{}');
     const contexto = `Page: ${window.location.pathname}. ${s.nombre ? `Customer: ${s.nombre}.` : ''} ${s.receta ? 'Has prescription saved.' : 'No prescription yet.'}`;
 
     try {
@@ -335,9 +313,11 @@ export default function VerlyBot() {
       });
       const data = await res.json();
       agregarMensaje('verly', data.texto);
-      cambiarExpresion('feliz', 2000);
+      setExpresion('feliz');
+      setTimeout(() => setExpresion('neutral'), 2000);
     } catch {
       agregarMensaje('verly', lang === 'es' ? 'Lo siento, hubo un error.' : 'Sorry, there was an error.');
+      setExpresion('neutral');
     }
   };
 
@@ -349,143 +329,195 @@ export default function VerlyBot() {
 
   const handleClick = () => {
     if (hasDragged.current) return;
-    setBurbujaVisible(false);
     setAbierto(!abierto);
   };
 
+  const cerrar = () => {
+    setVisible(false);
+    setAbierto(false);
+  };
+
+  if (!visible) return null;
+
   return (
     <>
-      {/* BURBUJA BIENVENIDA */}
-      {burbujaVisible && !abierto && (
-        <div style={{
-          position: 'fixed', bottom: `${pos.y + 82}px`, right: `${pos.x}px`, zIndex: 998,
-          background: 'white', borderRadius: '16px 16px 4px 16px',
-          padding: '12px 16px', boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-          border: '1.5px solid #E0F7F4', maxWidth: '220px',
-          animation: 'verlySlideUp 0.4s ease-out',
-          fontFamily: 'var(--font-jakarta), sans-serif',
-        }}>
-          <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A1A2E', marginBottom: '4px' }}>
-            {lang === 'es' ? '¡Hola! Soy Verly 👋' : "Hi! I'm Verly 👋"}
-          </div>
-          <div style={{ fontSize: '12px', color: '#5A6478', lineHeight: 1.5 }}>
-            {lang === 'es'
-              ? 'Tu asistente virtual. ¿Te ayudo a encontrar los lentes perfectos?'
-              : 'Your virtual assistant. Can I help you find the perfect glasses?'}
-          </div>
-          <button onClick={() => setBurbujaVisible(false)} style={{ position: 'absolute', top: '6px', right: '8px', background: 'none', border: 'none', fontSize: '14px', color: '#AAB4C0', cursor: 'pointer', lineHeight: 1 }}>×</button>
-        </div>
-      )}
-
-      {/* BOTÓN FLOTANTE */}
-      <div onMouseDown={onMouseDown} onTouchStart={onTouchStart} onClick={handleClick} style={{
-        position: 'fixed', bottom: `${pos.y}px`, right: `${pos.x}px`, zIndex: 999,
-        cursor: 'grab',
-        animation: !abierto ? 'verlyFloat 3s ease-in-out infinite' : 'none',
-        filter: 'drop-shadow(0 8px 28px rgba(43,191,179,0.45))',
-        userSelect: 'none',
-      }}>
-        <VerlyAvatar expresion={abierto ? 'feliz' : expresion} size={72}/>
-        {!abierto && (
-          <div style={{
-            position: 'absolute', top: '-2px', right: '-2px',
-            background: '#F5C518', borderRadius: '50%', width: '20px', height: '20px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '11px', fontWeight: 800, color: '#1A1A2E', border: '2px solid white',
-          }}>!</div>
-        )}
-      </div>
-
       {/* VENTANA DE CHAT */}
       {abierto && (
         <div style={{
-          position: 'fixed', bottom: `${pos.y + 88}px`, right: `${pos.x}px`, zIndex: 998,
-          width: '380px', maxWidth: 'calc(100vw - 56px)',
-          background: 'white', borderRadius: '20px',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
-          display: 'flex', flexDirection: 'column', maxHeight: '560px',
-          animation: 'verlySlideUp 0.3s ease-out',
-          fontFamily: 'var(--font-jakarta), sans-serif',
+          position: 'fixed',
+          bottom: `${pos.y + 80}px`,
+          left: `${pos.x}px`,
+          zIndex: 998,
+          width: '360px',
+          maxWidth: 'calc(100vw - 56px)',
+          background: 'white',
+          borderRadius: '12px',
+          boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
+          border: '1px solid var(--border)',
+          display: 'flex',
+          flexDirection: 'column',
+          maxHeight: '520px',
+          animation: 'verlySlideUp 0.25s ease-out',
+          fontFamily: 'var(--font-sans), sans-serif',
           overflow: 'hidden',
         }}>
           {/* Header */}
-          <div style={{ background: 'linear-gradient(135deg, #2BBFB3, #1a9990)', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-            <VerlyAvatar expresion={expresion} size={48}/>
+          <div style={{
+            background: 'var(--charcoal)',
+            padding: '1rem 1.25rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            flexShrink: 0,
+          }}>
+            <VerlyAvatar expresion={expresion} size={40}/>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '16px', fontWeight: 800, color: 'white' }}>Verly</div>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)' }}>
-                {lang === 'es' ? 'Tu asistente virtual' : 'Your virtual assistant'}
+              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 300, color: 'white', letterSpacing: '0.02em' }}>Verly</div>
+              <div style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)' }}>
+                {lang === 'es' ? 'Asistente virtual' : 'Virtual assistant'}
               </div>
             </div>
-            <button onClick={() => setAbierto(false)} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: '30px', height: '30px', color: 'white', cursor: 'pointer', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'inherit' }}>×</button>
+            <button
+              onClick={() => setAbierto(false)}
+              style={{ background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+            >−</button>
+            <button
+              onClick={cerrar}
+              style={{ background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+            >×</button>
           </div>
 
           {/* Mensajes */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '10px', background: 'var(--cream)' }}>
             {mensajes.map((m, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: m.de === 'verly' ? 'row' : 'row-reverse', gap: '8px', alignItems: 'flex-start' }}>
-                {m.de === 'verly' && <VerlyAvatar expresion="neutral" size={30}/>}
+                {m.de === 'verly' && <VerlyAvatar expresion="neutral" size={28}/>}
                 <div style={{ maxWidth: '82%' }}>
                   <div style={{
-                    background: m.de === 'verly' ? '#F0FBF8' : '#1A1A2E',
-                    color: m.de === 'verly' ? '#1A1A2E' : 'white',
-                    padding: '10px 14px',
-                    borderRadius: m.de === 'verly' ? '4px 14px 14px 14px' : '14px 4px 14px 14px',
-                    fontSize: '13px', lineHeight: 1.6,
+                    background: m.de === 'verly' ? 'white' : 'var(--charcoal)',
+                    color: m.de === 'verly' ? 'var(--charcoal)' : 'white',
+                    padding: '9px 13px',
+                    borderRadius: m.de === 'verly' ? '3px 10px 10px 10px' : '10px 3px 10px 10px',
+                    fontSize: '13px',
+                    lineHeight: 1.6,
+                    border: m.de === 'verly' ? '1px solid var(--border)' : 'none',
+                    fontFamily: 'var(--font-sans)',
                   }}>
                     {m.texto}
                   </div>
                   {m.paquete && (
                     <BurbujaPaquete paquete={m.paquete} lang={lang} onAceptar={() => {
-                      cambiarExpresion('feliz', 2500);
+                      setExpresion('feliz');
+                      setTimeout(() => setExpresion('neutral'), 2500);
                       agregarMensaje('verly', lang === 'es'
-                        ? `¡Excelente! Selecciona ${m.paquete!.material} en el drawer y agrega los filtros recomendados.`
-                        : `Excellent! Select ${m.paquete!.material} in the drawer and add the recommended filters.`);
+                        ? `¡Excelente elección! Selecciona ${m.paquete!.material} en el configurador.`
+                        : `Great choice! Select ${m.paquete!.material} in the configurator.`);
                     }}/>
                   )}
                 </div>
               </div>
             ))}
-            {opciones.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
-                {opciones.map((op, i) => (
-                  <button key={i} onClick={() => procesarRespuesta(op)} style={{
-                    background: 'white', border: '1.5px solid #2BBFB3', borderRadius: '20px',
-                    padding: '6px 14px', fontSize: '12px', fontWeight: 600, color: '#2BBFB3',
-                    cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s',
-                  }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#E0F7F4'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'white'; }}
-                  >{op}</button>
-                ))}
-              </div>
-            )}
             <div ref={messagesEndRef}/>
           </div>
 
           {/* Input */}
-          <div style={{ padding: '0.75rem', borderTop: '1px solid #EAECF0', display: 'flex', gap: '8px', flexShrink: 0 }}>
-            <input value={input} onChange={e => setInput(e.target.value)}
+          <div style={{ padding: '0.75rem', borderTop: '1px solid var(--border)', display: 'flex', gap: '8px', flexShrink: 0, background: 'white' }}>
+            <input
+              value={input}
+              onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && manejarEnvio()}
               placeholder={lang === 'es' ? 'Escribe aquí...' : 'Type here...'}
-              style={{ flex: 1, padding: '10px 14px', borderRadius: '20px', border: '1.5px solid #EAECF0', fontSize: '13px', fontFamily: 'inherit', outline: 'none' }}
+              style={{
+                flex: 1, padding: '9px 13px',
+                borderRadius: '4px',
+                border: '1px solid var(--border)',
+                fontSize: '13px',
+                fontFamily: 'var(--font-sans)',
+                outline: 'none',
+                background: 'var(--cream)',
+                color: 'var(--charcoal)',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = 'var(--sage)')}
+              onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
             />
-            <button onClick={manejarEnvio} style={{
-              background: '#2BBFB3', color: 'white', border: 'none', borderRadius: '50%',
-              width: '40px', height: '40px', cursor: 'pointer', fontSize: '18px', flexShrink: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>→</button>
+            <button
+              onClick={manejarEnvio}
+              style={{
+                background: 'var(--sage)', color: 'white', border: 'none',
+                borderRadius: '4px', width: '38px', height: '38px',
+                cursor: 'pointer', fontSize: '16px', flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--charcoal)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--sage)')}
+            >→</button>
           </div>
         </div>
       )}
 
+      {/* BOTÓN FLOTANTE */}
+      <div
+        onMouseDown={onMouseDown}
+        onTouchStart={onTouchStart}
+        onClick={handleClick}
+        style={{
+          position: 'fixed',
+          bottom: `${pos.y}px`,
+          left: `${pos.x}px`,
+          zIndex: 999,
+          cursor: 'grab',
+          userSelect: 'none',
+          animation: !abierto ? 'verlyFloat 3s ease-in-out infinite' : 'none',
+        }}
+      >
+        {/* Avatar con fondo */}
+        <div style={{
+          width: '60px',
+          height: '60px',
+          borderRadius: '50%',
+          background: 'white',
+          border: '2px solid var(--border)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'box-shadow 0.2s, transform 0.2s',
+        }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 28px rgba(0,0,0,0.18)';
+            (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.12)';
+            (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)';
+          }}
+        >
+          <VerlyAvatar expresion={abierto ? 'feliz' : expresion} size={44}/>
+        </div>
+
+        {/* Indicador punto verde */}
+        {!abierto && (
+          <div style={{
+            position: 'absolute',
+            top: '2px',
+            right: '2px',
+            width: '12px',
+            height: '12px',
+            borderRadius: '50%',
+            background: 'var(--sage)',
+            border: '2px solid white',
+          }}/>
+        )}
+      </div>
+
       <style>{`
         @keyframes verlyFloat {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+          50% { transform: translateY(-8px); }
         }
         @keyframes verlySlideUp {
-          from { opacity: 0; transform: translateY(16px); }
+          from { opacity: 0; transform: translateY(12px); }
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>

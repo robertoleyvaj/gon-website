@@ -1,3 +1,4 @@
+// app/page.tsx
 'use client';
 import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
@@ -15,230 +16,227 @@ export default function Home() {
   }, []);
 
   return (
-    <main style={{ fontFamily: 'var(--font-jakarta), sans-serif', margin: 0, padding: 0, background: '#FAFAFA', color: '#1A1A2E' }}>
-
+    <main style={{ fontFamily: 'var(--font-sans)', margin: 0, padding: 0, background: 'var(--cream)', color: 'var(--charcoal)' }}>
       <Navbar />
 
       {/* ── HERO ── */}
       <section style={{
         position: 'relative',
-        background: '#F5F2EE',
-        minHeight: esMobil ? '100vh' : '88vh',
+        width: '100%',
+        minHeight: esMobil ? '80vh' : '88vh',
+        overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
-        overflow: 'hidden',
       }}>
+        <img
+          src="/hero-man.jpg"
+          alt=""
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: esMobil ? '70% top' : 'center top',
+          }}
+        />
         <div style={{
-          position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse 70% 80% at 80% 50%, #E0F7F5 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute', right: '-60px', top: '50%', transform: 'translateY(-50%)',
-          width: '560px', height: '560px',
-          background: 'radial-gradient(circle, #2BBFB322 0%, transparent 70%)',
-          borderRadius: '50%',
-          pointerEvents: 'none',
-        }} />
+          position: 'absolute',
+          inset: 0,
+          background: esMobil
+            ? 'linear-gradient(to bottom, rgba(247,244,239,0.7) 0%, rgba(247,244,239,0.2) 100%)'
+            : 'linear-gradient(to right, rgba(247,244,239,0.95) 0%, rgba(247,244,239,0.82) 35%, rgba(247,244,239,0.0) 62%)',
+        }}/>
 
         <div style={{
           position: 'relative', zIndex: 1,
-          maxWidth: '1180px', margin: '0 auto',
-          padding: esMobil ? '3rem 1.5rem' : '6rem 2rem',
-          display: 'grid',
-          gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr',
-          gap: esMobil ? '2rem' : '4rem',
-          alignItems: 'center',
-          width: '100%',
+          maxWidth: '1180px', width: '100%',
+          margin: '0 auto',
+          padding: esMobil ? '5rem 1.5rem 3rem' : '6rem 2rem 0',
         }}>
-          {/* Texto */}
-          <div>
-            <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: '8px',
-              background: '#2BBFB3', color: 'white',
-              padding: '6px 16px', borderRadius: '4px',
-              fontSize: '11px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase',
-              marginBottom: '2rem',
-            }}>
-              {t('Desde $5 USD · Sin aseguranza', 'From $5 USD · No insurance needed')}
-            </div>
+          <p style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '11px', fontWeight: 500, letterSpacing: '2.5px',
+            textTransform: 'uppercase', color: 'var(--sage)',
+            marginBottom: '1.25rem',
+          }}>
+            {t('Estilo atemporal. Confianza diaria.', 'Timeless style. Everyday confidence.')}
+          </p>
 
-            <h1 style={{
-              fontSize: esMobil ? 'clamp(2rem, 8vw, 2.8rem)' : 'clamp(2.4rem, 5vw, 3.6rem)',
-              fontWeight: 800,
-              lineHeight: 1.08,
-              letterSpacing: '-0.03em',
-              color: '#1A1A2E',
-              marginBottom: '1.5rem',
-            }}>
-              {t('Lentes a tu medida.', 'Lenses made')}<br />
-              <span style={{ color: '#2BBFB3' }}>
-                {t('Precio justo.', 'for you.')}
-              </span>
-            </h1>
+          <h1 style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: esMobil ? 'clamp(2.8rem, 9vw, 3.4rem)' : 'clamp(3.2rem, 5vw, 4.4rem)',
+            fontWeight: 400,
+            lineHeight: 1.08,
+            letterSpacing: '-0.02em',
+            color: 'var(--charcoal)',
+            marginBottom: '1.25rem',
+            maxWidth: esMobil ? '100%' : '560px',
+          }}>
+            {t(
+              <>Lentes de calidad<br />que se adaptan<br /><em style={{ fontStyle: 'italic', color: 'var(--sage-light)' }}>a tu vida.</em></>,
+              <>Quality eyewear<br />that fits<br /><em style={{ fontStyle: 'italic', color: 'var(--sage-light)' }}>your life.</em></>
+            )}
+          </h1>
 
-            <p style={{
-              fontSize: '17px',
-              color: '#5A6478',
-              lineHeight: 1.7,
-              marginBottom: '2.5rem',
-              maxWidth: '420px',
-            }}>
-              {t(
-                'Armazones de calidad con micas hechas a tu graduación. Entrega rápida a California. Sin citas. Sin seguro.',
-                'Quality frames with lenses made to your prescription. Fast delivery to California. No appointments. No insurance.'
-              )}
-            </p>
+          <p style={{
+            fontFamily: 'var(--font-sans)',
+            fontSize: '15px',
+            color: 'var(--warm-gray)',
+            lineHeight: 1.8,
+            marginBottom: '2.5rem',
+            maxWidth: '380px',
+            fontWeight: 400,
+          }}>
+            {t(
+              'Diseños clásicos. Micas premium. Precios justos. Hechos para la vida real.',
+              'Classic designs. Premium lenses. Fair prices. Made for real life.'
+            )}
+          </p>
 
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <a href="/Tienda" style={{
-                background: '#1A1A2E', color: 'white',
-                padding: '15px 32px', borderRadius: '6px',
-                fontSize: '14px', fontWeight: 700, textDecoration: 'none',
-                letterSpacing: '0.5px',
-              }}>
-                {t('Explorar Lentes', 'Explore Frames')}
-              </a>
-            </div>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '3rem' }}>
+            <a href="/Tienda" style={{
+              background: 'var(--sage)', color: 'white',
+              padding: '14px 32px', borderRadius: '3px',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12px', fontWeight: 500, textDecoration: 'none',
+              letterSpacing: '1.2px', textTransform: 'uppercase',
+              transition: 'background 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--charcoal)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--sage)')}
+            >
+              {t('Ver armazones', 'Shop Eyeglasses')}
+            </a>
+            <a href="/sunglasses" style={{
+              background: 'white', color: 'var(--charcoal)',
+              padding: '13px 28px', borderRadius: '3px',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '12px', fontWeight: 500, textDecoration: 'none',
+              letterSpacing: '1px', textTransform: 'uppercase',
+              border: '1px solid var(--border)',
+              transition: 'border-color 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--charcoal)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+            >
+              {t('Lentes de sol', 'Shop Sunglasses')}
+            </a>
           </div>
 
-          {/* Visual lado derecho */}
-          {!esMobil && (
-            <div style={{
-              position: 'relative',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <div style={{
-                width: '420px', height: '420px',
-                background: 'linear-gradient(145deg, #E0F7F5, #F0FBF8)',
-                borderRadius: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                position: 'relative',
-              }}>
-                <svg width="280" height="140" viewBox="0 0 280 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="8" y="20" width="108" height="100" rx="32" fill="white" stroke="#2BBFB3" strokeWidth="5"/>
-                  <rect x="164" y="20" width="108" height="100" rx="32" fill="white" stroke="#2BBFB3" strokeWidth="5"/>
-                  <path d="M116 60 C124 50, 156 50, 164 60" stroke="#2BBFB3" strokeWidth="4" fill="none" strokeLinecap="round"/>
-                  <line x1="8" y1="55" x2="-8" y2="48" stroke="#2BBFB3" strokeWidth="4" strokeLinecap="round"/>
-                  <line x1="272" y1="55" x2="288" y2="48" stroke="#2BBFB3" strokeWidth="4" strokeLinecap="round"/>
-                  <ellipse cx="42" cy="52" rx="14" ry="8" fill="#E0F7F5" opacity="0.7"/>
-                  <ellipse cx="198" cy="52" rx="14" ry="8" fill="#E0F7F5" opacity="0.7"/>
-                </svg>
-
-                <div style={{
-                  position: 'absolute', bottom: '40px', right: '-10px',
-                  background: '#F5C518', color: '#1A1A2E',
-                  padding: '12px 18px', borderRadius: '12px',
-                  fontSize: '13px', fontWeight: 800,
-                  boxShadow: '0 8px 24px rgba(245,197,24,0.35)',
-                }}>
-                  {t('Desde $5 USD', 'From $5 USD')}
-                </div>
-
-                <div style={{
-                  position: 'absolute', top: '40px', left: '-10px',
-                  background: 'white', color: '#1A1A2E',
-                  padding: '10px 16px', borderRadius: '12px',
-                  fontSize: '12px', fontWeight: 700,
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-                  border: '1px solid #E2E8F0',
-                }}>
-                  {t('Entrega 3–5 días', 'Delivery 3–5 days')}
+          {/* Trust badges */}
+          <div style={{
+            display: 'flex', gap: '2.5rem', flexWrap: 'wrap',
+            paddingTop: '2rem',
+            borderTop: '1px solid rgba(28,28,26,0.08)',
+            maxWidth: '520px',
+          }}>
+            {[
+              {
+                icon: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                ),
+                es: 'Garantía 90 días', en: '90-Day Warranty',
+                sub_es: 'En todos los pedidos', sub_en: 'On all orders',
+              },
+              {
+                icon: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                  </svg>
+                ),
+                es: 'Envío rápido', en: 'Fast Shipping',
+                sub_es: '3 a 5 días hábiles', sub_en: '3 to 5 business days',
+              },
+              {
+                icon: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-5.49"/>
+                  </svg>
+                ),
+                es: 'Devolución 30 días', en: '30-Day Returns',
+                sub_es: 'Sin complicaciones', sub_en: 'Hassle-free',
+              },
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                <div style={{ marginTop: '1px', flexShrink: 0 }}>{item.icon}</div>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 500, color: 'var(--charcoal)', lineHeight: 1.3 }}>
+                    {t(item.es, item.en)}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', color: 'var(--warm-gray)', marginTop: '2px' }}>
+                    {t(item.sub_es, item.sub_en)}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ── BARRA DE CONFIANZA ── */}
-      <div style={{
-        background: 'white',
-        borderTop: '1px solid #EAECF0',
-        borderBottom: '1px solid #EAECF0',
-        padding: esMobil ? '1rem' : '1.4rem 2rem',
-        display: 'flex', justifyContent: 'center',
-        gap: esMobil ? '0.75rem' : '4rem',
-        flexWrap: 'wrap',
-      }}>
-        {[
-          { es: 'Desde $5 USD', en: 'From $5 USD' },
-          { es: 'Entrega 3–5 días a California', en: 'Delivery 3–5 days to CA' },
-          { es: 'Sin aseguranza médica', en: 'No insurance required' },
-          { es: '30 días de devolución', en: '30-day free returns' },
-        ].map((item, i) => (
-          <span key={i} style={{
-            color: '#5A6478', fontSize: esMobil ? '11px' : '13px', fontWeight: 500,
-            display: 'flex', alignItems: 'center', gap: '6px',
-          }}>
-            <span style={{ color: '#2BBFB3', fontWeight: 800 }}>—</span>
-            {t(item.es, item.en)}
-          </span>
-        ))}
-      </div>
-
-      {/* ── COLECCIONES ── */}
-      <section style={{ padding: esMobil ? '3rem 1.5rem' : '6rem 2rem', maxWidth: '1180px', margin: '0 auto' }}>
-        <div style={{ marginBottom: '3.5rem' }}>
-          <p style={{
-            fontSize: '11px', fontWeight: 700, letterSpacing: '2px',
-            textTransform: 'uppercase', color: '#2BBFB3', marginBottom: '0.75rem',
-          }}>
-            {t('Colecciones', 'Collections')}
-          </p>
+      {/* ── SHOP BY STYLE ── */}
+      <section style={{ padding: esMobil ? '3.5rem 1.5rem' : '5rem 2rem', maxWidth: '1180px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <h2 style={{
-            fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
-            fontWeight: 800, letterSpacing: '-0.025em',
-            color: '#1A1A2E',
+            fontFamily: 'var(--font-serif)',
+            fontSize: 'clamp(1.8rem, 3vw, 2.2rem)',
+            fontWeight: 400, color: 'var(--charcoal)',
+            marginBottom: '0.5rem',
           }}>
-            {t('Encuentra tu estilo', 'Find your style')}
+            {t('Compra por estilo', 'Shop by style')}
           </h2>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', color: 'var(--warm-gray)' }}>
+            {t('Formas atemporales. Estilo sin esfuerzo.', 'Timeless shapes. Effortless style.')}
+          </p>
         </div>
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: esMobil ? '1fr' : 'repeat(auto-fill, minmax(260px, 1fr))',
-          gap: '1.5rem',
+          gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(5, 1fr)',
+          gap: '1rem',
         }}>
           {[
-            { es: 'Para Ella', en: 'For Her', desc_es: 'Diseños delicados y modernos.', desc_en: 'Delicate and modern designs.', color: '#F7E8ED', accent: '#D4708A' },
-            { es: 'Estilo Masculino', en: "Men's Style", desc_es: 'Sofisticación y carácter.', desc_en: 'Sophistication and character.', color: '#E8F4F7', accent: '#2A7FA8' },
-            { es: 'Últimos Diseños', en: 'New Arrivals', desc_es: 'Lo más reciente de temporada.', desc_en: 'The latest of the season.', color: '#EEF0F8', accent: '#5B68C0' },
-            { es: 'Los Favoritos', en: 'Best Sellers', desc_es: 'Los más pedidos por nuestros clientes.', desc_en: 'Most ordered by our customers.', color: '#FBF3E4', accent: '#C08A2A' },
+            { es: 'Rectangular', en: 'Rectangle', href: '/Tienda', rx: '6', solar: false },
+            { es: 'Redondo', en: 'Round', href: '/Tienda', rx: '30', solar: false },
+            { es: 'Ovalado', en: 'Oval', href: '/Tienda', rx: '20', solar: false },
+            { es: 'Clásico', en: 'Classic', href: '/Tienda', rx: '10', solar: false },
+            { es: 'Solar', en: 'Sunglasses', href: '/sunglasses', rx: '14', solar: true },
           ].map((c, i) => (
-            <a key={i} href="/Tienda" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <a key={i} href={c.href} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div style={{
-                background: 'white', borderRadius: '12px',
-                overflow: 'hidden', border: '1px solid #EAECF0',
-                transition: 'box-shadow 0.2s, transform 0.2s',
+                background: 'white',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
               }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 40px rgba(0,0,0,0.10)';
-                  (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)';
+                  (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--sage)';
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)';
                 }}
                 onMouseLeave={e => {
+                  (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border)';
                   (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
-                  (e.currentTarget as HTMLDivElement).style.transform = 'none';
                 }}
               >
-                <div style={{
-                  height: '180px', background: c.color,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <svg width="100" height="52" viewBox="0 0 100 52" fill="none">
-                    <rect x="2" y="6" width="38" height="40" rx="12" fill="white" stroke={c.accent} strokeWidth="2.5"/>
-                    <rect x="60" y="6" width="38" height="40" rx="12" fill="white" stroke={c.accent} strokeWidth="2.5"/>
-                    <path d="M40 22 C44 18, 56 18, 60 22" stroke={c.accent} strokeWidth="2" fill="none" strokeLinecap="round"/>
-                    <line x1="2" y1="22" x2="-4" y2="19" stroke={c.accent} strokeWidth="2" strokeLinecap="round"/>
-                    <line x1="98" y1="22" x2="104" y2="19" stroke={c.accent} strokeWidth="2" strokeLinecap="round"/>
+                <div style={{ height: '130px', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+                  <svg width="110" height="55" viewBox="0 0 110 55" fill="none">
+                    <rect x="2" y="7" width="44" height="38" rx={c.rx} fill={c.solar ? '#1A1A2E' : 'white'} fillOpacity={c.solar ? 0.15 : 1} stroke="var(--charcoal)" strokeWidth="1.8"/>
+                    <rect x="64" y="7" width="44" height="38" rx={c.rx} fill={c.solar ? '#1A1A2E' : 'white'} fillOpacity={c.solar ? 0.15 : 1} stroke="var(--charcoal)" strokeWidth="1.8"/>
+                    <path d="M46 22 C50 18, 60 18, 64 22" stroke="var(--charcoal)" strokeWidth="1.6" fill="none" strokeLinecap="round"/>
+                    <line x1="2" y1="22" x2="-5" y2="18" stroke="var(--charcoal)" strokeWidth="1.6" strokeLinecap="round"/>
+                    <line x1="108" y1="22" x2="115" y2="18" stroke="var(--charcoal)" strokeWidth="1.6" strokeLinecap="round"/>
                   </svg>
                 </div>
-                <div style={{ padding: '1.4rem' }}>
-                  <div style={{ fontSize: '16px', fontWeight: 700, marginBottom: '5px', color: '#1A1A2E' }}>{t(c.es, c.en)}</div>
-                  <div style={{ fontSize: '13px', color: '#7A8494', marginBottom: '14px', lineHeight: 1.5 }}>{t(c.desc_es, c.desc_en)}</div>
-                  <div style={{ color: '#2BBFB3', fontSize: '13px', fontWeight: 700 }}>{t('Ver colección →', 'View collection →')}</div>
+                <div style={{ padding: '0.9rem 1rem 1rem' }}>
+                  <div style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '4px' }}>
+                    {t(c.es, c.en)}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--sage)' }}>
+                    {t('Ver ahora →', 'Shop now →')}
+                  </div>
                 </div>
               </div>
             </a>
@@ -247,142 +245,75 @@ export default function Home() {
       </section>
 
       {/* ── CÓMO FUNCIONA ── */}
-      <section style={{ background: 'white', padding: esMobil ? '3rem 1.5rem' : '6rem 2rem' }}>
+      <section id="como-funciona" style={{ background: 'white', padding: esMobil ? '3.5rem 1.5rem' : '6rem 2rem' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <p style={{
-              fontSize: '11px', fontWeight: 700, letterSpacing: '2px',
-              textTransform: 'uppercase', color: '#2BBFB3', marginBottom: '0.75rem',
-            }}>
+          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 500, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '0.6rem' }}>
               {t('El proceso', 'The process')}
             </p>
-            <h2 style={{
-              fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
-              fontWeight: 800, letterSpacing: '-0.025em', color: '#1A1A2E',
-            }}>
-              {t('Tan fácil como 1, 2, 3, 4', 'As easy as 1, 2, 3, 4')}
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 400, color: 'var(--charcoal)' }}>
+              {t('Simple como debe ser', 'Simple as it should be')}
             </h2>
           </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr 1fr' : 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '1.25rem' }}>
             {[
-              { num: '01', es: 'Elige tu armazón', en: 'Choose your frame', desc_es: 'Más de 60 estilos disponibles.', desc_en: '60+ styles available.', link: '/Tienda' },
-              { num: '02', es: 'Ingresa tu receta', en: 'Enter your prescription', desc_es: 'Manual o foto en 1 minuto.', desc_en: 'Manual or photo in 1 minute.', link: '/receta' },
-              { num: '03', es: 'Personaliza tus micas', en: 'Customize your lenses', desc_es: 'Material, filtros, visión.', desc_en: 'Material, filters, vision type.', link: '/configurador2' },
-              { num: '04', es: 'Recíbelos en casa', en: 'Receive at home', desc_es: 'Entrega 3–5 días a California.', desc_en: 'Delivery 3–5 days to California.', link: '/Tienda' },
+              { num: '01', es: 'Elige tu armazón', en: 'Choose your frame', desc_es: 'Estilos para todos los gustos.', desc_en: 'Styles for every taste.' },
+              { num: '02', es: 'Ingresa tu receta', en: 'Enter your prescription', desc_es: 'Manual o foto, en un minuto.', desc_en: 'Manual or photo, in one minute.' },
+              { num: '03', es: 'Personaliza tus micas', en: 'Customize your lenses', desc_es: 'Material, filtros, tipo de visión.', desc_en: 'Material, filters, vision type.' },
+              { num: '04', es: 'Recíbelos en casa', en: 'Delivered to your door', desc_es: 'Rápido, seguro y sin complicaciones.', desc_en: 'Fast, secure and hassle-free.' },
             ].map((s, i) => (
-              <a key={i} href={s.link} style={{ textDecoration: 'none' }}>
-                <div style={{
-                  padding: '1.5rem 1.25rem', border: '1px solid #EAECF0',
-                  borderRadius: '12px', height: '100%',
-                  transition: 'border-color 0.2s, box-shadow 0.2s',
-                }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = '#2BBFB3';
-                    (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(43,191,179,0.12)';
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = '#EAECF0';
-                    (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
-                  }}
-                >
-                  <div style={{
-                    fontSize: '28px', fontWeight: 800, color: '#E8F7F6',
-                    marginBottom: '1rem', letterSpacing: '-1px',
-                    WebkitTextStroke: '1.5px #2BBFB3',
-                  }}>
-                    {s.num}
-                  </div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, marginBottom: '6px', color: '#1A1A2E' }}>{t(s.es, s.en)}</div>
-                  <div style={{ fontSize: '12px', color: '#7A8494', lineHeight: 1.6 }}>{t(s.desc_es, s.desc_en)}</div>
+              <div key={i} style={{ padding: '1.75rem 1.25rem', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--cream)' }}>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '34px', fontWeight: 300, color: 'var(--cream-dark)', marginBottom: '1rem', lineHeight: 1, WebkitTextStroke: '1px var(--sage-light)' }}>
+                  {s.num}
                 </div>
-              </a>
+                <div style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 600, marginBottom: '5px', color: 'var(--charcoal)' }}>{t(s.es, s.en)}</div>
+                <div style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--warm-gray)', lineHeight: 1.6 }}>{t(s.desc_es, s.desc_en)}</div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* ── BANNER PROMO ── */}
-      <section style={{
-        background: '#1A1A2E', padding: esMobil ? '3rem 1.5rem' : '5rem 2rem',
-        textAlign: 'center', position: 'relative', overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'radial-gradient(ellipse 60% 80% at 50% 50%, #2BBFB315 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
+      <section style={{ background: 'var(--charcoal)', padding: esMobil ? '4rem 1.5rem' : '6rem 2rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 50% 70% at 50% 50%, rgba(74,89,64,0.12) 0%, transparent 70%)', pointerEvents: 'none' }}/>
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <p style={{
-            fontSize: '11px', fontWeight: 700, letterSpacing: '3px',
-            textTransform: 'uppercase', color: '#2BBFB3', marginBottom: '1rem',
-          }}>
-            {t('Oferta de bienvenida', 'Welcome offer')}
-          </p>
-          <h2 style={{
-            fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)',
-            fontWeight: 800, letterSpacing: '-0.03em',
-            color: 'white', marginBottom: '1rem',
-          }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', fontWeight: 300, letterSpacing: '-0.02em', color: 'white', marginBottom: '1rem', lineHeight: 1.1 }}>
             {t('Tu primer par.', 'Your first pair.')}<br />
-            <span style={{ color: '#F5C518' }}>{t('Nuestro mejor precio.', 'Our best price.')}</span>
+            <em style={{ color: 'var(--cream-dark)', fontStyle: 'italic' }}>{t('Nuestro mejor precio.', 'Our best price.')}</em>
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.55)', marginBottom: '2.5rem', fontSize: '16px' }}>
+          <p style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.4)', marginBottom: '2.5rem', fontSize: '14px', lineHeight: 1.7 }}>
             {t('Usa el código ', 'Use code ')}
-            <span style={{
-              background: 'rgba(245,197,24,0.15)', color: '#F5C518',
-              padding: '2px 10px', borderRadius: '4px',
-              fontWeight: 800, letterSpacing: '1px', fontFamily: 'monospace',
-            }}>VERLY10</span>
+            <span style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.75)', padding: '2px 10px', borderRadius: '3px', fontWeight: 700, letterSpacing: '2px', fontFamily: 'monospace', border: '1px solid rgba(255,255,255,0.12)' }}>VERLY10</span>
             {t(' y obtén 10% de descuento en tu primer pedido.', ' and get 10% off your first order.')}
           </p>
-          <a href="/Tienda" style={{
-            background: '#2BBFB3', color: 'white',
-            padding: '15px 36px', borderRadius: '6px',
-            fontSize: '14px', fontWeight: 700, textDecoration: 'none',
-            letterSpacing: '0.5px', display: 'inline-block',
-          }}>
-            {t('Ir a la tienda', 'Go to store')}
+          <a href="/Tienda" style={{ background: 'white', color: 'var(--charcoal)', padding: '13px 36px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase', display: 'inline-block' }}>
+            {t('Ver armazones', 'Shop frames')}
           </a>
         </div>
       </section>
 
       {/* ── FAQ ── */}
-      <section id="faq" style={{ padding: esMobil ? '3rem 1.5rem' : '6rem 2rem', maxWidth: '720px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-          <p style={{
-            fontSize: '11px', fontWeight: 700, letterSpacing: '2px',
-            textTransform: 'uppercase', color: '#2BBFB3', marginBottom: '0.75rem',
-          }}>FAQ</p>
-          <h2 style={{
-            fontSize: 'clamp(1.8rem, 3vw, 2.4rem)',
-            fontWeight: 800, letterSpacing: '-0.025em', color: '#1A1A2E',
-          }}>
+      <section id="faq" style={{ padding: esMobil ? '4rem 1.5rem' : '7rem 2rem', maxWidth: '660px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 500, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '0.6rem' }}>FAQ</p>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 400, color: 'var(--charcoal)' }}>
             {t('Preguntas frecuentes', 'Frequently Asked Questions')}
           </h2>
         </div>
-
         {[
-          { q_es: '¿Necesito aseguranza médica?', q_en: 'Do I need health insurance?', a_es: 'No. Vendemos directamente al cliente, sin necesidad de seguro médico.', a_en: 'No. We sell directly to customers, no health insurance needed.' },
-          { q_es: '¿Cuánto tarda la entrega?', q_en: 'How long does delivery take?', a_es: 'Entre 3 y 5 días hábiles a California.', a_en: '3 to 5 business days to California.' },
-          { q_es: '¿Cómo ingreso mi graduación?', q_en: 'How do I enter my prescription?', a_es: 'Puedes ingresar los números manualmente o subir una foto de tu receta.', a_en: 'You can enter numbers manually or upload a photo of your prescription.' },
+          { q_es: '¿Necesito aseguranza médica?', q_en: 'Do I need health insurance?', a_es: 'No. Vendemos directamente al cliente, sin necesidad de seguro médico.', a_en: 'No. We sell directly to you, no insurance needed.' },
+          { q_es: '¿Cuánto tarda la entrega?', q_en: 'How long does delivery take?', a_es: 'Envío express en 3 a 5 días hábiles.', a_en: 'Express delivery in 3 to 5 business days.' },
+          { q_es: '¿Cómo ingreso mi graduación?', q_en: 'How do I enter my prescription?', a_es: 'Puedes escribir los números o subir una foto de tu receta. Ambas opciones disponibles al personalizar tus micas.', a_en: 'You can enter the numbers manually or upload a photo of your prescription.' },
           { q_es: '¿Puedo devolver mis lentes?', q_en: 'Can I return my glasses?', a_es: 'Sí, tienes 30 días para hacer una devolución sin complicaciones.', a_en: 'Yes, you have 30 days for a hassle-free return.' },
-          { q_es: '¿Qué métodos de pago aceptan?', q_en: 'What payment methods do you accept?', a_es: 'Aceptamos todas las tarjetas de crédito y débito a través de Stripe.', a_en: 'We accept all credit and debit cards through Stripe.' },
+          { q_es: '¿Qué métodos de pago aceptan?', q_en: 'What payment methods do you accept?', a_es: 'Aceptamos todas las tarjetas de crédito y débito.', a_en: 'We accept all major credit and debit cards.' },
         ].map((f, i) => (
-          <details key={i} style={{
-            background: 'white', borderRadius: '10px',
-            border: '1px solid #EAECF0', marginBottom: '0.75rem', overflow: 'hidden',
-          }}>
-            <summary style={{
-              padding: '1.2rem 1.5rem',
-              fontSize: '15px', fontWeight: 600, color: '#1A1A2E',
-              cursor: 'pointer', listStyle: 'none',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            }}>
+          <details key={i} style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', marginBottom: '0.5rem', overflow: 'hidden' }}>
+            <summary style={{ padding: '1.1rem 1.5rem', fontFamily: 'var(--font-sans)', fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               {t(f.q_es, f.q_en)}
-              <span style={{ color: '#2BBFB3', fontSize: '18px', fontWeight: 300 }}>+</span>
+              <span style={{ color: 'var(--sage)', fontSize: '18px', fontWeight: 300, flexShrink: 0, marginLeft: '1rem' }}>+</span>
             </summary>
-            <div style={{ padding: '0 1.5rem 1.2rem', fontSize: '14px', color: '#5A6478', lineHeight: 1.7 }}>
+            <div style={{ padding: '0 1.5rem 1.1rem', fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--warm-gray)', lineHeight: 1.75 }}>
               {t(f.a_es, f.a_en)}
             </div>
           </details>
@@ -390,66 +321,50 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer style={{ background: '#111827', color: 'rgba(255,255,255,0.5)', padding: '4rem 2rem 2rem' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: esMobil ? '1fr' : 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '2.5rem', maxWidth: '1100px', margin: '0 auto 3rem',
-        }}>
+      <footer style={{ background: 'var(--charcoal)', color: 'rgba(255,255,255,0.35)', padding: '4rem 2rem 2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : 'repeat(auto-fit, minmax(180px, 1fr))', gap: '2.5rem', maxWidth: '1100px', margin: '0 auto 3rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '1rem' }}>
-              <span style={{ fontSize: '20px', fontWeight: 800, color: 'white' }}>Verly</span>
-              <span style={{ fontSize: '9px', fontWeight: 700, color: '#F5C518', letterSpacing: '2.5px' }}>OPTICAL</span>
-            </div>
-            <p style={{ fontSize: '13px', lineHeight: 1.8, maxWidth: '220px' }}>
-              {t('Lentes accesibles para la comunidad latina en California.', 'Affordable eyewear for the Latino community in California.')}
+            <img src="/logo-trasparente.png" alt="Verly Optical" style={{ height: '36px', width: 'auto', marginBottom: '1rem', opacity: 0.85 }}/>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', lineHeight: 1.8, maxWidth: '200px', color: 'rgba(255,255,255,0.35)' }}>
+              {t('Lentes accesibles para toda la familia.', 'Affordable eyewear for everyone.')}
             </p>
           </div>
           <div>
-            <h4 style={{ color: 'rgba(255,255,255,0.85)', fontSize: '12px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '1.2rem' }}>
+            <h4 style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1.25rem' }}>
               {t('Tienda', 'Shop')}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
-                { href: '/Tienda', es: 'Todos los armazones', en: 'All frames' },
-                { href: '/receta', es: 'Mi Receta', en: 'My Prescription' },
-                { href: '/configurador2', es: 'Armar Lentes', en: 'Build Lenses' },
+                { href: '/Tienda', es: 'Eyeglasses', en: 'Eyeglasses' },
+                { href: '/sunglasses', es: 'Sunglasses', en: 'Sunglasses' },
               ].map((l, i) => (
-                <a key={i} href={l.href} style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'none', fontSize: '13px' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
-                >
-                  {t(l.es, l.en)}
-                </a>
+                <a key={i} href={l.href} style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.3)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+                >{t(l.es, l.en)}</a>
               ))}
             </div>
           </div>
           <div>
-            <h4 style={{ color: 'rgba(255,255,255,0.85)', fontSize: '12px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '1.2rem' }}>
+            <h4 style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1.25rem' }}>
               {t('Ayuda', 'Help')}
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <a href="#faq" style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'none', fontSize: '13px' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
+              <a href="#faq" style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.3)', textDecoration: 'none', fontSize: '13px' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
               >FAQ</a>
-              <a href="mailto:hola@verlyoptical.com" style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'none', fontSize: '13px' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
-              >
-                {t('Contáctanos', 'Contact us')}
-              </a>
+              <a href="mailto:customerservice@verlyoptical.com" style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.3)', textDecoration: 'none', fontSize: '13px' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+              >{t('Contáctanos', 'Contact us')}</a>
             </div>
           </div>
         </div>
-        <div style={{
-          borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.5rem',
-          textAlign: 'center', fontSize: '12px', maxWidth: '1100px', margin: '0 auto',
-        }}>
-          © 2025 Verly Optical — verlyoptical.com
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem', textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '12px', maxWidth: '1100px', margin: '0 auto', color: 'rgba(255,255,255,0.2)' }}>
+          © 2026 Verly Optical
         </div>
       </footer>
-
     </main>
   );
 }
