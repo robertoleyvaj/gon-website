@@ -101,6 +101,7 @@ export async function POST(req: NextRequest) {
       const descripcion = (session as any).line_items?.data?.[0]?.description || 'Lentes personalizados';
       await enviarEmailCompra(pedido.id, customerEmail, customerName || 'Cliente', descripcion, total);
     }
+  }
 
   return NextResponse.json({ received: true });
 }
