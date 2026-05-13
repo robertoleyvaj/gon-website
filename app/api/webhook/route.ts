@@ -95,8 +95,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    console.log(`✓ Pedido creado: #${pedido?.id} — ${customerName} — $${total}`);
-  }
+    // Enviar email de confirmación de compra
+    if (pedido && customerEmail) {
+      const { enviarEmailCompra } = await import('../../lib/emails');
+      const descripcion = (session as any).line_items?.data?.[0]?.description || 'Lentes personalizados';
+      await enviarEmailCompra(pedido.id, customerEmail, customerName || 'Cliente', descripcion, total);
+    }
 
   return NextResponse.json({ received: true });
 }
