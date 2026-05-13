@@ -1,0 +1,58 @@
+// app/api/emails/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import {
+  enviarEmailFabricacion,
+  enviarEmailEnviado,
+  enviarEmailEntregado,
+} from '../../lib/emails';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+export async function POST(req: NextRequest) {
+  const { tipo, order_id, tracking, paqueteria } = await req.json();
+
+  // Obtener datos del pedido y cliente
+  const { data: pedido } = await supabase
+    .from('pedidos')
+    .select('*, clientes(*)')
+    .eq('id', order_id)
+    .single();
+
+  if (!pedido) return NextResponse.json({ error: 'Pedido no encontrado' }, { status: 404 });
+
+  const cliente_email = pedido.clientes?.email || pedido.cliente_email;
+  const cliente_nombre = pedido.clientes?.nombre || 'Cliente';
+
+  if (!cliente_email) return NextResponse.json({ error: 'Cliente sin email' }, { status: 400 });
+
+  try {
+    switch (tipo) {
+      case 'fabricacion':
+        await supabase.from('pedidos').update({ estado: 'en proceso' }).eq('id', order_id);
+        await enviarEmailFabricacion(order_id, cliente_email, cliente_nombre);
+        break;
+
+      case 'enviado':
+        if (!tracking) return NextResponse.json({ error: 'Tracking requerido' }, { status: 400 });
+        await supabase.from('pedidos').update({ estado: 'enviado', tracking, paqueteria }).eq('id', order_id);
+        await enviarEmailEnviado(order_id, cliente_email, cliente_nombre, tracking, paqueteria || 'paquetería');
+        break;
+
+      case 'entregado':
+        await supabase.from('pedidos').update({ estado: 'entregado', delivered_at: new Date().toISOString() }).eq('id', order_id);
+        await enviarEmailEntregado(order_id, cliente_email, cliente_nombre);
+        break;
+
+      default:
+        return NextResponse.json({ error: 'Tipo inválido' }, { status: 400 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
+}
