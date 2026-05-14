@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../supabase';
 
 const MENU = [
@@ -20,17 +20,227 @@ const ESTADO_COLORS: any = {
   'entregado': { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
 };
 
-function orderCode(id: number): string {
-  return `VRL-${2846 + id}`;
+function orderCode(id: number): string { return `VRL-${2846 + id}`; }
+
+function tallaDesdeMedias(medidas: string): string {
+  const match = medidas.match(/(\d+)/);
+  if (!match) return 'M';
+  const lente = parseInt(match[1]);
+  if (lente <= 48) return 'S';
+  if (lente <= 52) return 'M';
+  if (lente <= 56) return 'L';
+  return 'XL';
 }
 
 const ARMAZON_VACIO = {
   nombre: '', modelo: '', marca: 'Verly', precio: '13', stock: '10',
-  badge: '', color: '#1A1A2E', material: '', forma: 'cuadrada',
-  genero: 'unisex', tipo: 'optico', descuento: '0', medidas: '',
-  talla: 'M', activo: true,
+  badge: '', color1: '#1A1A2E', color2: '', color3: '',
+  material: '', forma: 'cuadrada', genero: 'unisex', tipo: 'optico',
+  descuento: '0', medidas: '', talla: 'M', activo: true,
   imagen_url: '', imagen2_url: '', imagen3_url: '',
 };
+
+const inputStyle: any = { width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'var(--font-sans), sans-serif', background: 'var(--cream)', color: 'var(--charcoal)' };
+const labelStyle: any = { fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', display: 'block', marginBottom: '4px', textTransform: 'uppercase', fontFamily: 'var(--font-sans), sans-serif' };
+const btnSage: any = { background: 'var(--sage)', color: 'white', border: 'none', borderRadius: '4px', padding: '9px 18px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif', letterSpacing: '0.06em' };
+const btnGhost: any = { background: 'white', color: 'var(--warm-gray)', border: '1px solid var(--border)', borderRadius: '4px', padding: '9px 18px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif' };
+const btnDanger: any = { background: 'white', color: '#C0392B', border: '1px solid #C0392B', borderRadius: '4px', padding: '6px 14px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif' };
+const btnPrimary: any = { background: 'var(--charcoal)', color: 'white', border: 'none', borderRadius: '4px', padding: '9px 18px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif', letterSpacing: '0.06em' };
+
+// ── FUERA del Admin ───────────────────────────────────────────────────────
+
+function FotoUpload({ campo, valor, onChange, armazonId, onUpload }: {
+  campo: string, valor: string, onChange: (url: string) => void,
+  armazonId?: number, onUpload: (file: File, campo: string, id?: number) => Promise<string | null>
+}) {
+  return valor ? (
+    <div>
+      <img src={valor} alt="" style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '6px' }}/>
+      <div style={{ display: 'flex', gap: '6px' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 10px', borderRadius: '4px', border: '1px solid var(--border)', cursor: 'pointer', fontSize: '11px', color: 'var(--warm-gray)', background: 'var(--cream)' }}>
+          <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
+            const file = e.target.files?.[0]; if (!file) return;
+            const url = await onUpload(file, campo, armazonId);
+            if (url) onChange(url);
+          }}/>
+          Cambiar
+        </label>
+        <button type="button" onClick={() => onChange('')} style={{ ...btnDanger, padding: '5px 10px', fontSize: '11px' }}>Quitar</button>
+      </div>
+    </div>
+  ) : (
+    <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '1rem 0.5rem', borderRadius: '6px', border: '1px dashed var(--border)', cursor: 'pointer', background: 'var(--cream)', minHeight: '80px', justifyContent: 'center' }}>
+      <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
+        const file = e.target.files?.[0]; if (!file) return;
+        const url = await onUpload(file, campo, armazonId);
+        if (url) onChange(url);
+      }}/>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warm-gray)" strokeWidth="1.5" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <span style={{ fontSize: '11px', color: 'var(--warm-gray)', textAlign: 'center' }}>Subir foto</span>
+    </label>
+  );
+}
+
+function ColorPicker({ label, value, onChange }: { label: string, value: string, onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label style={labelStyle}>{label}</label>
+      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+        <input type="color" value={value || '#FFFFFF'} onChange={e => onChange(e.target.value)}
+          style={{ width: '36px', height: '34px', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer', padding: '2px', background: 'white' }}/>
+        <input value={value} onChange={e => onChange(e.target.value)}
+          style={{ ...inputStyle, flex: 1 }} placeholder="#000000"/>
+        {value && <button type="button" onClick={() => onChange('')} style={{ background: 'none', border: 'none', color: 'var(--warm-gray)', cursor: 'pointer', fontSize: '16px', padding: '0 4px' }}>×</button>}
+      </div>
+    </div>
+  );
+}
+
+function ArmazonForm({ data, onChange, armazonId, onUpload }: {
+  data: any,
+  onChange: (field: string, value: any) => void,
+  armazonId?: number,
+  onUpload: (file: File, campo: string, id?: number) => Promise<string | null>
+}) {
+  const handleMedidas = (val: string) => {
+    onChange('medidas', val);
+    onChange('talla', tallaDesdeMedias(val));
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+
+      {/* FOTOS */}
+      <div>
+        <label style={labelStyle}>Fotos (hasta 3)</label>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+          {[
+            { campo: 'imagen_url', label: 'Principal' },
+            { campo: 'imagen2_url', label: 'Foto 2' },
+            { campo: 'imagen3_url', label: 'Foto 3' },
+          ].map(f => (
+            <div key={f.campo}>
+              <div style={{ fontSize: '10px', color: 'var(--warm-gray)', marginBottom: '4px', textAlign: 'center', fontWeight: 500 }}>{f.label}</div>
+              <FotoUpload
+                campo={f.campo}
+                valor={data[f.campo] || ''}
+                onChange={url => onChange(f.campo, url)}
+                armazonId={armazonId}
+                onUpload={onUpload}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* INFO BÁSICA */}
+      <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
+        <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Información básica</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div>
+            <label style={labelStyle}>Nombre / Apodo</label>
+            <input value={data.nombre} onChange={e => onChange('nombre', e.target.value)} style={inputStyle} placeholder="Old Fashion"/>
+          </div>
+          <div>
+            <label style={labelStyle}>Modelo</label>
+            <input value={data.modelo || ''} onChange={e => onChange('modelo', e.target.value)} style={inputStyle} placeholder="VRL-001"/>
+          </div>
+          <div>
+            <label style={labelStyle}>Marca</label>
+            <input value={data.marca} onChange={e => onChange('marca', e.target.value)} style={inputStyle} placeholder="Verly"/>
+          </div>
+          <div>
+            <label style={labelStyle}>Material</label>
+            <select value={data.material || ''} onChange={e => onChange('material', e.target.value)} style={inputStyle}>
+              <option value="">Seleccionar</option>
+              <option value="Acetato">Acetato</option>
+              <option value="Metálico">Metálico</option>
+              <option value="TR-90">TR-90</option>
+              <option value="Tres piezas">Tres piezas</option>
+              <option value="Titanio">Titanio</option>
+              <option value="Mixto">Mixto</option>
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Badge</label>
+            <input value={data.badge || ''} onChange={e => onChange('badge', e.target.value)} style={inputStyle} placeholder="Nuevo / Popular"/>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '18px' }}>
+            <input type="checkbox" checked={data.activo} onChange={e => onChange('activo', e.target.checked)} id={`activo-${armazonId || 'new'}`}/>
+            <label htmlFor={`activo-${armazonId || 'new'}`} style={{ fontSize: '13px', fontWeight: 500 }}>Activo</label>
+          </div>
+        </div>
+      </div>
+
+      {/* PRECIOS */}
+      <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
+        <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Precio e inventario</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+          <div>
+            <label style={labelStyle}>Precio ($)</label>
+            <input type="number" value={data.precio} onChange={e => onChange('precio', e.target.value)} style={inputStyle}/>
+          </div>
+          <div>
+            <label style={labelStyle}>Descuento (%)</label>
+            <input type="number" value={data.descuento || '0'} onChange={e => onChange('descuento', e.target.value)} style={inputStyle} placeholder="0"/>
+          </div>
+          <div>
+            <label style={labelStyle}>Stock</label>
+            <input type="number" value={data.stock} onChange={e => onChange('stock', e.target.value)} style={inputStyle}/>
+          </div>
+        </div>
+      </div>
+
+      {/* CARACTERÍSTICAS */}
+      <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
+        <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Características</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div>
+            <label style={labelStyle}>Forma</label>
+            <select value={data.forma} onChange={e => onChange('forma', e.target.value)} style={inputStyle}>
+              {['cuadrada', 'ovalada', 'rectangular', 'redonda'].map(f => <option key={f} value={f}>{f}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Género</label>
+            <select value={data.genero} onChange={e => onChange('genero', e.target.value)} style={inputStyle}>
+              {['hombre', 'mujer', 'unisex'].map(g => <option key={g} value={g}>{g}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Tipo</label>
+            <select value={data.tipo} onChange={e => onChange('tipo', e.target.value)} style={inputStyle}>
+              <option value="optico">Óptico</option>
+              <option value="solar">Solar</option>
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Medidas → Talla auto</label>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <input value={data.medidas || ''} onChange={e => handleMedidas(e.target.value)} style={{ ...inputStyle, flex: 1 }} placeholder="52-18-140"/>
+              <div style={{ padding: '8px 12px', background: 'white', border: '1px solid var(--border)', borderRadius: '6px', fontSize: '13px', fontWeight: 600, color: 'var(--sage)', whiteSpace: 'nowrap' }}>
+                {data.talla || 'M'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* COLORES */}
+      <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
+        <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Colores (hasta 3)</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+          <ColorPicker label="Color 1 (principal)" value={data.color1 || data.color || ''} onChange={v => onChange('color1', v)}/>
+          <ColorPicker label="Color 2" value={data.color2 || ''} onChange={v => onChange('color2', v)}/>
+          <ColorPicker label="Color 3" value={data.color3 || ''} onChange={v => onChange('color3', v)}/>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+// ── ADMIN ─────────────────────────────────────────────────────────────────
 
 export default function Admin() {
   const [authed, setAuthed] = useState(false);
@@ -50,7 +260,6 @@ export default function Admin() {
   const [showNewPedido, setShowNewPedido] = useState(false);
   const [showNewCliente, setShowNewCliente] = useState(false);
   const [showNewArmazon, setShowNewArmazon] = useState(false);
-  const [uploadingImg, setUploadingImg] = useState<string | null>(null);
 
   const [newPedido, setNewPedido] = useState<any>({
     cliente_id: '', armazon_id: '', estado: 'pendiente',
@@ -77,172 +286,28 @@ export default function Admin() {
     setFinanzas(f || []);
   }
 
-  async function subirFoto(file: File, campo: string, armazonId?: number): Promise<string | null> {
-    setUploadingImg(campo);
+  const subirFoto = useCallback(async (file: File, campo: string, armazonId?: number): Promise<string | null> => {
     const ext = file.name.split('.').pop();
     const nombre = `armazon-${armazonId || Date.now()}-${campo}-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from('armazones').upload(nombre, file, { upsert: true });
-    if (error) { setUploadingImg(null); return null; }
+    if (error) return null;
     const { data } = supabase.storage.from('armazones').getPublicUrl(nombre);
-    setUploadingImg(null);
     return data.publicUrl;
-  }
+  }, []);
+
+  const handleNewArmazonChange = useCallback((field: string, value: any) => {
+    setNewArmazon((prev: any) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleEditArmazonChange = useCallback((field: string, value: any) => {
+    setEditArmazon((prev: any) => ({ ...prev, [field]: value }));
+  }, []);
 
   const totalVentas = pedidos.reduce((s, p) => s + (p.precio_venta || 0), 0);
   const totalCostos = finanzas.reduce((s, f) => s + (f.costo_armazon || 0) + (f.costo_laboratorio || 0) + (f.otros_costos || 0), 0);
   const ganancia = totalVentas - totalCostos;
   const pedidosPendientes = pedidos.filter(p => p.estado === 'pendiente').length;
 
-  const inputStyle: any = { width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '13px', outline: 'none', boxSizing: 'border-box', fontFamily: 'var(--font-sans), sans-serif', background: 'var(--cream)', color: 'var(--charcoal)' };
-  const labelStyle: any = { fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', display: 'block', marginBottom: '4px', textTransform: 'uppercase', fontFamily: 'var(--font-sans), sans-serif' };
-  const btnPrimary: any = { background: 'var(--charcoal)', color: 'white', border: 'none', borderRadius: '4px', padding: '9px 18px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif', letterSpacing: '0.06em' };
-  const btnSage: any = { background: 'var(--sage)', color: 'white', border: 'none', borderRadius: '4px', padding: '9px 18px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif', letterSpacing: '0.06em' };
-  const btnDanger: any = { background: 'white', color: '#C0392B', border: '1px solid #C0392B', borderRadius: '4px', padding: '6px 14px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif' };
-  const btnGhost: any = { background: 'white', color: 'var(--warm-gray)', border: '1px solid var(--border)', borderRadius: '4px', padding: '9px 18px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif' };
-
-  // Componente de subida de foto reutilizable
-  function FotoUpload({ campo, valor, onChange, armazonId }: { campo: string, valor: string, onChange: (url: string) => void, armazonId?: number }) {
-    return valor ? (
-      <div>
-        <img src={valor} alt="" style={{ width: '100%', maxHeight: '140px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border)', marginBottom: '6px' }}/>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '5px 10px', borderRadius: '4px', border: '1px solid var(--border)', cursor: 'pointer', fontSize: '11px', color: 'var(--warm-gray)', background: 'var(--cream)' }}>
-            <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
-              const file = e.target.files?.[0]; if (!file) return;
-              const url = await subirFoto(file, campo, armazonId);
-              if (url) onChange(url);
-            }}/>
-            {uploadingImg === campo ? 'Subiendo...' : 'Cambiar'}
-          </label>
-          <button onClick={() => onChange('')} style={{ ...btnDanger, padding: '5px 10px', fontSize: '11px' }}>Quitar</button>
-        </div>
-      </div>
-    ) : (
-      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.65rem 1rem', borderRadius: '6px', border: '1px dashed var(--border)', cursor: 'pointer', background: 'var(--cream)' }}>
-        <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
-          const file = e.target.files?.[0]; if (!file) return;
-          const url = await subirFoto(file, campo, armazonId);
-          if (url) onChange(url);
-        }}/>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warm-gray)" strokeWidth="1.5" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <span style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>{uploadingImg === campo ? 'Subiendo...' : 'Subir foto'}</span>
-      </label>
-    );
-  }
-
-  // Formulario de armazón reutilizable
-  function ArmazonForm({ data, setData, armazonId }: { data: any, setData: (d: any) => void, armazonId?: number }) {
-    return (
-      <div>
-        {/* Fotos */}
-        <div style={{ marginBottom: '1.25rem' }}>
-          <label style={labelStyle}>Fotos (hasta 3)</label>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-            {['imagen_url', 'imagen2_url', 'imagen3_url'].map((campo, i) => (
-              <div key={campo}>
-                <div style={{ fontSize: '10px', color: 'var(--warm-gray)', marginBottom: '4px', textAlign: 'center' }}>Foto {i + 1}{i === 0 ? ' (principal)' : ''}</div>
-                <FotoUpload
-                  campo={campo}
-                  valor={data[campo] || ''}
-                  onChange={url => setData({ ...data, [campo]: url })}
-                  armazonId={armazonId}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Campos */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-          <div>
-            <label style={labelStyle}>Nombre / Apodo</label>
-            <input value={data.nombre} onChange={e => setData({ ...data, nombre: e.target.value })} style={inputStyle} placeholder="Old Fashion"/>
-          </div>
-          <div>
-            <label style={labelStyle}>Modelo</label>
-            <input value={data.modelo || ''} onChange={e => setData({ ...data, modelo: e.target.value })} style={inputStyle} placeholder="VRL-001"/>
-          </div>
-          <div>
-            <label style={labelStyle}>Marca</label>
-            <input value={data.marca} onChange={e => setData({ ...data, marca: e.target.value })} style={inputStyle} placeholder="Verly"/>
-          </div>
-          <div>
-            <label style={labelStyle}>Material</label>
-            <select value={data.material || ''} onChange={e => setData({ ...data, material: e.target.value })} style={inputStyle}>
-              <option value="">Seleccionar</option>
-              <option value="Acetato">Acetato</option>
-              <option value="Metálico">Metálico</option>
-              <option value="TR-90">TR-90</option>
-              <option value="Tres piezas">Tres piezas</option>
-              <option value="Titanio">Titanio</option>
-              <option value="Mixto">Mixto</option>
-            </select>
-          </div>
-          <div>
-            <label style={labelStyle}>Precio ($)</label>
-            <input type="number" value={data.precio} onChange={e => setData({ ...data, precio: e.target.value })} style={inputStyle}/>
-          </div>
-          <div>
-            <label style={labelStyle}>Descuento (%)</label>
-            <input type="number" value={data.descuento || '0'} onChange={e => setData({ ...data, descuento: e.target.value })} style={inputStyle} placeholder="0"/>
-          </div>
-          <div>
-            <label style={labelStyle}>Stock</label>
-            <input type="number" value={data.stock} onChange={e => setData({ ...data, stock: e.target.value })} style={inputStyle}/>
-          </div>
-          <div>
-            <label style={labelStyle}>Badge</label>
-            <input value={data.badge || ''} onChange={e => setData({ ...data, badge: e.target.value })} style={inputStyle} placeholder="Nuevo / Popular"/>
-          </div>
-          <div>
-            <label style={labelStyle}>Color hex</label>
-            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-              <input type="color" value={data.color || '#1A1A2E'} onChange={e => setData({ ...data, color: e.target.value })} style={{ width: '36px', height: '36px', border: '1px solid var(--border)', borderRadius: '4px', cursor: 'pointer', padding: '2px' }}/>
-              <input value={data.color || ''} onChange={e => setData({ ...data, color: e.target.value })} style={{ ...inputStyle, flex: 1 }} placeholder="#1A1A2E"/>
-            </div>
-          </div>
-          <div>
-            <label style={labelStyle}>Talla</label>
-            <select value={data.talla || 'M'} onChange={e => setData({ ...data, talla: e.target.value })} style={inputStyle}>
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>
-            </select>
-          </div>
-          <div>
-            <label style={labelStyle}>Forma</label>
-            <select value={data.forma} onChange={e => setData({ ...data, forma: e.target.value })} style={inputStyle}>
-              {['cuadrada', 'ovalada', 'rectangular', 'redonda'].map(f => <option key={f} value={f}>{f}</option>)}
-            </select>
-          </div>
-          <div>
-            <label style={labelStyle}>Género</label>
-            <select value={data.genero} onChange={e => setData({ ...data, genero: e.target.value })} style={inputStyle}>
-              {['hombre', 'mujer', 'unisex'].map(g => <option key={g} value={g}>{g}</option>)}
-            </select>
-          </div>
-          <div>
-            <label style={labelStyle}>Tipo</label>
-            <select value={data.tipo} onChange={e => setData({ ...data, tipo: e.target.value })} style={inputStyle}>
-              <option value="optico">Óptico</option>
-              <option value="solar">Solar</option>
-            </select>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '20px' }}>
-            <input type="checkbox" checked={data.activo} onChange={e => setData({ ...data, activo: e.target.checked })} id={`activo-${armazonId || 'new'}`}/>
-            <label htmlFor={`activo-${armazonId || 'new'}`} style={{ fontSize: '13px', fontWeight: 500 }}>Activo</label>
-          </div>
-          <div style={{ gridColumn: '1 / -1' }}>
-            <label style={labelStyle}>Medidas</label>
-            <input value={data.medidas || ''} onChange={e => setData({ ...data, medidas: e.target.value })} style={inputStyle} placeholder="52-18-140 mm"/>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // LOGIN
   if (!authed) return (
     <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-sans), sans-serif' }}>
       <div style={{ background: 'white', borderRadius: '12px', padding: '2.5rem', width: '360px', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', border: '1px solid var(--border)' }}>
@@ -288,9 +353,7 @@ export default function Admin() {
       {/* CONTENIDO */}
       <div style={{ flex: 1, overflow: 'auto' }}>
         <div style={{ background: 'white', borderBottom: '1px solid var(--border)', padding: '0.85rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 10 }}>
-          <h2 style={{ margin: 0, fontFamily: 'var(--font-sans)', fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)', letterSpacing: '0.02em' }}>
-            {MENU.find(m => m.id === modulo)?.label}
-          </h2>
+          <h2 style={{ margin: 0, fontFamily: 'var(--font-sans)', fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)', letterSpacing: '0.02em' }}>{MENU.find(m => m.id === modulo)?.label}</h2>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <a href="/" target="_blank" style={{ fontFamily: 'var(--font-sans)', color: 'var(--warm-gray)', fontSize: '12px', textDecoration: 'none' }}>Ver sitio →</a>
             <button onClick={() => setAuthed(false)} style={{ ...btnGhost, padding: '6px 12px', fontSize: '11px' }}>Salir</button>
@@ -321,7 +384,7 @@ export default function Admin() {
               <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
                 <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border)', fontSize: '13px', fontWeight: 500 }}>Pedidos recientes</div>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead><tr style={{ background: 'var(--cream)' }}>{['#', 'Cliente', 'Armazón', 'Total', 'Estado', 'Fecha'].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>)}</tr></thead>
+                  <thead><tr style={{ background: 'var(--cream)' }}>{['#','Cliente','Armazón','Total','Estado','Fecha'].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>)}</tr></thead>
                   <tbody>
                     {pedidos.slice(0, 8).map(p => (
                       <tr key={p.id} style={{ borderTop: '1px solid var(--border)' }}>
@@ -384,10 +447,10 @@ export default function Admin() {
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                       <button onClick={() => setShowNewPedido(false)} style={btnGhost}>Cancelar</button>
                       <button onClick={async () => {
-                        const { data: ped } = await supabase.from('pedidos').insert({ cliente_id: newPedido.cliente_id || null, armazon_id: newPedido.armazon_id || null, estado: newPedido.estado, precio_venta: parseFloat(newPedido.precio_venta) || 0, notas_admin: newPedido.notas_admin, notas_cliente: newPedido.notas_cliente }).select().single();
+                        const { data: ped } = await supabase.from('pedidos').insert({ cliente_id: newPedido.cliente_id || null, armazon_id: newPedido.armazon_id || null, estado: newPedido.estado, precio_venta: parseFloat(newPedido.precio_venta)||0, notas_admin: newPedido.notas_admin, notas_cliente: newPedido.notas_cliente }).select().single();
                         if (ped) {
-                          await supabase.from('recetas').insert({ pedido_id: ped.id, ...Object.fromEntries(Object.entries(newPedido.receta).map(([k,v]) => [k, parseFloat(v as string) || null])) });
-                          await supabase.from('finanzas').insert({ pedido_id: ped.id, precio_venta: parseFloat(newPedido.precio_venta) || 0, ...Object.fromEntries(Object.entries(newPedido.finanzas).map(([k,v]) => [k, parseFloat(v as string) || 0])) });
+                          await supabase.from('recetas').insert({ pedido_id: ped.id, ...Object.fromEntries(Object.entries(newPedido.receta).map(([k,v]) => [k, parseFloat(v as string)||null])) });
+                          await supabase.from('finanzas').insert({ pedido_id: ped.id, precio_venta: parseFloat(newPedido.precio_venta)||0, ...Object.fromEntries(Object.entries(newPedido.finanzas).map(([k,v]) => [k, parseFloat(v as string)||0])) });
                         }
                         setShowNewPedido(false); cargarTodo();
                       }} style={btnSage}>Guardar pedido</button>
@@ -398,14 +461,14 @@ export default function Admin() {
 
               <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead><tr style={{ background: 'var(--cream)' }}>{['#', 'Cliente', 'Armazón', 'Total', 'Estado', 'Dirección', 'Tracking', 'Fecha', ''].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>)}</tr></thead>
+                  <thead><tr style={{ background: 'var(--cream)' }}>{['#','Cliente','Armazón','Total','Estado','Dirección','Tracking','Fecha',''].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>)}</tr></thead>
                   <tbody>
                     {pedidos.map(p => (
                       <tr key={p.id} style={{ borderTop: '1px solid var(--border)' }}>
                         <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)', fontWeight: 500 }}>{orderCode(p.id)}</td>
                         <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 500 }}>{p.clientes?.nombre || '—'}</td>
                         <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--warm-gray)' }}>{p.armazones?.nombre || '—'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 600 }}>${p.precio_venta || 0}</td>
+                        <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 600 }}>${p.precio_venta||0}</td>
                         <td style={{ padding: '12px 16px' }}>
                           <select value={p.estado} onChange={async e => { await supabase.from('pedidos').update({ estado: e.target.value }).eq('id', p.id); cargarTodo(); }} style={{ padding: '4px 8px', borderRadius: '20px', border: `1px solid ${ESTADO_COLORS[p.estado]?.border}`, background: ESTADO_COLORS[p.estado]?.bg, color: ESTADO_COLORS[p.estado]?.text, fontSize: '11px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
                             {ESTADOS.map(s => <option key={s} value={s}>{s}</option>)}
@@ -461,8 +524,6 @@ export default function Admin() {
                         </div>
                       </div>
                     )}
-
-                    {/* Botones email */}
                     <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
                       <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Actualizar estado y notificar</div>
                       <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -470,30 +531,20 @@ export default function Admin() {
                           if (!confirm('¿Marcar como En Fabricación y notificar al cliente?')) return;
                           const res = await fetch('/api/emails', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: 'fabricacion', order_id: editPedido.id }) });
                           if (res.ok) { setEditPedido({...editPedido, estado: 'en proceso'}); cargarTodo(); alert('Email enviado'); }
-                          else alert('Error al enviar');
-                        }} style={{ ...btnSage, opacity: editPedido.estado !== 'pendiente' ? 0.4 : 1, cursor: editPedido.estado !== 'pendiente' ? 'not-allowed' : 'pointer', fontSize: '11px', padding: '7px 14px' }}>
-                          En fabricación
-                        </button>
+                        }} style={{ ...btnSage, opacity: editPedido.estado !== 'pendiente' ? 0.4 : 1, cursor: editPedido.estado !== 'pendiente' ? 'not-allowed' : 'pointer', fontSize: '11px', padding: '7px 14px' }}>En fabricación</button>
                         <button disabled={editPedido.estado !== 'en proceso'} onClick={async () => {
                           const tracking = prompt('Número de tracking:'); if (!tracking) return;
-                          const paqueteria = prompt('Paquetería (FedEx, DHL, etc):') || 'paquetería';
+                          const paqueteria = prompt('Paquetería:') || 'paquetería';
                           const res = await fetch('/api/emails', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: 'enviado', order_id: editPedido.id, tracking, paqueteria }) });
                           if (res.ok) { setEditPedido({...editPedido, estado: 'enviado', tracking, paqueteria}); cargarTodo(); alert('Email enviado'); }
-                          else alert('Error al enviar');
-                        }} style={{ background: '#1E40AF', color: 'white', border: 'none', borderRadius: '4px', padding: '7px 14px', fontSize: '11px', fontWeight: 500, cursor: editPedido.estado !== 'en proceso' ? 'not-allowed' : 'pointer', opacity: editPedido.estado !== 'en proceso' ? 0.4 : 1, fontFamily: 'var(--font-sans)' }}>
-                          Enviado
-                        </button>
+                        }} style={{ background: '#1E40AF', color: 'white', border: 'none', borderRadius: '4px', padding: '7px 14px', fontSize: '11px', fontWeight: 500, cursor: editPedido.estado !== 'en proceso' ? 'not-allowed' : 'pointer', opacity: editPedido.estado !== 'en proceso' ? 0.4 : 1, fontFamily: 'var(--font-sans)' }}>Enviado</button>
                         <button disabled={editPedido.estado !== 'enviado'} onClick={async () => {
                           if (!confirm('¿Marcar como Entregado?')) return;
                           const res = await fetch('/api/emails', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: 'entregado', order_id: editPedido.id }) });
-                          if (res.ok) { setEditPedido({...editPedido, estado: 'entregado'}); cargarTodo(); alert('Email enviado. Seguimiento de 30 días programado.'); }
-                          else alert('Error al enviar');
-                        }} style={{ background: '#065F46', color: 'white', border: 'none', borderRadius: '4px', padding: '7px 14px', fontSize: '11px', fontWeight: 500, cursor: editPedido.estado !== 'enviado' ? 'not-allowed' : 'pointer', opacity: editPedido.estado !== 'enviado' ? 0.4 : 1, fontFamily: 'var(--font-sans)' }}>
-                          Entregado
-                        </button>
+                          if (res.ok) { setEditPedido({...editPedido, estado: 'entregado'}); cargarTodo(); alert('Email enviado. 30 días programado.'); }
+                        }} style={{ background: '#065F46', color: 'white', border: 'none', borderRadius: '4px', padding: '7px 14px', fontSize: '11px', fontWeight: 500, cursor: editPedido.estado !== 'enviado' ? 'not-allowed' : 'pointer', opacity: editPedido.estado !== 'enviado' ? 0.4 : 1, fontFamily: 'var(--font-sans)' }}>Entregado</button>
                       </div>
                     </div>
-
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                       <button onClick={async () => { await supabase.from('pedidos').update({ tracking: editPedido.tracking, paqueteria: editPedido.paqueteria, estado: editPedido.estado }).eq('id', editPedido.id); setEditPedido(null); cargarTodo(); }} style={btnSage}>Guardar cambios</button>
                       <button onClick={async () => { if (confirm('¿Eliminar pedido?')) { await supabase.from('recetas').delete().eq('pedido_id', editPedido.id); await supabase.from('finanzas').delete().eq('pedido_id', editPedido.id); await supabase.from('pedidos').delete().eq('id', editPedido.id); setEditPedido(null); cargarTodo(); } }} style={btnDanger}>Eliminar</button>
@@ -538,9 +589,9 @@ export default function Admin() {
                     {clientes.map(c => (
                       <tr key={c.id} style={{ borderTop: '1px solid var(--border)' }}>
                         <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 500 }}>{c.nombre}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--warm-gray)' }}>{c.email || '—'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--warm-gray)' }}>{c.telefono || '—'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.direccion || '—'}</td>
+                        <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--warm-gray)' }}>{c.email||'—'}</td>
+                        <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--warm-gray)' }}>{c.telefono||'—'}</td>
+                        <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.direccion||'—'}</td>
                         <td style={{ padding: '12px 16px', fontSize: '13px' }}>{pedidos.filter(p => p.cliente_id === c.id).length}</td>
                         <td style={{ padding: '12px 16px' }}><button onClick={() => setEditCliente(c)} style={{ ...btnGhost, padding: '4px 12px', fontSize: '11px' }}>Ver</button></td>
                       </tr>
@@ -557,8 +608,8 @@ export default function Admin() {
                       <button onClick={() => setEditCliente(null)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: 'var(--warm-gray)' }}>×</button>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1.5rem' }}>
-                      {['nombre','email','telefono','direccion'].map(k => (<div key={k}><label style={labelStyle}>{k}</label><input value={editCliente[k] || ''} onChange={e => setEditCliente({...editCliente, [k]: e.target.value})} style={inputStyle}/></div>))}
-                      <div><label style={labelStyle}>Notas</label><textarea value={editCliente.notas || ''} onChange={e => setEditCliente({...editCliente, notas: e.target.value})} style={{...inputStyle, resize:'none'}} rows={3}/></div>
+                      {['nombre','email','telefono','direccion'].map(k => (<div key={k}><label style={labelStyle}>{k}</label><input value={editCliente[k]||''} onChange={e => setEditCliente({...editCliente, [k]: e.target.value})} style={inputStyle}/></div>))}
+                      <div><label style={labelStyle}>Notas</label><textarea value={editCliente.notas||''} onChange={e => setEditCliente({...editCliente, notas: e.target.value})} style={{...inputStyle, resize:'none'}} rows={3}/></div>
                     </div>
                     <div style={{ marginBottom: '1.5rem' }}>
                       <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Pedidos</div>
@@ -594,11 +645,11 @@ export default function Admin() {
                       <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>Nuevo armazón</h3>
                       <button onClick={() => setShowNewArmazon(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: 'var(--warm-gray)' }}>×</button>
                     </div>
-                    <ArmazonForm data={newArmazon} setData={setNewArmazon}/>
+                    <ArmazonForm data={newArmazon} onChange={handleNewArmazonChange} onUpload={subirFoto}/>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
                       <button onClick={() => setShowNewArmazon(false)} style={btnGhost}>Cancelar</button>
                       <button onClick={async () => {
-                        await supabase.from('armazones').insert({ ...newArmazon, precio: parseInt(newArmazon.precio), stock: parseInt(newArmazon.stock), descuento: parseFloat(newArmazon.descuento) || 0 });
+                        await supabase.from('armazones').insert({ ...newArmazon, precio: parseInt(newArmazon.precio), stock: parseInt(newArmazon.stock), descuento: parseFloat(newArmazon.descuento)||0, color: newArmazon.color1 });
                         setShowNewArmazon(false); cargarTodo();
                       }} style={btnSage}>Guardar</button>
                     </div>
@@ -609,21 +660,20 @@ export default function Admin() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem' }}>
                 {armazones.map(a => (
                   <div key={a.id} style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
-                    <div style={{ height: '160px', background: `${a.color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                    <div style={{ height: '160px', background: `${a.color || a.color1 || '#1A1A2E'}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                       {a.imagen_url
                         ? <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
-                        : <svg width="100" height="56" viewBox="0 0 160 90" fill="none"><rect x="4" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color} strokeWidth="3.5"/><rect x="92" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color} strokeWidth="3.5"/><path d="M68 38 C72 32, 88 32, 92 38" stroke={a.color} strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>
+                        : <svg width="100" height="56" viewBox="0 0 160 90" fill="none"><rect x="4" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color||'#1A1A2E'} strokeWidth="3.5"/><rect x="92" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color||'#1A1A2E'} strokeWidth="3.5"/><path d="M68 38 C72 32, 88 32, 92 38" stroke={a.color||'#1A1A2E'} strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>
                       }
                       <div style={{ position: 'absolute', top: '8px', right: '8px', background: a.activo ? '#D1FAE5' : '#FEE2E2', color: a.activo ? '#065F46' : '#991B1B', borderRadius: '20px', padding: '2px 8px', fontSize: '10px', fontWeight: 500 }}>{a.activo ? 'Activo' : 'Inactivo'}</div>
                       {a.tipo === 'solar' && <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'var(--charcoal)', color: 'white', borderRadius: '20px', padding: '2px 8px', fontSize: '10px', fontWeight: 500 }}>Solar</div>}
                       {a.descuento > 0 && <div style={{ position: 'absolute', bottom: '8px', left: '8px', background: '#C0392B', color: 'white', borderRadius: '20px', padding: '2px 8px', fontSize: '10px', fontWeight: 600 }}>-{a.descuento}%</div>}
-                      {/* Miniaturas fotos 2 y 3 */}
-                      {(a.imagen2_url || a.imagen3_url) && (
-                        <div style={{ position: 'absolute', bottom: '8px', right: '8px', display: 'flex', gap: '4px' }}>
-                          {a.imagen2_url && <img src={a.imagen2_url} style={{ width: '28px', height: '28px', objectFit: 'cover', borderRadius: '3px', border: '1px solid white' }}/>}
-                          {a.imagen3_url && <img src={a.imagen3_url} style={{ width: '28px', height: '28px', objectFit: 'cover', borderRadius: '3px', border: '1px solid white' }}/>}
-                        </div>
-                      )}
+                      {/* Colores */}
+                      <div style={{ position: 'absolute', bottom: '8px', right: '8px', display: 'flex', gap: '4px' }}>
+                        {[a.color1||a.color, a.color2, a.color3].filter(Boolean).map((c, i) => (
+                          <div key={i} style={{ width: '14px', height: '14px', borderRadius: '50%', background: c, border: '1.5px solid white' }}/>
+                        ))}
+                      </div>
                     </div>
                     <div style={{ padding: '1rem' }}>
                       <div style={{ fontWeight: 500, fontSize: '14px', marginBottom: '2px' }}>{a.nombre}</div>
@@ -635,7 +685,7 @@ export default function Admin() {
                           {a.descuento > 0 && <span style={{ fontSize: '11px', color: '#C0392B', marginLeft: '6px' }}>-{a.descuento}%</span>}
                         </div>
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <button onClick={() => setEditArmazon({...a})} style={{ ...btnGhost, padding: '4px 12px', fontSize: '11px' }}>Editar</button>
+                          <button onClick={() => setEditArmazon({...a, color1: a.color1||a.color||'#1A1A2E'})} style={{ ...btnGhost, padding: '4px 12px', fontSize: '11px' }}>Editar</button>
                           <button onClick={async () => { if (confirm('¿Eliminar?')) { await supabase.from('armazones').delete().eq('id', a.id); cargarTodo(); } }} style={{ ...btnDanger, padding: '4px 12px', fontSize: '11px' }}>Eliminar</button>
                         </div>
                       </div>
@@ -651,11 +701,11 @@ export default function Admin() {
                       <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>Editando: {editArmazon.nombre}</h3>
                       <button onClick={() => setEditArmazon(null)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: 'var(--warm-gray)' }}>×</button>
                     </div>
-                    <ArmazonForm data={editArmazon} setData={setEditArmazon} armazonId={editArmazon.id}/>
+                    <ArmazonForm data={editArmazon} onChange={handleEditArmazonChange} armazonId={editArmazon.id} onUpload={subirFoto}/>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
                       <button onClick={() => setEditArmazon(null)} style={btnGhost}>Cancelar</button>
                       <button onClick={async () => {
-                        await supabase.from('armazones').update({ ...editArmazon, precio: parseInt(editArmazon.precio), stock: parseInt(editArmazon.stock), descuento: parseFloat(editArmazon.descuento) || 0 }).eq('id', editArmazon.id);
+                        await supabase.from('armazones').update({ ...editArmazon, precio: parseInt(editArmazon.precio), stock: parseInt(editArmazon.stock), descuento: parseFloat(editArmazon.descuento)||0, color: editArmazon.color1||editArmazon.color }).eq('id', editArmazon.id);
                         setEditArmazon(null); cargarTodo();
                       }} style={btnSage}>Guardar</button>
                     </div>
@@ -669,7 +719,7 @@ export default function Admin() {
           {modulo === 'finanzas' && (
             <div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                {[{label:'Ingresos totales',valor:`$${totalVentas.toFixed(2)}`},{label:'Costos totales',valor:`$${totalCostos.toFixed(2)}`},{label:'Ganancia bruta',valor:`$${ganancia.toFixed(2)}`},{label:'Margen',valor:totalVentas > 0 ? `${((ganancia/totalVentas)*100).toFixed(1)}%` : '0%'}].map((m, i) => (
+                {[{label:'Ingresos totales',valor:`$${totalVentas.toFixed(2)}`},{label:'Costos totales',valor:`$${totalCostos.toFixed(2)}`},{label:'Ganancia bruta',valor:`$${ganancia.toFixed(2)}`},{label:'Margen',valor:totalVentas>0?`${((ganancia/totalVentas)*100).toFixed(1)}%`:'0%'}].map((m,i) => (
                   <div key={i} style={{ background: 'white', borderRadius: '8px', padding: '1.25rem', border: '1px solid var(--border)' }}>
                     <div style={{ fontSize: '10px', color: 'var(--warm-gray)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>{m.label}</div>
                     <div style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--charcoal)' }}>{m.valor}</div>
@@ -684,8 +734,8 @@ export default function Admin() {
                     {pedidos.filter(p => p.finanzas?.[0]).map(p => {
                       const f = p.finanzas[0];
                       const costos = (f.costo_armazon||0)+(f.costo_laboratorio||0)+(f.otros_costos||0);
-                      const gan = (p.precio_venta||0) - costos;
-                      const margen = p.precio_venta > 0 ? ((gan/p.precio_venta)*100).toFixed(1) : '0';
+                      const gan = (p.precio_venta||0)-costos;
+                      const margen = p.precio_venta>0?((gan/p.precio_venta)*100).toFixed(1):'0';
                       return (
                         <tr key={p.id} style={{ borderTop: '1px solid var(--border)' }}>
                           <td style={{ padding: '10px 16px', fontSize: '12px', color: 'var(--warm-gray)', fontWeight: 500 }}>{orderCode(p.id)}</td>
@@ -693,12 +743,12 @@ export default function Admin() {
                           <td style={{ padding: '10px 16px', fontSize: '13px', color: '#C0392B' }}>${f.costo_armazon||0}</td>
                           <td style={{ padding: '10px 16px', fontSize: '13px', color: '#C0392B' }}>${f.costo_laboratorio||0}</td>
                           <td style={{ padding: '10px 16px', fontSize: '13px', color: '#C0392B' }}>${f.otros_costos||0}</td>
-                          <td style={{ padding: '10px 16px', fontSize: '13px', fontWeight: 600, color: gan >= 0 ? '#065F46' : '#C0392B' }}>${gan.toFixed(2)}</td>
+                          <td style={{ padding: '10px 16px', fontSize: '13px', fontWeight: 600, color: gan>=0?'#065F46':'#C0392B' }}>${gan.toFixed(2)}</td>
                           <td style={{ padding: '10px 16px', fontSize: '13px', fontWeight: 500, color: 'var(--sage)' }}>{margen}%</td>
                         </tr>
                       );
                     })}
-                    {pedidos.filter(p => p.finanzas?.[0]).length === 0 && <tr><td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: 'var(--warm-gray)', fontSize: '13px' }}>Sin datos financieros aún</td></tr>}
+                    {pedidos.filter(p => p.finanzas?.[0]).length===0 && <tr><td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: 'var(--warm-gray)', fontSize: '13px' }}>Sin datos financieros aún</td></tr>}
                   </tbody>
                 </table>
               </div>
@@ -707,7 +757,6 @@ export default function Admin() {
 
           {modulo === 'promociones' && (
             <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', padding: '3rem', textAlign: 'center' }}>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--border)" strokeWidth="1.5" strokeLinecap="round" style={{ marginBottom: '1rem' }}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
               <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '0.5rem' }}>Promociones</p>
               <p style={{ fontSize: '13px', color: 'var(--warm-gray)' }}>Disponible en la siguiente fase.</p>
             </div>
@@ -715,7 +764,6 @@ export default function Admin() {
 
           {modulo === 'marketing' && (
             <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', padding: '3rem', textAlign: 'center' }}>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--border)" strokeWidth="1.5" strokeLinecap="round" style={{ marginBottom: '1rem' }}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '0.5rem' }}>Marketing & UTM</p>
               <p style={{ fontSize: '13px', color: 'var(--warm-gray)' }}>Disponible en la siguiente fase.</p>
             </div>
