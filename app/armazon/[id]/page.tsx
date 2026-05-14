@@ -639,7 +639,9 @@ export default function DetalleArmazon() {
   const [colorPolarizado, setColorPolarizado] = useState('negro');
   const [colorTinte, setColorTinte] = useState('negro');
   const [loadingPago, setLoadingPago] = useState(false);
-  const [soloArmazon, setSoloArmazon] = useState(false);
+  const [fotoActiva, setFotoActiva] = useState(0);
+const [zoom, setZoom] = useState(false);
+const [posZoom, setPosZoom] = useState({ x: 50, y: 50 });
 
   const [esMobil, setEsMobil] = useState(false);
   useEffect(() => {
