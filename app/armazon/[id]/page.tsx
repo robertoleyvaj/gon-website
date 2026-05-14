@@ -1211,15 +1211,96 @@ export default function DetalleArmazon() {
 
       {/* DETALLE PRINCIPAL */}
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: esMobil ? '1.5rem 1rem' : '3rem 2rem', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: esMobil ? '1.5rem' : '4rem', alignItems: 'start' }}>
-        <div style={{ background: '#EDEAE4', borderRadius: '4px', padding: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '260px', position: 'relative' }}>
-          {armazon.imagen_url
-            ? <img src={armazon.imagen_url} alt={armazon.nombre} style={{ width: '100%', maxHeight: '300px', objectFit: 'contain' }}/>
-            : <LenteSVG color={armazon.color || 'var(--charcoal)'} forma={armazon.forma} size="large" solar={esSolar}/>
-          }
-          {esSolar && (
-            <div style={{ position: 'absolute', bottom: '1rem', left: '1rem', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)', background: 'var(--cream)', padding: '3px 9px', border: '1px solid var(--border)' }}>
-              {t('Graduable', 'Rx Ready')}
+        {/* GALERÍA */}
+        {(() => {
+          const fotos = [armazon.imagen_url, (armazon as any).imagen2_url, (armazon as any).imagen3_url].filter(Boolean) as string[];
+          const [fotoActiva, setFotoActiva] = (useState as any)(0);
+          const [zoom, setZoom] = (useState as any)(false);
+          const [posZoom, setPosZoom] = (useState as any)({ x: 50, y: 50 });
+
+          const handleMouseMove = (e: any) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            setPosZoom({ x, y });
+          };
+
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Foto principal */}
+              <div
+                style={{ background: '#EDEAE4', borderRadius: '4px', overflow: 'hidden', position: 'relative', cursor: fotos.length > 0 ? (zoom ? 'zoom-out' : 'zoom-in') : 'default', aspectRatio: '4/3' }}
+                onClick={() => fotos.length > 0 && setZoom(!zoom)}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={() => setZoom(false)}
+              >
+                {fotos.length > 0 ? (
+                  <img
+                    src={fotos[fotoActiva]}
+                    alt={armazon.nombre}
+                    style={{
+                      width: '100%', height: '100%',
+                      objectFit: 'contain',
+                      transformOrigin: `${posZoom.x}% ${posZoom.y}%`,
+                      transform: zoom ? 'scale(2.2)' : 'scale(1)',
+                      transition: zoom ? 'none' : 'transform 0.3s ease',
+                      display: 'block',
+                      padding: '1.5rem',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', boxSizing: 'border-box' }}>
+                    <LenteSVG color={armazon.color || 'var(--charcoal)'} forma={armazon.forma} size="large" solar={esSolar}/>
+                  </div>
+                )}
+
+                {/* Flechas si hay varias fotos */}
+                {fotos.length > 1 && !zoom && (
+                  <>
+                    <button
+                      onClick={e => { e.stopPropagation(); setFotoActiva((prev: number) => (prev - 1 + fotos.length) % fotos.length); }}
+                      style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: '34px', height: '34px', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.12)', color: 'var(--charcoal)' }}
+                    >‹</button>
+                    <button
+                      onClick={e => { e.stopPropagation(); setFotoActiva((prev: number) => (prev + 1) % fotos.length); }}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.85)', border: 'none', borderRadius: '50%', width: '34px', height: '34px', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.12)', color: 'var(--charcoal)' }}
+                    >›</button>
+                  </>
+                )}
+
+                {/* Badge solar */}
+                {esSolar && (
+                  <div style={{ position: 'absolute', bottom: '1rem', left: '1rem', fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)', background: 'var(--cream)', padding: '3px 9px', border: '1px solid var(--border)' }}>
+                    {t('Graduable', 'Rx Ready')}
+                  </div>
+                )}
+
+                {/* Hint zoom */}
+                {fotos.length > 0 && !zoom && (
+                  <div style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(255,255,255,0.75)', borderRadius: '4px', padding: '3px 8px', fontSize: '10px', color: 'var(--warm-gray)', fontFamily: 'var(--font-sans)', letterSpacing: '0.04em', pointerEvents: 'none' }}>
+                    🔍 {t('Zoom', 'Zoom')}
+                  </div>
+                )}
+              </div>
+
+              {/* Miniaturas */}
+              {fotos.length > 1 && (
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {fotos.map((foto, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setFotoActiva(i)}
+                      style={{ width: '72px', height: '72px', borderRadius: '4px', overflow: 'hidden', border: fotoActiva === i ? '2px solid var(--charcoal)' : '2px solid var(--border)', background: '#EDEAE4', cursor: 'pointer', padding: 0, flexShrink: 0, transition: 'border-color 0.15s' }}
+                    >
+                      <img src={foto} alt={`${armazon.nombre} ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', boxSizing: 'border-box' }}/>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+          );
+        })()}
           )}
         </div>
 
