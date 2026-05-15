@@ -651,7 +651,7 @@ export default function Admin() {
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
                       <button onClick={() => setShowNewArmazon(false)} style={btnGhost}>Cancelar</button>
                       <button onClick={async () => {
-                        await supabase.from('armazones').insert({ ...newArmazon, precio: parseInt(newArmazon.precio), stock: parseInt(newArmazon.stock), descuento: parseFloat(newArmazon.descuento)||0, color: newArmazon.color1 });
+                        await supabase.from('armazones').update({ ...editArmazon, precio: parseInt(editArmazon.precio), stock: parseInt(editArmazon.stock), descuento: parseFloat(editArmazon.descuento)||0, color: editArmazon.color1||editArmazon.color }).eq('id', editArmazon.id);
                         setShowNewArmazon(false); cargarTodo();
                       }} style={btnSage}>Guardar</button>
                     </div>

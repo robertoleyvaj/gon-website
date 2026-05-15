@@ -81,29 +81,21 @@ function armarPaquete(receta: Receta, estiloVida: Record<string, boolean>, lang:
   return { nombre: lang === 'es' ? `Paquete ${condicion}` : `${condicion} Package`, material, precioMaterial, filtros: filtrosRec, precioOriginal, precioFinal, descuento, condicion, explicacion };
 }
 
-// ── AVATAR — solo carita con lentes, paleta Verly ─────────────────────────
 function VerlyAvatar({ expresion, size = 48 }: { expresion: Expresion; size?: number }) {
   const ojosAbiertos = expresion !== 'pensando';
   const sonrisa = expresion === 'feliz' || expresion === 'recomendando';
   const cejas = expresion === 'sorprendida' ? -4 : expresion === 'pensando' ? 2 : 0;
   return (
     <svg width={size} height={size} viewBox="0 0 80 80" fill="none" style={{ flexShrink: 0 }}>
-      {/* Cara */}
       <ellipse cx="40" cy="40" rx="34" ry="36" fill="var(--cream)" stroke="var(--border)" strokeWidth="2"/>
-      {/* Brillo */}
       <ellipse cx="30" cy="24" rx="7" ry="4" fill="white" opacity="0.4"/>
-      {/* Cejas */}
       <path d={`M22 ${30+cejas} Q27 ${27+cejas} 32 ${30+cejas}`} stroke="var(--charcoal)" strokeWidth="2" strokeLinecap="round"/>
       <path d={`M48 ${30+cejas} Q53 ${27+cejas} 58 ${30+cejas}`} stroke="var(--charcoal)" strokeWidth="2" strokeLinecap="round"/>
-      {/* Armazones */}
       <rect x="18" y="33" width="20" height="13" rx="5" fill="white" stroke="var(--charcoal)" strokeWidth="2" opacity="0.95"/>
       <rect x="42" y="33" width="20" height="13" rx="5" fill="white" stroke="var(--charcoal)" strokeWidth="2" opacity="0.95"/>
-      {/* Puente */}
       <path d="M38 39 C39 36, 41 36, 42 39" stroke="var(--charcoal)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-      {/* Patillas */}
       <line x1="18" y1="39" x2="12" y2="36" stroke="var(--charcoal)" strokeWidth="1.5" strokeLinecap="round"/>
       <line x1="62" y1="39" x2="68" y2="36" stroke="var(--charcoal)" strokeWidth="1.5" strokeLinecap="round"/>
-      {/* Ojos */}
       {ojosAbiertos ? (
         <>
           <ellipse cx="28" cy="39" rx="3.5" ry="3.5" fill="var(--charcoal)"/>
@@ -117,7 +109,6 @@ function VerlyAvatar({ expresion, size = 48 }: { expresion: Expresion; size?: nu
           <path d="M48 39 Q52 35.5 56 39" stroke="var(--charcoal)" strokeWidth="2" fill="none" strokeLinecap="round"/>
         </>
       )}
-      {/* Boca */}
       {sonrisa
         ? <path d="M32 54 Q40 60 48 54" stroke="var(--charcoal)" strokeWidth="2" fill="none" strokeLinecap="round"/>
         : expresion === 'sorprendida'
@@ -130,8 +121,7 @@ function VerlyAvatar({ expresion, size = 48 }: { expresion: Expresion; size?: nu
           </>
         : <path d="M34 55 Q40 58 46 55" stroke="var(--charcoal)" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
       }
-      {/* Mejillas */}
-      {(sonrisa) && (
+      {sonrisa && (
         <>
           <ellipse cx="20" cy="50" rx="5" ry="3" fill="var(--sage-light)" opacity="0.2"/>
           <ellipse cx="60" cy="50" rx="5" ry="3" fill="var(--sage-light)" opacity="0.2"/>
@@ -144,8 +134,8 @@ function VerlyAvatar({ expresion, size = 48 }: { expresion: Expresion; size?: nu
 function BurbujaPaquete({ paquete, onAceptar, lang }: { paquete: Paquete; onAceptar: () => void; lang: 'es' | 'en' }) {
   return (
     <div style={{ background: 'var(--cream-dark)', border: '1px solid var(--border)', borderRadius: '8px', padding: '1rem', marginTop: '8px' }}>
-      <div style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '8px' }}>{paquete.nombre}</div>
-      <div style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--charcoal)', marginBottom: '10px', lineHeight: 1.6 }}>{paquete.explicacion}</div>
+      <div style={{ fontSize: '0.65rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)', marginBottom: '8px' }}>{paquete.nombre}</div>
+      <div style={{ fontSize: '12px', color: 'var(--charcoal)', marginBottom: '10px', lineHeight: 1.6 }}>{paquete.explicacion}</div>
       <div style={{ background: 'white', borderRadius: '6px', padding: '0.75rem', marginBottom: '10px', border: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', padding: '4px 0', borderBottom: '1px solid var(--cream-dark)' }}>
           <span style={{ color: 'var(--warm-gray)' }}>{lang === 'es' ? 'Armazón' : 'Frame'}</span>
@@ -164,12 +154,12 @@ function BurbujaPaquete({ paquete, onAceptar, lang }: { paquete: Paquete; onAcep
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
         <div>
-          <div style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>${paquete.precioOriginal} USD</div>
+          <div style={{ fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>${paquete.precioOriginal} USD</div>
           <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--sage)' }}>${paquete.precioFinal} USD</div>
         </div>
-        <div style={{ background: 'var(--sage)', color: 'white', padding: '4px 10px', borderRadius: '4px', fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 500 }}>-{paquete.descuento}% OFF</div>
+        <div style={{ background: 'var(--sage)', color: 'white', padding: '4px 10px', borderRadius: '4px', fontSize: '11px', fontWeight: 500 }}>-{paquete.descuento}% OFF</div>
       </div>
-      <button onClick={onAceptar} style={{ width: '100%', background: 'var(--charcoal)', color: 'white', border: 'none', borderRadius: '4px', padding: '10px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, letterSpacing: '0.06em', cursor: 'pointer' }}>
+      <button onClick={onAceptar} style={{ width: '100%', background: 'var(--charcoal)', color: 'white', border: 'none', borderRadius: '4px', padding: '10px', fontSize: '12px', fontWeight: 500, letterSpacing: '0.06em', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
         {lang === 'es' ? 'Quiero este paquete →' : 'I want this package →'}
       </button>
     </div>
@@ -185,50 +175,50 @@ export default function VerlyBot() {
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [input, setInput] = useState('');
   const [sesion, setSesion] = useState<SesionPx>({ nombre: '', receta: null, estiloVida: {}, paqueteRecomendado: null });
+  const [esMobil, setEsMobil] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const prevPathname = useRef(pathname);
 
-  // ── DRAG ──────────────────────────────────────────────────────────────────
-  const [pos, setPos] = useState({ x: 28, y: 28 });
-  const dragRef = useRef({ dragging: false, startX: 0, startY: 0, startPosX: 28, startPosY: 28 });
+  // Detectar móvil
+  useEffect(() => {
+    const check = () => setEsMobil(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // ── DRAG (solo desktop) ───────────────────────────────────────────────────
+  const [pos, setPos] = useState({ x: 24, y: 24 });
+  const dragRef = useRef({ dragging: false, startX: 0, startY: 0, startPosX: 24, startPosY: 24 });
   const hasDragged = useRef(false);
 
   const onMouseDown = (e: React.MouseEvent) => {
+    if (esMobil) return;
     dragRef.current = { dragging: true, startX: e.clientX, startY: e.clientY, startPosX: pos.x, startPosY: pos.y };
     hasDragged.current = false;
     e.preventDefault();
   };
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    const t = e.touches[0];
-    dragRef.current = { dragging: true, startX: t.clientX, startY: t.clientY, startPosX: pos.x, startPosY: pos.y };
-    hasDragged.current = false;
-  };
-
   useEffect(() => {
-    const onMove = (e: MouseEvent | TouchEvent) => {
+    if (esMobil) return;
+    const onMove = (e: MouseEvent) => {
       if (!dragRef.current.dragging) return;
-      const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
-      const clientY = 'touches' in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
-      const dx = clientX - dragRef.current.startX;
-      const dy = clientY - dragRef.current.startY;
+      const dx = e.clientX - dragRef.current.startX;
+      const dy = e.clientY - dragRef.current.startY;
       if (Math.abs(dx) > 4 || Math.abs(dy) > 4) hasDragged.current = true;
-      const newX = Math.max(8, Math.min(window.innerWidth - 88, dragRef.current.startPosX - dx));
-      const newY = Math.max(8, Math.min(window.innerHeight - 88, dragRef.current.startPosY - dy));
-      setPos({ x: newX, y: newY });
+      // right/bottom based positioning
+      const newRight = Math.max(8, Math.min(window.innerWidth - 72, dragRef.current.startPosX - dx));
+      const newBottom = Math.max(8, Math.min(window.innerHeight - 72, dragRef.current.startPosY - dy));
+      setPos({ x: newRight, y: newBottom });
     };
     const onUp = () => { dragRef.current.dragging = false; };
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
-    window.addEventListener('touchmove', onMove, { passive: true });
-    window.addEventListener('touchend', onUp);
     return () => {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
-      window.removeEventListener('touchmove', onMove);
-      window.removeEventListener('touchend', onUp);
     };
-  }, []);
+  }, [esMobil]);
 
   // ── RESET AL CAMBIAR DE PÁGINA ────────────────────────────────────────────
   useEffect(() => {
@@ -296,15 +286,12 @@ export default function VerlyBot() {
   const procesarRespuesta = async (texto: string) => {
     agregarMensaje('px', texto);
     setExpresion('pensando');
-
     const historial = [...mensajes, { de: 'px' as const, texto }].map(m => ({
       role: m.de === 'verly' ? 'assistant' : 'user',
       content: m.texto,
     }));
-
     const s = JSON.parse(sessionStorage.getItem('verly_sesion') || '{}');
     const contexto = `Page: ${window.location.pathname}. ${s.nombre ? `Customer: ${s.nombre}.` : ''} ${s.receta ? 'Has prescription saved.' : 'No prescription yet.'}`;
-
     try {
       const res = await fetch('/api/verly', {
         method: 'POST',
@@ -339,70 +326,50 @@ export default function VerlyBot() {
 
   if (!visible) return null;
 
+  // Posición del botón: fijo abajo derecha en móvil, arrastrable en desktop
+  const bottonStyle: React.CSSProperties = esMobil
+    ? { position: 'fixed', bottom: '90px', right: '16px', zIndex: 999 }
+    : { position: 'fixed', bottom: `${pos.y}px`, right: `${pos.x}px`, zIndex: 999 };
+
+  const chatStyle: React.CSSProperties = esMobil
+    ? { position: 'fixed', bottom: '0', left: '0', right: '0', zIndex: 998, width: '100%', maxWidth: '100%', borderRadius: '16px 16px 0 0', maxHeight: '75vh' }
+    : { position: 'fixed', bottom: `${pos.y + 76}px`, right: `${pos.x}px`, zIndex: 998, width: '360px', maxWidth: 'calc(100vw - 48px)', borderRadius: '12px' };
+
   return (
     <>
       {/* VENTANA DE CHAT */}
       {abierto && (
         <div style={{
-          position: 'fixed',
-          bottom: `${pos.y + 80}px`,
-          left: `${pos.x}px`,
-          zIndex: 998,
-          width: '360px',
-          maxWidth: 'calc(100vw - 56px)',
+          ...chatStyle,
           background: 'white',
-          borderRadius: '12px',
-          boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
+          boxShadow: '0 -4px 40px rgba(0,0,0,0.12)',
           border: '1px solid var(--border)',
           display: 'flex',
           flexDirection: 'column',
-          maxHeight: '520px',
           animation: 'verlySlideUp 0.25s ease-out',
           fontFamily: 'var(--font-sans), sans-serif',
           overflow: 'hidden',
         }}>
           {/* Header */}
-          <div style={{
-            background: 'var(--charcoal)',
-            padding: '1rem 1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            flexShrink: 0,
-          }}>
+          <div style={{ background: 'var(--charcoal)', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
             <VerlyAvatar expresion={expresion} size={40}/>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 300, color: 'white', letterSpacing: '0.02em' }}>Verly</div>
-              <div style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)' }}>
+              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 300, color: 'white' }}>Verly</div>
+              <div style={{ fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)' }}>
                 {lang === 'es' ? 'Asistente virtual' : 'Virtual assistant'}
               </div>
             </div>
-            <button
-              onClick={() => setAbierto(false)}
-              style={{ background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-            >−</button>
-            <button
-              onClick={cerrar}
-              style={{ background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: '50%', width: '28px', height: '28px', color: 'rgba(255,255,255,0.6)', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-            >×</button>
+            <button onClick={() => setAbierto(false)} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>−</button>
+            <button onClick={cerrar} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>×</button>
           </div>
 
           {/* Mensajes */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '10px', background: 'var(--cream)' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '10px', background: 'var(--cream)', maxHeight: esMobil ? 'calc(75vh - 130px)' : '340px' }}>
             {mensajes.map((m, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: m.de === 'verly' ? 'row' : 'row-reverse', gap: '8px', alignItems: 'flex-start' }}>
                 {m.de === 'verly' && <VerlyAvatar expresion="neutral" size={28}/>}
                 <div style={{ maxWidth: '82%' }}>
-                  <div style={{
-                    background: m.de === 'verly' ? 'white' : 'var(--charcoal)',
-                    color: m.de === 'verly' ? 'var(--charcoal)' : 'white',
-                    padding: '9px 13px',
-                    borderRadius: m.de === 'verly' ? '3px 10px 10px 10px' : '10px 3px 10px 10px',
-                    fontSize: '13px',
-                    lineHeight: 1.6,
-                    border: m.de === 'verly' ? '1px solid var(--border)' : 'none',
-                    fontFamily: 'var(--font-sans)',
-                  }}>
+                  <div style={{ background: m.de === 'verly' ? 'white' : 'var(--charcoal)', color: m.de === 'verly' ? 'var(--charcoal)' : 'white', padding: '9px 13px', borderRadius: m.de === 'verly' ? '3px 10px 10px 10px' : '10px 3px 10px 10px', fontSize: '13px', lineHeight: 1.6, border: m.de === 'verly' ? '1px solid var(--border)' : 'none', fontFamily: 'var(--font-sans)' }}>
                     {m.texto}
                   </div>
                   {m.paquete && (
@@ -427,94 +394,77 @@ export default function VerlyBot() {
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && manejarEnvio()}
               placeholder={lang === 'es' ? 'Escribe aquí...' : 'Type here...'}
-              style={{
-                flex: 1, padding: '9px 13px',
-                borderRadius: '4px',
-                border: '1px solid var(--border)',
-                fontSize: '13px',
-                fontFamily: 'var(--font-sans)',
-                outline: 'none',
-                background: 'var(--cream)',
-                color: 'var(--charcoal)',
-              }}
+              style={{ flex: 1, padding: '9px 13px', borderRadius: '4px', border: '1px solid var(--border)', fontSize: '13px', fontFamily: 'var(--font-sans)', outline: 'none', background: 'var(--cream)', color: 'var(--charcoal)' }}
               onFocus={e => (e.currentTarget.style.borderColor = 'var(--sage)')}
               onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
             />
-            <button
-              onClick={manejarEnvio}
-              style={{
-                background: 'var(--sage)', color: 'white', border: 'none',
-                borderRadius: '4px', width: '38px', height: '38px',
-                cursor: 'pointer', fontSize: '16px', flexShrink: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'background 0.2s',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--charcoal)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--sage)')}
-            >→</button>
+            <button onClick={manejarEnvio} style={{ background: 'var(--sage)', color: 'white', border: 'none', borderRadius: '4px', width: '38px', height: '38px', cursor: 'pointer', fontSize: '16px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = 'var(--charcoal)')} onMouseLeave={e => (e.currentTarget.style.background = 'var(--sage)')}>→</button>
           </div>
         </div>
       )}
 
       {/* BOTÓN FLOTANTE */}
-      <div
-        onMouseDown={onMouseDown}
-        onTouchStart={onTouchStart}
-        onClick={handleClick}
-        style={{
-          position: 'fixed',
-          bottom: `${pos.y}px`,
-          left: `${pos.x}px`,
-          zIndex: 999,
-          cursor: 'grab',
-          userSelect: 'none',
-          animation: !abierto ? 'verlyFloat 3s ease-in-out infinite' : 'none',
-        }}
-      >
-        {/* Avatar con fondo */}
-        <div style={{
-          width: '60px',
-          height: '60px',
-          borderRadius: '50%',
-          background: 'white',
-          border: '2px solid var(--border)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: 'box-shadow 0.2s, transform 0.2s',
-        }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 28px rgba(0,0,0,0.18)';
-            (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.05)';
+      <div style={bottonStyle}>
+        {/* Botón × para cerrar — siempre visible en móvil, visible en desktop al hover */}
+        {!abierto && (
+          <button
+            onClick={e => { e.stopPropagation(); cerrar(); }}
+            style={{
+              position: 'absolute',
+              top: '-6px',
+              right: '-6px',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              background: 'var(--charcoal)',
+              border: '2px solid white',
+              color: 'white',
+              fontSize: '10px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              lineHeight: 1,
+              fontWeight: 700,
+            }}
+          >×</button>
+        )}
+
+        <div
+          onMouseDown={onMouseDown}
+          onClick={handleClick}
+          style={{
+            width: '56px',
+            height: '56px',
+            borderRadius: '50%',
+            background: 'white',
+            border: '2px solid var(--border)',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: esMobil ? 'pointer' : 'grab',
+            userSelect: 'none',
+            transition: 'box-shadow 0.2s, transform 0.2s',
+            animation: !abierto ? 'verlyFloat 3s ease-in-out infinite' : 'none',
           }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.12)';
-            (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)';
-          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 28px rgba(0,0,0,0.18)'; (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.05)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.12)'; (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)'; }}
         >
-          <VerlyAvatar expresion={abierto ? 'feliz' : expresion} size={44}/>
+          <VerlyAvatar expresion={abierto ? 'feliz' : expresion} size={40}/>
         </div>
 
-        {/* Indicador punto verde */}
+        {/* Dot verde */}
         {!abierto && (
-          <div style={{
-            position: 'absolute',
-            top: '2px',
-            right: '2px',
-            width: '12px',
-            height: '12px',
-            borderRadius: '50%',
-            background: 'var(--sage)',
-            border: '2px solid white',
-          }}/>
+          <div style={{ position: 'absolute', top: '2px', left: '2px', width: '11px', height: '11px', borderRadius: '50%', background: 'var(--sage)', border: '2px solid white', pointerEvents: 'none' }}/>
         )}
       </div>
 
       <style>{`
         @keyframes verlyFloat {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
+          50% { transform: translateY(-6px); }
         }
         @keyframes verlySlideUp {
           from { opacity: 0; transform: translateY(12px); }
