@@ -17,11 +17,9 @@ const FORMAS = ['Rectangle', 'Round', 'Square', 'Oval', 'Aviator'];
 const MATERIALES = ['Acetato', 'Metálico', 'TR-90', 'Titanio', 'Mixto'];
 const TALLAS = ['S', 'M', 'L', 'XL'];
 
-// ── CARD con useState propio ──────────────────────────────────────────────
 function ArmazonCard({ a, esMobil, t }: { a: Armazon; esMobil: boolean; t: (es: string, en: string) => string }) {
   const [liked, setLiked] = useState(false);
   const [hovered, setHovered] = useState(false);
-
   return (
     <Link href={`/armazon/${a.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
       <div
@@ -29,14 +27,9 @@ function ArmazonCard({ a, esMobil, t }: { a: Armazon; esMobil: boolean; t: (es: 
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {/* Imagen */}
         <div style={{ aspectRatio: '4/3', background: '#f5f2ed', overflow: 'hidden', position: 'relative' }}>
           {a.imagen_url ? (
-            <img
-              src={a.imagen_url}
-              alt={a.nombre}
-              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform 0.5s ease', display: 'block', transform: hovered ? 'scale(1.05)' : 'scale(1)' }}
-            />
+            <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform 0.5s ease', display: 'block', transform: hovered ? 'scale(1.05)' : 'scale(1)' }}/>
           ) : (
             <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="80" height="44" viewBox="0 0 160 90" fill="none" style={{ opacity: 0.15 }}>
@@ -46,13 +39,11 @@ function ArmazonCard({ a, esMobil, t }: { a: Armazon; esMobil: boolean; t: (es: 
               </svg>
             </div>
           )}
-          {/* Badge */}
           {a.badge && (
             <div style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 9px', borderRadius: '3px', background: a.badge?.toLowerCase() === 'nuevo' || a.badge?.toLowerCase() === 'new' ? '#55624c' : '#1d1d1d', color: 'white' }}>
               {a.badge}
             </div>
           )}
-          {/* Wishlist */}
           <button
             onClick={e => { e.preventDefault(); e.stopPropagation(); setLiked(l => !l); }}
             style={{ position: 'absolute', top: '10px', right: '10px', width: '30px', height: '30px', borderRadius: '50%', background: 'white', border: `1px solid ${liked ? 'rgba(192,57,43,0.25)' : 'rgba(0,0,0,0.06)'}`, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', transition: 'all 0.2s', transform: liked ? 'scale(1.1)' : 'scale(1)' }}
@@ -61,21 +52,15 @@ function ArmazonCard({ a, esMobil, t }: { a: Armazon; esMobil: boolean; t: (es: 
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
           </button>
-          {/* Descuento */}
           {a.descuento && a.descuento > 0 && (
-            <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '0.6rem', fontWeight: 700, padding: '3px 8px', borderRadius: '3px', background: '#c0392b', color: 'white' }}>
-              -{a.descuento}%
-            </div>
+            <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '0.6rem', fontWeight: 700, padding: '3px 8px', borderRadius: '3px', background: '#c0392b', color: 'white' }}>-{a.descuento}%</div>
           )}
         </div>
-        {/* Info */}
         <div style={{ padding: esMobil ? '0.75rem' : '1rem 1.25rem 1.25rem' }}>
           <div style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '0.95rem' : '1.1rem', fontWeight: 400, color: '#1d1d1d', marginBottom: '2px', letterSpacing: '-0.01em' }}>{a.nombre}</div>
           {a.material && <div style={{ fontSize: '0.72rem', color: '#9a9a9a', marginBottom: '8px', textTransform: 'capitalize' }}>{a.material}</div>}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1d1d1d' }}>
-              {t('Desde', 'From')} ${a.precio}
-            </div>
+            <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1d1d1d' }}>{t('Desde', 'From')} ${a.precio}</div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: hovered ? 'white' : '#55624c', background: hovered ? '#55624c' : 'transparent', padding: hovered ? '4px 10px' : '4px 0', borderRadius: '4px', transition: 'all 0.25s ease' }}>
               {t('Ver', 'View')} <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
             </div>
@@ -86,7 +71,6 @@ function ArmazonCard({ a, esMobil, t }: { a: Armazon; esMobil: boolean; t: (es: 
   );
 }
 
-// ── TIENDA ────────────────────────────────────────────────────────────────
 export default function Tienda() {
   const { t, lang } = useLang() as any;
   const [armazones, setArmazones] = useState<Armazon[]>([]);
@@ -94,7 +78,6 @@ export default function Tienda() {
   const [esMobil, setEsMobil] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [generoTab, setGeneroTab] = useState('all');
-
   const [filtroGenero, setFiltroGenero] = useState<string[]>([]);
   const [filtroForma, setFiltroForma] = useState<string[]>([]);
   const [filtroMaterial, setFiltroMaterial] = useState<string[]>([]);
@@ -113,11 +96,8 @@ export default function Tienda() {
       .then(({ data }) => { setArmazones(data || []); setLoading(false); });
   }, []);
 
-  const toggleArr = (arr: string[], val: string) =>
-    arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
-
-  const toggleSection = (s: string) =>
-    setOpenSections(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
+  const toggleArr = (arr: string[], val: string) => arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
+  const toggleSection = (s: string) => setOpenSections(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
 
   const chips = [
     ...filtroGenero.map(v => ({ label: v, type: 'genero', val: v })),
@@ -160,10 +140,7 @@ export default function Tienda() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingBottom: '1rem' }}>
               {[{ val: '', label: t('Todos', 'All') }, { val: 'hombre', label: t('Hombre', 'Men') }, { val: 'mujer', label: t('Mujer', 'Women') }, { val: 'unisex', label: 'Unisex' }].map(o => (
                 <label key={o.val} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '13px', color: '#1d1d1d' }}>
-                  <Checkbox
-                    checked={(o.val === '' && filtroGenero.length === 0) || filtroGenero.includes(o.val)}
-                    onClick={() => { if (o.val === '') { setFiltroGenero([]); return; } setFiltroGenero(prev => toggleArr(prev, o.val)); }}
-                  />
+                  <Checkbox checked={(o.val === '' && filtroGenero.length === 0) || filtroGenero.includes(o.val)} onClick={() => { if (o.val === '') { setFiltroGenero([]); return; } setFiltroGenero(prev => toggleArr(prev, o.val)); }}/>
                   {o.label}
                 </label>
               ))}
@@ -223,20 +200,23 @@ export default function Tienda() {
       <Navbar />
 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <div style={{ marginTop: '64px', background: '#edeae3', overflow: 'hidden' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: esMobil ? '2.5rem 1.25rem' : '0 3rem', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', alignItems: 'center', minHeight: esMobil ? 'auto' : '300px', gap: 0 }}>
-          <div style={{ padding: esMobil ? '0' : '3rem 0' }}>
-            <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#55624c', margin: '0 0 0.75rem' }}>Collection</p>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '3rem' : '4.5rem', fontWeight: 400, letterSpacing: '-0.03em', color: '#1d1d1d', margin: '0 0 1rem', lineHeight: 1.05 }}>
-              {t('Armazones', 'Eyewear')}
+      <div style={{ marginTop: '64px', position: 'relative', width: '100%', height: esMobil ? '260px' : '380px', overflow: 'hidden' }}>
+        <img src="/hero-tienda.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '60% 40%', display: 'block' }}/>
+        <div style={{ position: 'absolute', inset: 0, background: esMobil ? 'linear-gradient(to bottom, rgba(28,28,26,0.6) 0%, rgba(28,28,26,0.35) 100%)' : 'linear-gradient(to right, rgba(28,28,26,0.75) 0%, rgba(28,28,26,0.45) 45%, rgba(28,28,26,0.0) 75%)' }}/>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: esMobil ? '2rem 1.25rem' : '0 4rem' }}>
+          <div style={{ maxWidth: '560px' }}>
+            <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', margin: '0 0 0.75rem' }}>Collection</p>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.8rem' : '4.5rem', fontWeight: 400, letterSpacing: '-0.03em', color: 'white', margin: '0 0 1rem', lineHeight: 1.05 }}>
+              {t('Clear indoors.', 'Clear indoors.')}
+<br/>
+<em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.8)' }}>{t('Dark outdoors.', 'Dark outdoors.')}</em>
             </h1>
-            <p style={{ fontSize: '0.9rem', color: '#6f6a63', margin: '0 0 1.5rem', lineHeight: 1.7, maxWidth: '340px' }}>
-              {t('Diseño atemporal. Comodidad diaria. Lentes que se adaptan a tu vida.', 'Timeless design. Everyday comfort. Lenses that fit your lifestyle.')}
-            </p>
+            <p style={{ fontSize: esMobil ? '0.85rem' : '1rem', color: 'rgba(255,255,255,0.72)', margin: '0 0 1.75rem', lineHeight: 1.7, maxWidth: '380px' }}>
+              {t('Lentes fotocromáticos que se adaptan a cada luz. Un solo par para todo el día.', 'Adaptive lenses that adjust to every light. One pair for all day.')}
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', border: '1px solid #e2ddd6', borderRadius: '6px', padding: '8px 14px' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#55624c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                <span style={{ fontSize: '0.72rem', color: '#1d1d1d', fontWeight: 500 }}>{t('Envío gratis +$69', 'Free shipping over $69')}</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: '6px', padding: '8px 14px', backdropFilter: 'blur(8px)' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>{t('Envío gratis +$69', 'Free shipping over $69')}</span>
               </div>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#55624c', borderRadius: '6px', padding: '8px 14px' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
@@ -244,12 +224,6 @@ export default function Tienda() {
               </div>
             </div>
           </div>
-          {!esMobil && (
-            <div style={{ position: 'relative', height: '300px', overflow: 'hidden', borderRadius: '12px 12px 0 0', margin: '0 -3rem 0 0' }}>
-              <img src="/hero-man.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%' }}/>
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(237,234,227,0.5) 0%, transparent 45%)' }}/>
-            </div>
-          )}
         </div>
       </div>
 
@@ -286,7 +260,6 @@ export default function Tienda() {
 
         {/* CATÁLOGO */}
         <div>
-          {/* Filtros móvil + chips */}
           <div style={{ marginBottom: chips.length > 0 || esMobil ? '1.25rem' : '0' }}>
             {esMobil && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: chips.length > 0 ? '0.75rem' : '0' }}>
@@ -311,7 +284,6 @@ export default function Tienda() {
             )}
           </div>
 
-          {/* Grid */}
           {loading ? (
             <div style={{ textAlign: 'center', padding: '4rem', color: '#9a9a9a', fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 300 }}>{t('Cargando...', 'Loading...')}</div>
           ) : filtered.length === 0 ? (
@@ -327,7 +299,7 @@ export default function Tienda() {
         </div>
       </div>
 
-      {/* ── WHY VERLY — fondo verde ───────────────────────────────────────── */}
+      {/* ── WHY VERLY ────────────────────────────────────────────────────── */}
       <div style={{ background: '#55624c', padding: esMobil ? '3rem 1.25rem' : '5rem 3rem' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', textAlign: 'center', margin: '0 0 0.75rem' }}>Verly Optical</p>
@@ -336,21 +308,9 @@ export default function Tienda() {
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : 'repeat(3, 1fr)', gap: esMobil ? '2rem' : '3rem' }}>
             {[
-              {
-                icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>),
-                title: t('Envío rápido', 'Fast delivery'),
-                desc: t('Envío gratis en pedidos +$69. Recibe tus lentes en 5–7 días hábiles.', 'Free shipping over $69. Receive your glasses in 5–7 business days.'),
-              },
-              {
-                icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>),
-                title: t('Micas accesibles', 'Affordable lenses'),
-                desc: t('Calidad premium sin el precio de una óptica tradicional. Sin aseguranza.', 'Premium quality without the traditional optical store price. No insurance needed.'),
-              },
-              {
-                icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>),
-                title: t('Receta fácil', 'Easy prescription upload'),
-                desc: t('Sube tu receta en segundos. Escríbela o manda una foto.', 'Upload your prescription in seconds — type it in or send a photo.'),
-              },
+              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 4v4h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>), title: t('Envío rápido', 'Fast delivery'), desc: t('Envío gratis en pedidos +$69. Recibe tus lentes en 5–7 días hábiles.', 'Free shipping over $69. Receive your glasses in 5–7 business days.') },
+              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>), title: t('Micas accesibles', 'Affordable lenses'), desc: t('Calidad premium sin el precio de una óptica tradicional. Sin aseguranza.', 'Premium quality without the traditional optical store price. No insurance needed.') },
+              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>), title: t('Receta fácil', 'Easy prescription upload'), desc: t('Sube tu receta en segundos. Escríbela o manda una foto.', 'Upload your prescription in seconds — type it in or send a photo.') },
             ].map((b, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: esMobil ? 'row' : 'column', gap: esMobil ? '1rem' : '1.25rem', alignItems: esMobil ? 'flex-start' : 'center', textAlign: esMobil ? 'left' : 'center' }}>
                 <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -363,10 +323,8 @@ export default function Tienda() {
               </div>
             ))}
           </div>
-
-          {/* CTA */}
           <div style={{ textAlign: 'center', marginTop: '3rem', paddingTop: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-            <Link href="/armazon/63" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', color: '#55624c', padding: '14px 32px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', transition: 'all 0.2s' }}>
+            <Link href="/Tienda" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', color: '#55624c', padding: '14px 32px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
               {t('Explorar colección →', 'Explore collection →')}
             </Link>
           </div>
