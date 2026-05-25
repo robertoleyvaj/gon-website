@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import { useLang } from '../../components/LanguageContext';
 import { supabase } from '../../supabase';
+import { useCart, generateCartId } from '../../context/CartContext';
 
 type Armazon = {
   id: number; nombre: string; forma: string; genero: string;
@@ -381,72 +382,6 @@ function VerlyModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }
   );
 }
 
-function ModalRecetaObligatoria({ onGuardar, onSinGraduacion, lang, t }: { onGuardar: (receta: RecetaData | null, foto: string | null) => void; onSinGraduacion: () => void; lang: 'es' | 'en'; t: (es: string, en: string) => string; }) {
-  const [modo, setModo] = useState<'opciones' | 'manual' | 'foto'>('opciones');
-  const [receta, setReceta] = useState<RecetaData>({ sph_od: null, cyl_od: null, axis_od: null, sph_os: null, cyl_os: null, axis_os: null, add: null, dp: null, prisma: '' });
-  const [fotoUrl, setFotoUrl] = useState('');
-  const [errores, setErrores] = useState<string[]>([]);
-  const validar = () => {
-    const errs: string[] = [];
-    if (receta.sph_od === null && receta.sph_os === null) errs.push(t('Ingresa al menos el SPH de un ojo', 'Enter at least the SPH for one eye'));
-    if (receta.cyl_od !== null && receta.cyl_od !== 0 && receta.axis_od === null) errs.push(t('EJE requerido para OD', 'AXIS required for OD'));
-    if (receta.cyl_os !== null && receta.cyl_os !== 0 && receta.axis_os === null) errs.push(t('EJE requerido para OS', 'AXIS required for OS'));
-    return errs;
-  };
-  return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <div style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '480px', boxShadow: '0 24px 64px rgba(0,0,0,0.15)', overflow: 'hidden', animation: 'slideUp 0.3s ease-out', maxHeight: '92vh', overflowY: 'auto', fontFamily: 'var(--font-sans), sans-serif' }}>
-        <div style={{ background: '#1d1d1d', padding: '1.5rem', textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'white', marginBottom: '4px' }}>{t('Necesitamos tu graduación', 'We need your prescription')}</div>
-          <div style={{ fontSize: '0.72rem', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' }}>{t('Para fabricar tus lentes perfectamente', 'To make your lenses perfectly')}</div>
-        </div>
-        <div style={{ padding: '1.5rem' }}>
-          {modo === 'opciones' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {[{ icon: '✏️', title: t('Escribir graduación', 'Enter prescription manually'), sub: t('SPH, CYL, EJE, ADD y PD', 'SPH, CYL, AXIS, ADD and PD'), onClick: () => setModo('manual') }, { icon: '📷', title: t('Subir foto de mi receta', 'Upload prescription photo'), sub: t('Foto, PDF o captura de pantalla', 'Photo, PDF or screenshot'), onClick: () => setModo('foto') }, { icon: '🕶️', title: t('No tengo graduación', "I don't have a prescription"), sub: t('Lentes sin aumento, blue light o moda', 'Non-prescription, blue light or fashion'), onClick: onSinGraduacion }].map((opt, i) => (
-                <button key={i} onClick={opt.onClick} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '1rem 1.25rem', borderRadius: '8px', border: '1px solid #e8e5e0', background: '#faf9f7', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s', fontFamily: 'var(--font-sans)' }} onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#55624c'; (e.currentTarget as HTMLButtonElement).style.background = '#f0f4ef'; }} onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#e8e5e0'; (e.currentTarget as HTMLButtonElement).style.background = '#faf9f7'; }}>
-                  <span style={{ fontSize: '22px' }}>{opt.icon}</span>
-                  <div style={{ flex: 1 }}><div style={{ fontSize: '14px', fontWeight: 500, color: '#1d1d1d' }}>{opt.title}</div><div style={{ fontSize: '12px', color: '#6f6a63', marginTop: '2px' }}>{opt.sub}</div></div>
-                  <span style={{ color: '#9a9a9a', fontSize: '18px' }}>›</span>
-                </button>
-              ))}
-            </div>
-          )}
-          {modo === 'manual' && (
-            <div>
-              <button onClick={() => setModo('opciones')} style={{ background: 'none', border: 'none', color: '#55624c', fontSize: '13px', cursor: 'pointer', marginBottom: '1rem', padding: 0, fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
-              <FormReceta receta={receta} onChange={setReceta} errores={errores} t={t}/>
-              <button onClick={() => { const errs = validar(); if (errs.length > 0) { setErrores(errs); return; } onGuardar(receta, null); }} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '1rem', fontFamily: 'var(--font-sans)' }}>{t('Confirmar graduación y pagar →', 'Confirm prescription & pay →')}</button>
-            </div>
-          )}
-          {modo === 'foto' && (
-            <div>
-              <button onClick={() => setModo('opciones')} style={{ background: 'none', border: 'none', color: '#55624c', fontSize: '13px', cursor: 'pointer', marginBottom: '1rem', padding: 0, fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
-              {fotoUrl ? (
-                <div style={{ marginBottom: '1rem' }}>
-                  <img src={fotoUrl} alt="receta" style={{ width: '100%', borderRadius: '8px', maxHeight: '200px', objectFit: 'contain', border: '1px solid #e8e5e0' }}/>
-                  <button onClick={() => setFotoUrl('')} style={{ background: 'none', border: 'none', color: '#c0392b', fontSize: '12px', cursor: 'pointer', marginTop: '8px', fontFamily: 'var(--font-sans)' }}>{t('Quitar foto', 'Remove photo')}</button>
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '1rem' }}>
-                  {[{ icon: '📁', title: t('Subir archivo', 'Upload file'), sub: 'JPG, PNG, PDF', capture: undefined, accept: 'image/*,.pdf' }, { icon: '📸', title: t('Tomar foto ahora', 'Take photo now'), sub: t('Usa la cámara de tu dispositivo', 'Use your device camera'), capture: 'environment' as const, accept: 'image/*' }].map((opt, i) => (
-                    <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '1rem', borderRadius: '8px', border: '1px dashed #e8e5e0', cursor: 'pointer', background: '#faf9f7' }}>
-                      <input type="file" accept={opt.accept} capture={opt.capture} style={{ display: 'none' }} onChange={e => { const file = e.target.files?.[0]; if (file) setFotoUrl(URL.createObjectURL(file)); }}/>
-                      <span style={{ fontSize: '22px' }}>{opt.icon}</span>
-                      <div><div style={{ fontSize: '13px', fontWeight: 500, color: '#1d1d1d' }}>{opt.title}</div><div style={{ fontSize: '12px', color: '#6f6a63' }}>{opt.sub}</div></div>
-                    </label>
-                  ))}
-                </div>
-              )}
-              {fotoUrl && <button onClick={() => onGuardar(null, fotoUrl)} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)' }}>{t('Confirmar foto y pagar →', 'Confirm photo & pay →')}</button>}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function SelectorColores({ colores, valorActivo, onChange, lang }: { colores: { id: string; nombre_es: string; nombre_en: string; hex: string }[]; valorActivo: string; onChange: (id: string) => void; lang: string; }) {
   return (
     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -476,15 +411,16 @@ function Acordeon({ titulo, children }: { titulo: string; children: React.ReactN
 export default function DetalleArmazon() {
   const { id } = useParams();
   const { t, lang } = useLang() as any;
+  const { addItem, recetasSesion } = useCart();
   const [armazon, setArmazon] = useState<Armazon | null>(null);
   const [relacionados, setRelacionados] = useState<Armazon[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [verlyModal, setVerlyModal] = useState(false);
   const [paqueteVerly, setPaqueteVerly] = useState<PaqueteVerly | null>(null);
   const [errores, setErrores] = useState<string[]>([]);
-  const [modalRecetaPago, setModalRecetaPago] = useState(false);
+  const [paciente, setPaciente] = useState('');
+  const [reutilizarReceta, setReutilizarReceta] = useState<string | null>(null);
 
   const esSolar = armazon?.tipo === 'solar';
 
@@ -493,7 +429,6 @@ export default function DetalleArmazon() {
   const [recetaEstado, setRecetaEstado] = useState<RecetaEstado>('sin_receta');
   const [fotoReceta, setFotoReceta] = useState('');
   const [receta, setReceta] = useState<RecetaData>({ sph_od: null, cyl_od: null, axis_od: null, sph_os: null, cyl_os: null, axis_os: null, add: null, dp: null, prisma: '' });
-
   const [paso, setPaso] = useState(1);
   const [vision, setVision] = useState('');
   const [material, setMaterial] = useState('');
@@ -501,7 +436,6 @@ export default function DetalleArmazon() {
   const [colorFoto, setColorFoto] = useState('gris');
   const [colorPolarizado, setColorPolarizado] = useState('negro');
   const [colorTinte, setColorTinte] = useState('negro');
-  const [loadingPago, setLoadingPago] = useState(false);
   const [soloArmazon, setSoloArmazon] = useState(false);
   const [fotoActiva, setFotoActiva] = useState(0);
   const [posZoom, setPosZoom] = useState({ x: 50, y: 50 });
@@ -537,9 +471,6 @@ export default function DetalleArmazon() {
     const errs = validarReceta();
     if (errs.length > 0) { setErrores(errs); return; }
     setErrores([]);
-    const sesion = JSON.parse(sessionStorage.getItem('verly_sesion') || '{}');
-    sesion.receta = receta;
-    sessionStorage.setItem('verly_sesion', JSON.stringify(sesion));
     const paquete = calcularPaquete(receta, lang || 'en');
     setPaqueteVerly(paquete);
     setRecetaEstado('guardada');
@@ -558,35 +489,42 @@ export default function DetalleArmazon() {
 
   const elegirManual = () => { setVerlyModal(false); setDrawerEstado('config'); setPaso(1); };
 
-  const handlePago = async () => {
-    if (soloArmazon) { await ejecutarPago(); return; }
-    if (!tieneReceta) { setModalRecetaPago(true); return; }
-    await ejecutarPago();
-  };
-
-  const ejecutarPago = async () => {
-    setLoadingPago(true);
-    setModalRecetaPago(false);
-    try {
-      let items = '';
-      if (soloArmazon) { items = `${armazon?.nombre} (solo armazón)`; }
-      else {
-        const v = lang === 'es' ? (visionOpts.find(x => x.id === vision)?.nombre || '') : (visionOpts.find(x => x.id === vision)?.nombre_en || '');
-        const m = lang === 'es' ? (materialOpts.find(x => x.id === material)?.nombre || '') : (materialOpts.find(x => x.id === material)?.nombre_en || '');
-        const fs = filtroOpts.filter(f => filtros.includes(f.id)).map(f => {
-          const nombre = lang === 'es' ? f.nombre : f.nombre_en;
-          if (f.id === 'foto') return `${nombre} (${COLORES_FOTO.find(c => c.id === colorFoto)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorFoto})`;
-          if (f.id === 'pol') return `${nombre} (${COLORES_POLARIZADO.find(c => c.id === colorPolarizado)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorPolarizado})`;
-          if (f.id === 'tinte') return `${nombre} (${COLORES_TINTE.find(c => c.id === colorTinte)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorTinte})`;
-          return nombre;
-        }).join(', ');
-        items = `${armazon?.nombre} + ${v} + ${m}${fs ? ' + ' + fs : ''}`;
+  const handleAddToCart = () => {
+    if (reutilizarReceta) {
+      const recetaGuardada = recetasSesion.find(r => r.paciente === reutilizarReceta);
+      if (recetaGuardada && recetaGuardada.receta.datos) {
+        setReceta(recetaGuardada.receta.datos);
+        setRecetaEstado('guardada');
       }
-      const res = await fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ items, total }) });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else { alert(t('Error al procesar el pago.', 'Error processing payment.')); setLoadingPago(false); }
-    } catch { alert(t('Error al procesar el pago.', 'Error processing payment.')); setLoadingPago(false); }
+    }
+    const filtrosSeleccionados = filtroOpts.filter(f => filtros.includes(f.id));
+    const item = {
+      id: generateCartId(),
+      tipo: esSolar ? 'solar' as const : 'optico' as const,
+      armazon_id: armazon!.id,
+      armazon_nombre: armazon!.nombre,
+      armazon_imagen: armazon!.imagen_url,
+      armazon_precio: precioArmazon,
+      solo_armazon: soloArmazon,
+      lentes: soloArmazon ? undefined : {
+        vision, vision_nombre: visionOpts.find(v => v.id === vision)?.nombre_en || vision, vision_precio: precioVision,
+        material, material_nombre: materialOpts.find(m => m.id === material)?.nombre_en || material, material_precio: precioMaterial,
+        filtros, filtros_nombres: filtrosSeleccionados.map(f => f.nombre_en), filtros_precio: precioFiltros,
+      },
+      receta: soloArmazon ? undefined : {
+        metodo: recetaEstado === 'guardada' ? 'manual' as const : recetaEstado === 'foto' ? 'foto' as const : recetaEstado === 'sin_graduacion' ? 'sin_graduacion' as const : 'despues' as const,
+        datos: recetaEstado === 'guardada' ? receta : undefined,
+        foto_url: recetaEstado === 'foto' ? fotoReceta : undefined,
+      },
+      paciente: paciente.trim() || undefined,
+      precio_total: total,
+    };
+    addItem(item);
+    setDrawerOpen(false);
+    setPaso(1); setVision(''); setMaterial(''); setFiltros([]);
+    setPaciente(''); setReutilizarReceta(null);
+    setRecetaEstado('sin_receta'); setFotoReceta('');
+    setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio');
   };
 
   useEffect(() => {
@@ -603,18 +541,11 @@ export default function DetalleArmazon() {
   }, [id]);
 
   useEffect(() => {
-    document.body.style.overflow = drawerOpen || verlyModal || modalRecetaPago ? 'hidden' : '';
+    document.body.style.overflow = drawerOpen || verlyModal ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [drawerOpen, verlyModal, modalRecetaPago]);
+  }, [drawerOpen, verlyModal]);
 
   const abrirDrawer = () => { setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
-
-  const verlyTips: Record<number, string> = {
-    1: t('Selecciona el tipo de visión que necesitas.', 'Select the vision type you need.'),
-    2: t('El material afecta el grosor y peso de tus lentes.', 'Material affects thickness and weight.'),
-    3: t('Los filtros protegen tus ojos según tu estilo de vida.', 'Filters protect your eyes based on your lifestyle.'),
-    4: t('Revisa tu pedido y procede al pago seguro.', 'Review your order and proceed to secure payment.'),
-  };
 
   const resumenReceta = () => {
     if (recetaEstado === 'sin_graduacion') return t('Sin graduación', 'No prescription');
@@ -626,8 +557,6 @@ export default function DetalleArmazon() {
   const pasos = [t('Visión', 'Vision'), t('Material', 'Material'), t('Filtros', 'Filters'), t('Resumen', 'Summary')];
   const coloresDisponibles = getColoresDisponibles(vision, material);
   const filtrosActivos = esSolar ? filtroOptsSolar : filtroOpts;
-
-  // Fotos de galería — hasta 4 fotos (imagen_url a imagen4_url), imagen5_url es exclusiva para lifestyle
   const fotos = [armazon?.imagen_url, armazon?.imagen2_url, armazon?.imagen3_url, armazon?.imagen4_url].filter(Boolean) as string[];
   const fotoLifestyle = armazon?.imagen5_url || null;
   const partesMedidas = armazon?.medidas?.split('-') || [];
@@ -652,19 +581,17 @@ export default function DetalleArmazon() {
   return (
     <main style={{ fontFamily: 'var(--font-sans), sans-serif', background: '#f5f1eb', minHeight: '100vh', color: '#1d1d1d' }}>
       <Navbar />
-
       {verlyModal && paqueteVerly && <VerlyModalPaquete paquete={paqueteVerly} armazonNombre={armazon.nombre} onAceptar={aceptarPaquete} onManual={elegirManual} lang={lang || 'en'}/>}
-      {modalRecetaPago && <ModalRecetaObligatoria lang={lang || 'en'} t={t} onGuardar={(r, foto) => { if (r) { setReceta(r); setRecetaEstado('guardada'); } if (foto) { setFotoReceta(foto); setRecetaEstado('foto'); } ejecutarPago(); }} onSinGraduacion={() => { setRecetaEstado('sin_graduacion'); ejecutarPago(); }}/>}
       {drawerOpen && <div onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 200, backdropFilter: 'blur(2px)' }}/>}
 
-      {/* ══ DRAWER ══════════════════════════════════════════════════════════ */}
+      {/* ══ DRAWER ══ */}
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', maxWidth: '100vw', background: 'white', zIndex: 201, boxShadow: '-2px 0 40px rgba(0,0,0,0.08)', transform: drawerOpen ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
         <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'white', zIndex: 1 }}>
           <div>
             <p style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#9a9a9a', margin: 0 }}>{t('Personalizando', 'Customizing')}</p>
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, margin: '3px 0 0', color: '#1d1d1d' }}>{armazon.nombre}</h3>
           </div>
-          <button onClick={() => setDrawerOpen(false)} style={{ background: '#f5f3ef', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '18px', color: '#6f6a63', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = '#ede9e0')} onMouseLeave={e => (e.currentTarget.style.background = '#f5f3ef')}>×</button>
+          <button onClick={() => setDrawerOpen(false)} style={{ background: '#f5f3ef', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '18px', color: '#6f6a63', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
         </div>
 
         {drawerEstado === 'inicio_solar' && (
@@ -673,8 +600,13 @@ export default function DetalleArmazon() {
               <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300, color: '#1d1d1d', marginBottom: '0.5rem' }}>{t('¿Cómo quieres tus lentes?', 'How do you want your lenses?')}</p>
               <p style={{ fontSize: '0.8rem', color: '#6f6a63' }}>{t('Puedes llevarlos como vienen o personalizarlos.', 'Wear them as-is or customize them.')}</p>
             </div>
-            {[{ title: t('Solo el armazón', 'Frame only'), precio: `$${precioArmazon} USD`, desc: t('Incluye lentes oscuros estándar. Sin graduación.', 'Includes standard dark lenses. No prescription.'), dark: false, onClick: () => { setSoloArmazon(true); setDrawerEstado('config'); setPaso(4); } }, { title: t('Personalizar mis micas', 'Customize my lenses'), precio: `${t('desde', 'from')} $${precioArmazon + 15}`, desc: t('Agregar graduación, polarizado, fotocromático y más.', 'Add prescription, polarized, photochromic and more.'), dark: true, onClick: () => { setSoloArmazon(false); setDrawerEstado('inicio'); } }].map((opt, i) => (
-              <div key={i} onClick={opt.onClick} style={{ border: opt.dark ? 'none' : '1px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '1.5rem', cursor: 'pointer', background: opt.dark ? '#1d1d1d' : '#faf9f7', marginBottom: '0.75rem', transition: 'all 0.2s' }} onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'; }} onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
+            {[
+              { title: t('Solo el armazón', 'Frame only'), precio: `$${precioArmazon} USD`, desc: t('Incluye lentes oscuros estándar. Sin graduación.', 'Includes standard dark lenses. No prescription.'), dark: false, onClick: () => { setSoloArmazon(true); setDrawerEstado('config'); setPaso(4); } },
+              { title: t('Personalizar mis micas', 'Customize my lenses'), precio: `${t('desde', 'from')} $${precioArmazon + 15}`, desc: t('Agregar graduación, polarizado, fotocromático y más.', 'Add prescription, polarized, photochromic and more.'), dark: true, onClick: () => { setSoloArmazon(false); setDrawerEstado('inicio'); } }
+            ].map((opt, i) => (
+              <div key={i} onClick={opt.onClick} style={{ border: opt.dark ? 'none' : '1px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '1.5rem', cursor: 'pointer', background: opt.dark ? '#1d1d1d' : '#faf9f7', marginBottom: '0.75rem', transition: 'all 0.2s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                   <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: opt.dark ? 'white' : '#1d1d1d' }}>{opt.title}</span>
                   <span style={{ fontSize: '0.8rem', fontWeight: 500, color: opt.dark ? 'rgba(255,255,255,0.7)' : '#6f6a63' }}>{opt.precio}</span>
@@ -692,8 +624,14 @@ export default function DetalleArmazon() {
               <p style={{ fontSize: '0.8rem', color: '#6f6a63' }}>{t('Úsala para personalizar tus micas o agrégala después', 'Use it to customize your lenses or add it later')}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {[{ icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>), title: t('Escribir manualmente', 'Enter manually'), sub: t('SPH, CYL, EJE, ADD, PD', 'SPH, CYL, AXIS, ADD, PD'), onClick: () => setDrawerEstado('manual') }, { icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>), title: t('Subir foto de mi receta', 'Upload prescription photo'), sub: t('Foto, PDF o captura de pantalla', 'Photo, PDF or screenshot'), onClick: () => setDrawerEstado('foto') }, { icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>), title: t('La agregaré después', "I'll add it later"), sub: t('Agrega tu receta antes de pagar', 'Add your prescription before paying'), onClick: () => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); } }].map((opt, i) => (
-                <button key={i} onClick={opt.onClick} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '1.1rem 1.25rem', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.08)', background: '#faf9f7', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s', fontFamily: 'var(--font-sans)' }} onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#55624c'; (e.currentTarget as HTMLButtonElement).style.background = '#f0f4ef'; }} onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,0,0,0.08)'; (e.currentTarget as HTMLButtonElement).style.background = '#faf9f7'; }}>
+              {[
+                { icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>), title: t('Escribir manualmente', 'Enter manually'), sub: t('SPH, CYL, EJE, ADD, PD', 'SPH, CYL, AXIS, ADD, PD'), onClick: () => setDrawerEstado('manual') },
+                { icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>), title: t('Subir foto de mi receta', 'Upload prescription photo'), sub: t('Foto, PDF o captura de pantalla', 'Photo, PDF or screenshot'), onClick: () => setDrawerEstado('foto') },
+                { icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>), title: t('La agregaré después', "I'll add it later"), sub: t('Agrega tu receta antes de pagar', 'Add your prescription before paying'), onClick: () => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); } }
+              ].map((opt, i) => (
+                <button key={i} onClick={opt.onClick} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '1.1rem 1.25rem', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.08)', background: '#faf9f7', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s', fontFamily: 'var(--font-sans)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#55624c'; (e.currentTarget as HTMLButtonElement).style.background = '#f0f4ef'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,0,0,0.08)'; (e.currentTarget as HTMLButtonElement).style.background = '#faf9f7'; }}>
                   <div style={{ color: '#55624c', flexShrink: 0 }}>{opt.icon}</div>
                   <div style={{ flex: 1 }}><div style={{ fontSize: '14px', fontWeight: 500, color: '#1d1d1d' }}>{opt.title}</div><div style={{ fontSize: '12px', color: '#6f6a63', marginTop: '2px' }}>{opt.sub}</div></div>
                   <span style={{ color: '#9a9a9a', fontSize: '18px' }}>›</span>
@@ -725,7 +663,10 @@ export default function DetalleArmazon() {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '1rem' }}>
-                {[{ title: t('Subir archivo', 'Upload file'), sub: 'JPG, PNG, PDF', capture: undefined, accept: 'image/*,.pdf' }, { title: t('Tomar foto ahora', 'Take photo now'), sub: t('Usa la cámara de tu dispositivo', 'Use your device camera'), capture: 'environment' as const, accept: 'image/*' }].map((opt, i) => (
+                {[
+                  { title: t('Subir archivo', 'Upload file'), sub: 'JPG, PNG, PDF', capture: undefined, accept: 'image/*,.pdf' },
+                  { title: t('Tomar foto ahora', 'Take photo now'), sub: t('Usa la cámara de tu dispositivo', 'Use your device camera'), capture: 'environment' as const, accept: 'image/*' }
+                ].map((opt, i) => (
                   <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '1.1rem 1.25rem', borderRadius: '10px', border: '1px dashed rgba(0,0,0,0.12)', cursor: 'pointer', background: '#faf9f7' }}>
                     <input type="file" accept={opt.accept} capture={opt.capture} style={{ display: 'none' }} onChange={e => { const file = e.target.files?.[0]; if (file) setFotoReceta(URL.createObjectURL(file)); }}/>
                     <div><div style={{ fontSize: '13px', fontWeight: 500, color: '#1d1d1d' }}>{opt.title}</div><div style={{ fontSize: '12px', color: '#6f6a63' }}>{opt.sub}</div></div>
@@ -754,6 +695,7 @@ export default function DetalleArmazon() {
                 <button onClick={() => setDrawerEstado('inicio')} style={{ background: 'none', border: 'none', color: '#92400e', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>{t('Agregar', 'Add')}</button>
               </div>
             )}
+
             {soloArmazon ? (
               <div style={{ padding: '2rem', flex: 1 }}>
                 <div style={{ background: '#faf9f7', borderRadius: '10px', padding: '1.25rem', marginBottom: '1.5rem', border: '1px solid rgba(0,0,0,0.06)' }}>
@@ -762,7 +704,9 @@ export default function DetalleArmazon() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}><span>Total</span><span>${precioArmazon} USD</span></div>
                 </div>
                 <button onClick={() => { setSoloArmazon(false); setDrawerEstado('inicio_solar'); }} style={{ width: '100%', background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '11px', fontSize: '12px', color: '#6f6a63', cursor: 'pointer', fontFamily: 'var(--font-sans)', marginBottom: '10px' }}>{t('← Personalizar mis micas', '← Customize my lenses')}</button>
-                <button onClick={handlePago} disabled={loadingPago} style={{ width: '100%', background: loadingPago ? '#9a9a9a' : '#1d1d1d', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: loadingPago ? 'not-allowed' : 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)' }}>{loadingPago ? t('Procesando...', 'Processing...') : t('Pagar con tarjeta →', 'Pay with card →')}</button>
+                <button onClick={handleAddToCart} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)' }}>
+                  {t('Agregar al carrito →', 'Add to cart →')}
+                </button>
               </div>
             ) : (
               <>
@@ -779,6 +723,7 @@ export default function DetalleArmazon() {
                     ))}
                   </div>
                 </div>
+
                 <div style={{ padding: '2rem', flex: 1 }}>
                   {paso === 1 && (
                     <div>
@@ -796,6 +741,7 @@ export default function DetalleArmazon() {
                       </div>
                     </div>
                   )}
+
                   {paso === 2 && (
                     <div>
                       <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '0.25rem' }}>{t('Material de la mica', 'Lens material')}</h4>
@@ -812,6 +758,7 @@ export default function DetalleArmazon() {
                       </div>
                     </div>
                   )}
+
                   {paso === 3 && (
                     <div>
                       <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '0.25rem' }}>{t('Filtros y protecciones', 'Filters & coatings')}</h4>
@@ -839,30 +786,101 @@ export default function DetalleArmazon() {
                       </div>
                     </div>
                   )}
+
                   {paso === 4 && (
                     <div>
                       <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '1.25rem' }}>{t('Resumen de tu pedido', 'Order summary')}</h4>
-                      <div style={{ background: '#faf9f7', borderRadius: '10px', padding: '1.1rem', marginBottom: '1.25rem', border: '1px solid rgba(0,0,0,0.06)' }}>
-                        {[{ label: t('Armazón', 'Frame'), value: `$${precioArmazon}` }, { label: `${t('Visión', 'Vision')}: ${lang === 'es' ? (visionOpts.find(v => v.id === vision)?.nombre || '-') : (visionOpts.find(v => v.id === vision)?.nombre_en || '-')}`, value: `+$${precioVision}` }, { label: `${t('Material', 'Material')}: ${lang === 'es' ? (materialOpts.find(m => m.id === material)?.nombre || '-') : (materialOpts.find(m => m.id === material)?.nombre_en || '-')}`, value: precioMaterial === 0 ? t('Incluido', 'Included') : `+$${precioMaterial}` }, ...filtroOpts.filter(f => filtros.includes(f.id)).map(f => { const nombre = lang === 'es' ? f.nombre : f.nombre_en; let label = nombre; if (f.id === 'foto') label = `${nombre} — ${COLORES_FOTO.find(c => c.id === colorFoto)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorFoto}`; if (f.id === 'pol') label = `${nombre} — ${COLORES_POLARIZADO.find(c => c.id === colorPolarizado)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorPolarizado}`; if (f.id === 'tinte') label = `${nombre} — ${COLORES_TINTE.find(c => c.id === colorTinte)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorTinte}`; return { label, value: `+$${f.precio}` }; })].map((item, i, arr) => (
-                          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none', fontSize: '13px' }}><span style={{ color: '#6f6a63' }}>{item.label}</span><span style={{ fontWeight: 500 }}>{item.value}</span></div>
-                        ))}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}><span>Total</span><span>${total} USD</span></div>
+
+                      {/* ¿Para quién? */}
+                      <div style={{ marginBottom: '1.25rem', background: '#faf9f7', borderRadius: '10px', padding: '1rem', border: '1px solid rgba(0,0,0,0.06)' }}>
+                        <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: '#1d1d1d', margin: '0 0 4px' }}>
+                          {t('¿Para quién son?', 'Who are these for?')}
+                        </h4>
+                        <p style={{ fontSize: '12px', color: '#9a9a9a', margin: '0 0 0.75rem' }}>
+                          {t('Opcional — útil si compras para varias personas.', 'Optional — helpful if buying for multiple people.')}
+                        </p>
+                        {recetasSesion.length > 0 && (
+                          <div style={{ marginBottom: '0.75rem' }}>
+                            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6f6a63', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
+                              {t('Reutilizar receta de', 'Reuse prescription from')}
+                            </p>
+                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                              {recetasSesion.map((r, i) => (
+                                <button key={i} onClick={() => { setReutilizarReceta(r.paciente); setPaciente(r.paciente); }}
+                                  style={{ padding: '5px 12px', borderRadius: '20px', border: `1.5px solid ${reutilizarReceta === r.paciente ? '#55624c' : '#e2ddd6'}`, background: reutilizarReceta === r.paciente ? '#f0f4ef' : 'white', color: reutilizarReceta === r.paciente ? '#55624c' : '#6f6a63', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)', transition: 'all 0.15s' }}>
+                                  ↩ {r.paciente}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <input type="text"
+                          placeholder={t('Ej: Rob, Mom, Para mí...', 'e.g. Rob, Mom, For me...')}
+                          value={paciente}
+                          onChange={e => { setPaciente(e.target.value); setReutilizarReceta(null); }}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2ddd6', fontSize: '13px', fontFamily: 'var(--font-sans)', color: '#1d1d1d', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
+                          onFocus={e => (e.currentTarget.style.borderColor = '#55624c')}
+                          onBlur={e => (e.currentTarget.style.borderColor = '#e2ddd6')}
+                        />
                       </div>
+
+                      {/* Resumen precio */}
+                      <div style={{ background: '#faf9f7', borderRadius: '10px', padding: '1.1rem', marginBottom: '1.25rem', border: '1px solid rgba(0,0,0,0.06)' }}>
+                        {[
+                          { label: t('Armazón', 'Frame'), value: `$${precioArmazon}` },
+                          { label: `${t('Visión', 'Vision')}: ${lang === 'es' ? (visionOpts.find(v => v.id === vision)?.nombre || '-') : (visionOpts.find(v => v.id === vision)?.nombre_en || '-')}`, value: `+$${precioVision}` },
+                          { label: `${t('Material', 'Material')}: ${lang === 'es' ? (materialOpts.find(m => m.id === material)?.nombre || '-') : (materialOpts.find(m => m.id === material)?.nombre_en || '-')}`, value: precioMaterial === 0 ? t('Incluido', 'Included') : `+$${precioMaterial}` },
+                          ...filtroOpts.filter(f => filtros.includes(f.id)).map(f => {
+                            const nombre = lang === 'es' ? f.nombre : f.nombre_en;
+                            let label = nombre;
+                            if (f.id === 'foto') label = `${nombre} — ${COLORES_FOTO.find(c => c.id === colorFoto)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorFoto}`;
+                            if (f.id === 'pol') label = `${nombre} — ${COLORES_POLARIZADO.find(c => c.id === colorPolarizado)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorPolarizado}`;
+                            if (f.id === 'tinte') label = `${nombre} — ${COLORES_TINTE.find(c => c.id === colorTinte)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorTinte}`;
+                            return { label, value: `+$${f.precio}` };
+                          })
+                        ].map((item, i, arr) => (
+                          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none', fontSize: '13px' }}>
+                            <span style={{ color: '#6f6a63' }}>{item.label}</span>
+                            <span style={{ fontWeight: 500 }}>{item.value}</span>
+                          </div>
+                        ))}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}>
+                          <span>Total</span><span>${total} USD</span>
+                        </div>
+                      </div>
+
                       {!tieneReceta && (
                         <div style={{ background: '#fffbeb', borderRadius: '8px', padding: '0.9rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid rgba(245,197,24,0.3)' }}>
                           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#d97706', flexShrink: 0 }}/>
-                          <div style={{ flex: 1 }}><div style={{ fontSize: '12px', fontWeight: 500, color: '#92400e' }}>{t('Graduación pendiente', 'Prescription pending')}</div><div style={{ fontSize: '11px', color: '#a16207' }}>{t('Se pedirá antes de finalizar el pago', "Will be requested before payment")}</div></div>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: '12px', fontWeight: 500, color: '#92400e' }}>{t('Graduación pendiente', 'Prescription pending')}</div>
+                            <div style={{ fontSize: '11px', color: '#a16207' }}>{t('Se pedirá antes de finalizar el pago', 'Will be requested before payment')}</div>
+                          </div>
                           <button onClick={() => setDrawerEstado('inicio')} style={{ background: '#1d1d1d', border: 'none', borderRadius: '4px', padding: '5px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', color: 'white', fontFamily: 'var(--font-sans)' }}>{t('Agregar', 'Add')}</button>
                         </div>
                       )}
-                      <button onClick={handlePago} disabled={loadingPago} style={{ width: '100%', background: loadingPago ? '#9a9a9a' : '#1d1d1d', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: loadingPago ? 'not-allowed' : 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => !loadingPago && (e.currentTarget.style.background = '#55624c')} onMouseLeave={e => !loadingPago && (e.currentTarget.style.background = '#1d1d1d')}>{loadingPago ? t('Procesando...', 'Processing...') : tieneReceta ? t('Pagar con tarjeta →', 'Pay with card →') : t('Continuar al pago →', 'Continue to payment →')}</button>
+
+                      <button onClick={handleAddToCart}
+                        style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#3f4a37')}
+                        onMouseLeave={e => (e.currentTarget.style.background = '#55624c')}
+                      >
+                        {t('Agregar al carrito →', 'Add to cart →')}
+                      </button>
                     </div>
                   )}
                 </div>
+
                 {paso < 4 && (
                   <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', bottom: 0, background: 'white' }}>
-                    {paso > 1 ? <button onClick={() => setPaso(p => p - 1)} style={{ background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: '#6f6a63', fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button> : <button onClick={() => setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio')} style={{ background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: '#6f6a63', fontFamily: 'var(--font-sans)' }}>← {t('Mi receta', 'My prescription')}</button>}
-                    <button onClick={() => { if (paso === 1 && !vision) return; if (paso === 2 && !material) return; setPaso(p => p + 1); }} style={{ background: (paso === 1 && !vision) || (paso === 2 && !material) ? '#e8e5e0' : '#55624c', color: (paso === 1 && !vision) || (paso === 2 && !material) ? '#9a9a9a' : 'white', border: 'none', borderRadius: '8px', padding: '10px 24px', fontSize: '12px', fontWeight: 600, cursor: (paso === 1 && !vision) || (paso === 2 && !material) ? 'not-allowed' : 'pointer', letterSpacing: '0.08em', fontFamily: 'var(--font-sans)' }}>{paso === 3 ? t('Ver resumen →', 'See summary →') : t('Siguiente →', 'Next →')}</button>
+                    {paso > 1
+                      ? <button onClick={() => setPaso(p => p - 1)} style={{ background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: '#6f6a63', fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
+                      : <button onClick={() => setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio')} style={{ background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: '#6f6a63', fontFamily: 'var(--font-sans)' }}>← {t('Mi receta', 'My prescription')}</button>
+                    }
+                    <button onClick={() => { if (paso === 1 && !vision) return; if (paso === 2 && !material) return; setPaso(p => p + 1); }}
+                      style={{ background: (paso === 1 && !vision) || (paso === 2 && !material) ? '#e8e5e0' : '#55624c', color: (paso === 1 && !vision) || (paso === 2 && !material) ? '#9a9a9a' : 'white', border: 'none', borderRadius: '8px', padding: '10px 24px', fontSize: '12px', fontWeight: 600, cursor: (paso === 1 && !vision) || (paso === 2 && !material) ? 'not-allowed' : 'pointer', letterSpacing: '0.08em', fontFamily: 'var(--font-sans)' }}>
+                      {paso === 3 ? t('Ver resumen →', 'See summary →') : t('Siguiente →', 'Next →')}
+                    </button>
                   </div>
                 )}
               </>
@@ -871,7 +889,7 @@ export default function DetalleArmazon() {
         )}
       </div>
 
-      {/* ══ BREADCRUMB ══════════════════════════════════════════════════════ */}
+      {/* ══ BREADCRUMB ══ */}
       <div style={{ padding: '1rem 2rem', fontSize: '0.72rem', color: '#9a9a9a', letterSpacing: '0.02em', marginTop: '64px', maxWidth: '1440px', margin: '64px auto 0' }}>
         <a href="/" style={{ color: '#9a9a9a', textDecoration: 'none' }}>{t('Inicio', 'Home')}</a>
         <span style={{ margin: '0 8px', opacity: 0.5 }}>›</span>
@@ -880,14 +898,10 @@ export default function DetalleArmazon() {
         <span style={{ color: '#1d1d1d' }}>{armazon.nombre}</span>
       </div>
 
-      {/* ══ PRODUCTO PRINCIPAL ══════════════════════════════════════════════ */}
+      {/* ══ PRODUCTO PRINCIPAL ══ */}
       <div style={{ maxWidth: '1440px', margin: '0 auto', padding: esMobil ? '0 0 5rem' : '2rem 3rem 4rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 440px', gap: esMobil ? '0' : '6rem', alignItems: 'start' }}>
-
-          {/* ── GALERÍA ─────────────────────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: esMobil ? 'column' : 'row', gap: '16px' }}>
-
-            {/* Miniaturas verticales — solo desktop */}
             {fotos.length > 1 && !esMobil && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '68px', flexShrink: 0 }}>
                 {fotos.map((foto, i) => (
@@ -895,29 +909,14 @@ export default function DetalleArmazon() {
                     <img src={foto} alt={`${armazon.nombre} ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', boxSizing: 'border-box' }}/>
                   </button>
                 ))}
-                <button style={{ width: '68px', height: '32px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '3px' }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6f6a63" strokeWidth="1.5" strokeLinecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                  <span style={{ fontSize: '9px', color: '#6f6a63', fontWeight: 600, letterSpacing: '0.05em' }}>360°</span>
-                </button>
               </div>
             )}
-
-            {/* Foto principal */}
             <div style={{ flex: 1, position: 'relative' }}>
-              <div
-                style={{ background: 'white', borderRadius: esMobil ? '0' : '20px', overflow: 'hidden', position: 'relative', aspectRatio: '1/1', boxShadow: esMobil ? 'none' : '0 2px 40px rgba(0,0,0,0.05)', cursor: fotos.length > 0 ? 'crosshair' : 'default' }}
+              <div style={{ background: 'white', borderRadius: esMobil ? '0' : '20px', overflow: 'hidden', position: 'relative', aspectRatio: '1/1', boxShadow: esMobil ? 'none' : '0 2px 40px rgba(0,0,0,0.05)', cursor: fotos.length > 0 ? 'crosshair' : 'default' }}
                 onMouseMove={e => { if (esMobil) return; const rect = e.currentTarget.getBoundingClientRect(); setPosZoom({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 }); setZoomActivo(true); }}
                 onMouseLeave={() => setZoomActivo(false)}
                 onTouchStart={e => setTouchStart(e.touches[0].clientX)}
-onTouchEnd={e => {
-  if (touchStart === null) return;
-  const diff = touchStart - e.changedTouches[0].clientX;
-  if (Math.abs(diff) > 40) {
-    if (diff > 0) setFotoActiva(prev => Math.min(prev + 1, fotos.length - 1));
-    else setFotoActiva(prev => Math.max(prev - 1, 0));
-  }
-  setTouchStart(null);
-}}
+                onTouchEnd={e => { if (touchStart === null) return; const diff = touchStart - e.changedTouches[0].clientX; if (Math.abs(diff) > 40) { if (diff > 0) setFotoActiva(prev => Math.min(prev + 1, fotos.length - 1)); else setFotoActiva(prev => Math.max(prev - 1, 0)); } setTouchStart(null); }}
               >
                 {fotos.length > 0 ? (
                   <img src={fotos[fotoActiva] || fotos[0]} alt={armazon.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', padding: esMobil ? '1.5rem' : '3rem', boxSizing: 'border-box', transformOrigin: `${posZoom.x}% ${posZoom.y}%`, transform: zoomActivo ? 'scale(1.9)' : 'scale(1)', transition: zoomActivo ? 'none' : 'transform 0.4s ease' }}/>
@@ -926,14 +925,11 @@ onTouchEnd={e => {
                     <LenteSVG color={armazon.color || '#1d1d1d'} forma={armazon.forma} size="large" solar={esSolar}/>
                   </div>
                 )}
-                {/* Wishlist */}
-                <button style={{ position: 'absolute', top: '16px', right: '16px', width: '36px', height: '36px', borderRadius: '50%', background: 'white', border: '1px solid rgba(0,0,0,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', transition: 'all 0.2s' }} onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#fff0f0'; }} onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'white'; }}>
+                <button style={{ position: 'absolute', top: '16px', right: '16px', width: '36px', height: '36px', borderRadius: '50%', background: 'white', border: '1px solid rgba(0,0,0,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6f6a63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
                 {esSolar && <div style={{ position: 'absolute', bottom: '16px', left: '16px', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#55624c', background: '#f0f4ef', padding: '4px 10px', borderRadius: '20px', border: '1px solid #c8dbc4' }}>{t('Graduable', 'Rx Ready')}</div>}
               </div>
-
-              {/* Dots en móvil */}
               {fotos.length > 1 && esMobil && (
                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '14px', padding: '0 1rem' }}>
                   {fotos.map((_, i) => (
@@ -944,52 +940,33 @@ onTouchEnd={e => {
             </div>
           </div>
 
-          {/* ── INFO DERECHA ─────────────────────────────────────────────── */}
           <div style={{ position: esMobil ? 'relative' : 'sticky', top: esMobil ? 'auto' : '84px', padding: esMobil ? '1.5rem 1.25rem 0' : '0' }}>
-
-            {/* Badges */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#55624c', padding: '5px 12px', border: '1px solid #55624c', borderRadius: '2px' }}>
                 {armazon.genero === 'hombre' ? t('Hombre', 'Men') : armazon.genero === 'mujer' ? t('Mujer', 'Women') : 'Unisex'}
               </span>
-              {armazon.badge && (
-                <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6f6a63', padding: '5px 12px', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '2px' }}>
-                  {armazon.badge}
-                </span>
-              )}
+              {armazon.badge && <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6f6a63', padding: '5px 12px', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '2px' }}>{armazon.badge}</span>}
             </div>
-
-            {/* Nombre */}
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.8rem' : '4rem', fontWeight: 400, letterSpacing: '-0.03em', margin: '0 0 0.5rem', lineHeight: 1, color: '#1d1d1d' }}>
-              {armazon.nombre}
-            </h1>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.8rem' : '4rem', fontWeight: 400, letterSpacing: '-0.03em', margin: '0 0 0.5rem', lineHeight: 1, color: '#1d1d1d' }}>{armazon.nombre}</h1>
             <p style={{ fontSize: '1rem', color: '#6f6a63', marginBottom: '2rem', letterSpacing: '0.01em', fontWeight: 400 }}>
               {[armazon.material, armazon.forma && `${armazon.forma.charAt(0).toUpperCase() + armazon.forma.slice(1)}`].filter(Boolean).join(' · ')}
             </p>
-
-            {/* Precio */}
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '0.5rem' }}>
               <span style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', fontWeight: 400, letterSpacing: '-0.02em', lineHeight: 1 }}>${armazon.precio}</span>
               <span style={{ fontSize: '0.85rem', color: '#9a9a9a', fontWeight: 400 }}>USD</span>
-              {armazon.descuento && armazon.descuento > 0 && (
-                <span style={{ background: '#c0392b', color: 'white', fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: '3px', letterSpacing: '0.04em' }}>-{armazon.descuento}%</span>
-              )}
+              {armazon.descuento && armazon.descuento > 0 && <span style={{ background: '#c0392b', color: 'white', fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: '3px' }}>-{armazon.descuento}%</span>}
             </div>
-
-            {/* Callout micas */}
             <div style={{ marginBottom: '1.75rem' }}>
               <p style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1d1d1d', margin: '0 0 3px' }}>{t('Graduadas desde $15', 'With lenses from $15')}</p>
               <p style={{ fontSize: '0.78rem', color: '#9a9a9a', margin: 0 }}>Single Vision · Blue Light · {t('Fotocromático', 'Photochromic')} · {t('Progresivo', 'Progressive')}</p>
             </div>
-
-            {/* Botón principal — oculto en móvil (aparece sticky abajo) */}
             {!esMobil && (
-              <button onClick={abrirDrawer} style={{ display: 'block', width: '100%', textAlign: 'center', background: '#55624c', color: 'white', padding: '20px 32px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', border: 'none', cursor: 'pointer', marginBottom: '2.5rem', transition: 'all 0.3s ease', fontFamily: 'var(--font-sans)' }} onMouseEnter={e => { (e.currentTarget.style.background = '#3f4a37'); (e.currentTarget.style.transform = 'translateY(-1px)'); (e.currentTarget.style.boxShadow = '0 8px 24px rgba(85,98,76,0.3)'); }} onMouseLeave={e => { (e.currentTarget.style.background = '#55624c'); (e.currentTarget.style.transform = 'translateY(0)'); (e.currentTarget.style.boxShadow = 'none'); }}>
+              <button onClick={abrirDrawer} style={{ display: 'block', width: '100%', textAlign: 'center', background: '#55624c', color: 'white', padding: '20px 32px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', border: 'none', cursor: 'pointer', marginBottom: '2.5rem', transition: 'all 0.3s ease', fontFamily: 'var(--font-sans)' }}
+                onMouseEnter={e => { (e.currentTarget.style.background = '#3f4a37'); (e.currentTarget.style.transform = 'translateY(-1px)'); }}
+                onMouseLeave={e => { (e.currentTarget.style.background = '#55624c'); (e.currentTarget.style.transform = 'translateY(0)'); }}>
                 {esSolar ? t('Configurar mis lentes →', 'Configure my lenses →') : t('Personaliza tus micas →', 'Customize my lenses →')}
               </button>
             )}
-
-            {/* Benefits row */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0', borderTop: '1px solid rgba(0,0,0,0.06)', borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '1.5rem 0', marginBottom: '2.5rem' }}>
               {[
                 { icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v6H16V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>), label: t('Envío rápido', 'Fast shipping'), sub: t('5–7 días', '5–7 days') },
@@ -999,15 +976,10 @@ onTouchEnd={e => {
               ].map((b, i) => (
                 <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '0 8px', textAlign: 'center', borderRight: i < 3 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
                   <div style={{ color: '#6f6a63' }}>{b.icon}</div>
-                  <div>
-                    <div style={{ fontSize: '10px', fontWeight: 600, color: '#1d1d1d', marginBottom: '2px', letterSpacing: '0.02em' }}>{b.label}</div>
-                    <div style={{ fontSize: '9px', color: '#9a9a9a' }}>{b.sub}</div>
-                  </div>
+                  <div><div style={{ fontSize: '10px', fontWeight: 600, color: '#1d1d1d', marginBottom: '2px' }}>{b.label}</div><div style={{ fontSize: '9px', color: '#9a9a9a' }}>{b.sub}</div></div>
                 </div>
               ))}
             </div>
-
-            {/* FAQ */}
             <div style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
               <Acordeon titulo={t('Detalles del armazón', 'Frame details')}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1022,18 +994,17 @@ onTouchEnd={e => {
                 {t('Mide el ancho de tu cara de sien a sien. Menos de 13cm → S, 13–14cm → M, 14–15cm → L, más de 15cm → XL. La talla de este armazón es', 'Measure from temple to temple. Under 5.1" → S, 5.1–5.5" → M, 5.5–5.9" → L, over 5.9" → XL. This frame is size')} <strong style={{ color: '#1d1d1d' }}>{armazon.talla || 'M'}</strong>.
               </Acordeon>
               <Acordeon titulo={t('Envío y devoluciones', 'Shipping & returns')}>
-                {t('Enviamos a toda la Unión Americana en 5–7 días hábiles. Los lentes graduados tardan hasta 10 días adicionales. Si no estás satisfecho contáctanos en los primeros 30 días.', "We ship across the US in 5–7 business days. Prescription lenses take up to 10 additional days. Contact us within 30 days if not satisfied.")}
+                {t('Enviamos a toda la Unión Americana en 5–7 días hábiles. Los lentes graduados tardan hasta 10 días adicionales.', 'We ship across the US in 5–7 business days. Prescription lenses take up to 10 additional days.')}
               </Acordeon>
               <Acordeon titulo={t('¿Por qué Verly?', 'Why Verly?')}>
-                {t('Armazones de calidad a una fracción del precio de una óptica tradicional. Sin aseguranza, sin citas. Tus lentes llegan listos a tu puerta.', "Quality frames at a fraction of traditional optical prices. No insurance, no appointments. Your glasses arrive ready at your door.")}
+                {t('Armazones de calidad a una fracción del precio de una óptica tradicional. Sin aseguranza, sin citas.', 'Quality frames at a fraction of traditional optical prices. No insurance, no appointments.')}
               </Acordeon>
             </div>
-
           </div>
         </div>
       </div>
 
-      {/* ══ MEDIDAS ═════════════════════════════════════════════════════════ */}
+      {/* ══ MEDIDAS ══ */}
       {armazon.medidas && partesMedidas.length >= 2 && (
         <div style={{ background: '#edeae3', padding: esMobil ? '2.5rem 1.25rem' : '3rem' }}>
           <div style={{ maxWidth: '1440px', margin: '0 auto', padding: esMobil ? '0' : '0 3rem' }}>
@@ -1064,9 +1035,8 @@ onTouchEnd={e => {
         </div>
       )}
 
-      {/* ══ LIFESTYLE SECTION ═══════════════════════════════════════════════ */}
-      <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr 280px', minHeight: esMobil ? 'auto' : '420px', margin: '0' }}>
-        {/* Texto izquierda */}
+      {/* ══ LIFESTYLE ══ */}
+      <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr 280px', minHeight: esMobil ? 'auto' : '420px' }}>
         <div style={{ background: '#f5f1eb', padding: esMobil ? '2.5rem 1.25rem' : '4rem 3rem 4rem 4rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#9a9a9a', margin: '0 0 1.5rem' }}>Verly Optical</p>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 400, color: '#1d1d1d', margin: '0 0 1rem', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
@@ -1081,13 +1051,11 @@ onTouchEnd={e => {
               </div>
             ))}
           </div>
-          <button onClick={abrirDrawer} style={{ alignSelf: 'flex-start', background: '#1d1d1d', color: 'white', border: 'none', borderRadius: '6px', padding: '12px 24px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = '#55624c')} onMouseLeave={e => (e.currentTarget.style.background = '#1d1d1d')}>
+          <button onClick={abrirDrawer} style={{ alignSelf: 'flex-start', background: '#1d1d1d', color: 'white', border: 'none', borderRadius: '6px', padding: '12px 24px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
             {t('Ver en modelo', 'See on model')}
           </button>
         </div>
-
-        {/* Imagen modelo — usa imagen5_url exclusivamente */}
-        <div style={{ background: '#ddd8cf', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: esMobil ? '280px' : '420px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: '#ddd8cf', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: esMobil ? '280px' : '420px', overflow: 'hidden' }}>
           {fotoLifestyle ? (
             <img src={fotoLifestyle} alt={`${armazon.nombre} lifestyle`} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
           ) : (
@@ -1097,8 +1065,6 @@ onTouchEnd={e => {
             </div>
           )}
         </div>
-
-        {/* Highlights verdes — ocultos en móvil para no apilar demasiado */}
         {!esMobil && (
           <div style={{ background: '#55624c', padding: '3rem 2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2rem' }}>
             {[
@@ -1119,27 +1085,22 @@ onTouchEnd={e => {
         )}
       </div>
 
-      {/* ══ TAMBIÉN TE PUEDE GUSTAR ══════════════════════════════════════════ */}
+      {/* ══ RELACIONADOS ══ */}
       {relacionados.length > 0 && (
         <div style={{ background: '#f5f1eb', padding: esMobil ? '3rem 0' : '4rem 0' }}>
           <div style={{ maxWidth: '1440px', margin: '0 auto', padding: esMobil ? '0 1.25rem' : '0 3rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.6rem' : '2rem', fontWeight: 400, color: '#1d1d1d', margin: 0, letterSpacing: '-0.01em' }}>{t('También te puede gustar', 'You might also like')}</h2>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.6rem' : '2rem', fontWeight: 400, color: '#1d1d1d', margin: 0 }}>{t('También te puede gustar', 'You might also like')}</h2>
               <a href={esSolar ? '/sunglasses' : '/Tienda'} style={{ fontSize: '0.75rem', color: '#6f6a63', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>{t('Ver todos →', 'See all →')}</a>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: esMobil ? '12px' : '16px' }}>
               {relacionados.slice(0, 4).map(r => (
                 <a key={r.id} href={`/armazon/${r.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', transition: 'all 0.3s ease', border: '1px solid rgba(0,0,0,0.04)' }} onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 40px rgba(0,0,0,0.08)'; }} onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
+                  <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', transition: 'all 0.3s ease', border: '1px solid rgba(0,0,0,0.04)' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 40px rgba(0,0,0,0.08)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
                     <div style={{ aspectRatio: '4/3', background: '#faf9f7', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
-                      {r.imagen_url ? (
-                        <img src={r.imagen_url} alt={r.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1.25rem', boxSizing: 'border-box', transition: 'transform 0.4s ease' }} onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.05)')} onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}/>
-                      ) : (
-                        <div style={{ opacity: 0.3 }}><LenteSVG color={r.color || '#1d1d1d'} forma={r.forma} size="small"/></div>
-                      )}
-                      <button onClick={e => e.preventDefault()} style={{ position: 'absolute', bottom: '10px', right: '10px', width: '28px', height: '28px', borderRadius: '50%', background: 'white', border: '1px solid rgba(0,0,0,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 6px rgba(0,0,0,0.06)' }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6f6a63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                      </button>
+                      {r.imagen_url ? <img src={r.imagen_url} alt={r.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1.25rem', boxSizing: 'border-box' }}/> : <div style={{ opacity: 0.3 }}><LenteSVG color={r.color || '#1d1d1d'} forma={r.forma} size="small"/></div>}
                     </div>
                     <div style={{ padding: '0.9rem 1.1rem 1.1rem' }}>
                       <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9a9a9a', marginBottom: '4px' }}>{r.nombre}</div>
@@ -1156,14 +1117,13 @@ onTouchEnd={e => {
         </div>
       )}
 
-      {/* ══ BLOQUE EDITORIAL FINAL ══════════════════════════════════════════ */}
+      {/* ══ EDITORIAL FINAL ══ */}
       <div style={{ background: '#edeae3', padding: esMobil ? '3rem 1.25rem' : '5rem 4rem', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: esMobil ? '2.5rem' : '4rem', alignItems: 'center' }}>
         <div>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3.5rem', fontWeight: 400, color: '#1d1d1d', margin: '0 0 1rem', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-            Verly Optical<br/>
-            <em style={{ fontStyle: 'italic', color: '#6f6a63' }}>I see the difference.</em>
+            Verly Optical<br/><em style={{ fontStyle: 'italic', color: '#6f6a63' }}>I see the difference.</em>
           </h2>
-          <p style={{ fontSize: '0.85rem', color: '#9a9a9a', margin: 0, letterSpacing: '0.02em' }}>{t('Unos lentes, miles de historias.', 'One pair of glasses, thousands of stories.')}</p>
+          <p style={{ fontSize: '0.85rem', color: '#9a9a9a', margin: 0 }}>{t('Unos lentes, miles de historias.', 'One pair of glasses, thousands of stories.')}</p>
         </div>
         <div style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
           <Acordeon titulo={t('Detalles del armazón', 'Frame details')}>
@@ -1184,7 +1144,7 @@ onTouchEnd={e => {
         </div>
       </div>
 
-      {/* ══ BOTÓN STICKY MÓVIL ══════════════════════════════════════════════ */}
+      {/* ══ BOTÓN STICKY MÓVIL ══ */}
       {esMobil && (
         <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem 1.25rem', background: 'white', borderTop: '1px solid rgba(0,0,0,0.08)', zIndex: 100, boxShadow: '0 -4px 20px rgba(0,0,0,0.06)' }}>
           <button onClick={abrirDrawer} style={{ display: 'block', width: '100%', textAlign: 'center', background: '#55624c', color: 'white', padding: '18px 32px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
@@ -1193,9 +1153,7 @@ onTouchEnd={e => {
         </div>
       )}
 
-      <style>{`
-        @keyframes slideUp { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: translateY(0) } }
-      `}</style>
+      <style>{`@keyframes slideUp { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: translateY(0) } }`}</style>
     </main>
   );
 }

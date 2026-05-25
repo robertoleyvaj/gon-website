@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLang } from "./LanguageContext";
+import { useCart } from "../context/CartContext";
+import CartDrawer from "./CartDrawer";
 
 function LangSwitcher() {
   const { lang, setLang } = useLang();
@@ -33,6 +35,54 @@ function LangSwitcher() {
         </button>
       ))}
     </div>
+  );
+}
+
+function CartIcon() {
+  const { totalItems, setCartOpen } = useCart();
+  return (
+    <button
+      onClick={() => setCartOpen(true)}
+      style={{
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        position: "relative",
+        padding: "4px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "var(--charcoal)",
+        transition: "color 0.2s ease",
+      }}
+      aria-label="Cart"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      {totalItems > 0 && (
+        <span style={{
+          position: "absolute",
+          top: "-2px",
+          right: "-2px",
+          background: "#55624c",
+          color: "white",
+          borderRadius: "50%",
+          width: "16px",
+          height: "16px",
+          fontSize: "9px",
+          fontWeight: 700,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "var(--font-sans)",
+        }}>
+          {totalItems > 9 ? '9+' : totalItems}
+        </span>
+      )}
+    </button>
   );
 }
 
@@ -65,6 +115,8 @@ export default function Navbar() {
 
   return (
     <>
+      <CartDrawer />
+
       <header
         style={{
           position: "fixed",
@@ -105,10 +157,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav
-            className="desktop-nav"
-            style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}
-          >
+          <nav className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
             {navLinks.map(({ href, label }) => (
               <Link
                 key={href}
@@ -149,7 +198,7 @@ export default function Navbar() {
           {/* Right side */}
           <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
             <LangSwitcher />
-
+            <CartIcon />
             <Link
               href="/Tienda"
               className="cta-btn desktop-nav"
@@ -257,18 +306,13 @@ export default function Navbar() {
             Shop Now
           </Link>
 
-          {/* Lang switcher mobile */}
-          <div style={{
-            marginTop: "2rem",
-            opacity: menuOpen ? 1 : 0,
-            transition: "opacity 0.4s ease 0.4s",
-          }}>
+          <div style={{ marginTop: "2rem", opacity: menuOpen ? 1 : 0, transition: "opacity 0.4s ease 0.4s" }}>
             <LangSwitcher />
           </div>
         </nav>
 
         <p style={{ position: "absolute", bottom: "2.5rem", left: "2rem", fontFamily: "var(--font-sans)", fontSize: "0.7rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--warm-gray)" }}>
-          Verly Optical — Tijuana
+          Verly Optical
         </p>
       </div>
 

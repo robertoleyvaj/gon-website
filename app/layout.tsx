@@ -4,6 +4,7 @@ import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import VerlyBot from "./components/verlybot";
 import { LangProvider } from "./components/LanguageContext";
+import { CartProvider } from "./context/CartContext";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -89,8 +90,10 @@ export default function RootLayout({
         style={{ fontFamily: "var(--font-sans), sans-serif" }}
       >
         <LangProvider>
-          {children}
-          <VerlyBot />
+          <CartProvider>
+            {children}
+            <VerlyBot />
+          </CartProvider>
         </LangProvider>
       </body>
     </html>
