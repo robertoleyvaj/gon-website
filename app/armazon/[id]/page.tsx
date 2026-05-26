@@ -439,11 +439,25 @@ export default function DetalleArmazon() {
   const [colorPolarizado, setColorPolarizado] = useState('negro');
   const [colorTinte, setColorTinte] = useState('negro');
   const [soloArmazon, setSoloArmazon] = useState(false);
+  // app/armazon/[id]/page.tsx
+// ── REEMPLAZAR DESDE: const [fotoActiva, setFotoActiva] = useState(0);
+// ── HASTA: el final del archivo (export default DetalleArmazon)
+
   const [fotoActiva, setFotoActiva] = useState(0);
   const [posZoom, setPosZoom] = useState({ x: 50, y: 50 });
   const [zoomActivo, setZoomActivo] = useState(false);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [esMobil, setEsMobil] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  // Lightbox pinch-to-zoom
+  const [lbScale, setLbScale] = useState(1);
+  const [lbPos, setLbPos] = useState({ x: 0, y: 0 });
+  const [lbPinchStart, setLbPinchStart] = useState<number | null>(null);
+  const [lbDragStart, setLbDragStart] = useState<{ x: number; y: number; px: number; py: number } | null>(null);
+  const lbRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const check = () => setEsMobil(window.innerWidth <= 768);
@@ -451,6 +465,17 @@ export default function DetalleArmazon() {
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
+
+  // Bloquear scroll cuando lightbox está abierto
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      if (!drawerOpen && !verlyModal) document.body.style.overflow = '';
+      setLbScale(1);
+      setLbPos({ x: 0, y: 0 });
+    }
+  }, [lightboxOpen]);
 
   const precioArmazon = esRegalo ? 0 : (armazon?.precio || PRECIO_ARMAZON);
   const precioVision = visionOpts.find(v => v.id === vision)?.precio || 0;
@@ -492,10 +517,10 @@ export default function DetalleArmazon() {
   const elegirManual = () => { setVerlyModal(false); setDrawerEstado('config'); setPaso(1); };
 
   const handleAddToCart = () => {
-  if (esRegalo && items.some(i => i.es_regalo)) {
-    alert(t('Ya tienes un par de lentes de sol gratis en tu carrito.', 'You already have a free pair of sunglasses in your cart.'));
-    return;
-  }
+    if (esRegalo && items.some(i => i.es_regalo)) {
+      alert(t('Ya tienes un par de lentes de sol gratis en tu carrito.', 'You already have a free pair of sunglasses in your cart.'));
+      return;
+    }
     if (reutilizarReceta) {
       const recetaGuardada = recetasSesion.find(r => r.paciente === reutilizarReceta);
       if (recetaGuardada && recetaGuardada.receta.datos) {
@@ -568,6 +593,83 @@ export default function DetalleArmazon() {
   const fotoLifestyle = armazon?.imagen5_url || null;
   const partesMedidas = armazon?.medidas?.split('-') || [];
 
+  // ── Helpers navegación carrusel
+  const irFoto = (idx: number) => {
+    setFotoActiva(Math.max(0, Math.min(idx, fotos.length - 1)));
+    setSwipeOffset(0);
+  };
+  const fotoPrev = () => irFoto(fotoActiva - 1);
+  const fotoNext = () => irFoto(fotoActiva + 1);
+
+  // ── Touch handlers carrusel (swipe con rubber-band visual)
+  const onTouchStartCarrusel = (e: React.TouchEvent) => {
+    setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    setIsSwiping(false);
+    setSwipeOffset(0);
+  };
+  const onTouchMoveCarrusel = (e: React.TouchEvent) => {
+    if (!touchStart) return;
+    const dx = e.touches[0].clientX - touchStart.x;
+    const dy = e.touches[0].clientY - touchStart.y;
+    if (!isSwiping && Math.abs(dy) > Math.abs(dx)) return; // scroll vertical
+    setIsSwiping(true);
+    // rubber-band en los extremos
+    let offset = dx;
+    if ((fotoActiva === 0 && dx > 0) || (fotoActiva === fotos.length - 1 && dx < 0)) {
+      offset = dx * 0.25;
+    }
+    setSwipeOffset(offset);
+  };
+  const onTouchEndCarrusel = (e: React.TouchEvent) => {
+    if (!touchStart || !isSwiping) { setTouchStart(null); setSwipeOffset(0); setIsSwiping(false); return; }
+    const dx = touchStart.x - e.changedTouches[0].clientX;
+    if (Math.abs(dx) > 50) {
+      if (dx > 0) fotoNext(); else fotoPrev();
+    } else {
+      setSwipeOffset(0);
+    }
+    setTouchStart(null);
+    setIsSwiping(false);
+  };
+
+  // ── Lightbox touch handlers (pinch zoom + drag)
+  const onLbTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      setLbPinchStart(d);
+    } else if (e.touches.length === 1 && lbScale > 1) {
+      setLbDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY, px: lbPos.x, py: lbPos.y });
+    }
+  };
+  const onLbTouchMove = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    if (e.touches.length === 2 && lbPinchStart !== null) {
+      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      const newScale = Math.min(4, Math.max(1, lbScale * (d / lbPinchStart)));
+      setLbScale(newScale);
+      setLbPinchStart(d);
+    } else if (e.touches.length === 1 && lbDragStart && lbScale > 1) {
+      const dx = e.touches[0].clientX - lbDragStart.x;
+      const dy = e.touches[0].clientY - lbDragStart.y;
+      setLbPos({ x: lbDragStart.px + dx, y: lbDragStart.py + dy });
+    }
+  };
+  const onLbTouchEnd = () => {
+    setLbPinchStart(null);
+    setLbDragStart(null);
+    if (lbScale < 1.1) { setLbScale(1); setLbPos({ x: 0, y: 0 }); }
+  };
+  // Doble tap para zoom en lightbox
+  const lastTap = useRef<number>(0);
+  const onLbDoubleTap = () => {
+    const now = Date.now();
+    if (now - lastTap.current < 300) {
+      if (lbScale > 1) { setLbScale(1); setLbPos({ x: 0, y: 0 }); }
+      else { setLbScale(2.5); }
+    }
+    lastTap.current = now;
+  };
+
   if (loading) return (
     <main style={{ fontFamily: 'var(--font-sans), sans-serif', background: '#f5f1eb', minHeight: '100vh' }}>
       <Navbar />
@@ -590,6 +692,71 @@ export default function DetalleArmazon() {
       <Navbar />
       {verlyModal && paqueteVerly && <VerlyModalPaquete paquete={paqueteVerly} armazonNombre={armazon.nombre} onAceptar={aceptarPaquete} onManual={elegirManual} lang={lang || 'en'}/>}
       {drawerOpen && <div onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 200, backdropFilter: 'blur(2px)' }}/>}
+
+      {/* ══ LIGHTBOX ══ */}
+      {lightboxOpen && fotos.length > 0 && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.95)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+          onClick={(e) => { if (e.target === e.currentTarget) { setLightboxOpen(false); } }}
+        >
+          {/* Header lightbox */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
+            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', fontFamily: 'var(--font-sans)' }}>{fotoActiva + 1} / {fotos.length}</span>
+            <button onClick={() => setLightboxOpen(false)} style={{ background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'white', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+          </div>
+
+          {/* Imagen con pinch zoom */}
+          <div
+            ref={lbRef}
+            style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: lbScale > 1 ? 'grab' : 'zoom-in' }}
+            onTouchStart={onLbTouchStart}
+            onTouchMove={onLbTouchMove}
+            onTouchEnd={onLbTouchEnd}
+            onClick={onLbDoubleTap}
+          >
+            <img
+              src={fotos[fotoActiva]}
+              alt={armazon.nombre}
+              style={{
+                maxWidth: '100vw', maxHeight: '100vh',
+                objectFit: 'contain',
+                transform: `scale(${lbScale}) translate(${lbPos.x / lbScale}px, ${lbPos.y / lbScale}px)`,
+                transition: lbPinchStart || lbDragStart ? 'none' : 'transform 0.2s ease',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                touchAction: 'none',
+              }}
+              draggable={false}
+            />
+          </div>
+
+          {/* Hint doble tap */}
+          {lbScale === 1 && (
+            <div style={{ position: 'absolute', bottom: '5rem', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.35)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', whiteSpace: 'nowrap' }}>
+              {t('Doble toque para zoom · Pellizca para ampliar', 'Double tap to zoom · Pinch to enlarge')}
+            </div>
+          )}
+
+          {/* Flechas desktop */}
+          {!esMobil && fotos.length > 1 && (
+            <>
+              <button onClick={fotoPrev} disabled={fotoActiva === 0} style={{ position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === 0 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: fotoActiva === 0 ? 'default' : 'pointer', color: fotoActiva === 0 ? 'rgba(255,255,255,0.2)' : 'white', fontSize: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+              <button onClick={fotoNext} disabled={fotoActiva === fotos.length - 1} style={{ position: 'absolute', right: '1.5rem', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === fotos.length - 1 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: fotoActiva === fotos.length - 1 ? 'default' : 'pointer', color: fotoActiva === fotos.length - 1 ? 'rgba(255,255,255,0.2)' : 'white', fontSize: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
+            </>
+          )}
+
+          {/* Miniaturas lightbox */}
+          {fotos.length > 1 && (
+            <div style={{ position: 'absolute', bottom: '1.25rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px' }}>
+              {fotos.map((f, i) => (
+                <button key={i} onClick={() => irFoto(i)} style={{ width: '44px', height: '44px', borderRadius: '6px', overflow: 'hidden', border: fotoActiva === i ? '2px solid white' : '2px solid rgba(255,255,255,0.2)', background: 'transparent', cursor: 'pointer', padding: 0, opacity: fotoActiva === i ? 1 : 0.5, transition: 'all 0.2s' }}>
+                  <img src={f} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ══ DRAWER ══ */}
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', maxWidth: '100vw', background: 'white', zIndex: 201, boxShadow: '-2px 0 40px rgba(0,0,0,0.08)', transform: drawerOpen ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
@@ -797,41 +964,21 @@ export default function DetalleArmazon() {
                   {paso === 4 && (
                     <div>
                       <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '1.25rem' }}>{t('Resumen de tu pedido', 'Order summary')}</h4>
-
-                      {/* ¿Para quién? */}
                       <div style={{ marginBottom: '1.25rem', background: '#faf9f7', borderRadius: '10px', padding: '1rem', border: '1px solid rgba(0,0,0,0.06)' }}>
-                        <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: '#1d1d1d', margin: '0 0 4px' }}>
-                          {t('¿Para quién son?', 'Who are these for?')}
-                        </h4>
-                        <p style={{ fontSize: '12px', color: '#9a9a9a', margin: '0 0 0.75rem' }}>
-                          {t('Opcional — útil si compras para varias personas.', 'Optional — helpful if buying for multiple people.')}
-                        </p>
+                        <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: '#1d1d1d', margin: '0 0 4px' }}>{t('¿Para quién son?', 'Who are these for?')}</h4>
+                        <p style={{ fontSize: '12px', color: '#9a9a9a', margin: '0 0 0.75rem' }}>{t('Opcional — útil si compras para varias personas.', 'Optional — helpful if buying for multiple people.')}</p>
                         {recetasSesion.length > 0 && (
                           <div style={{ marginBottom: '0.75rem' }}>
-                            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6f6a63', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>
-                              {t('Reutilizar receta de', 'Reuse prescription from')}
-                            </p>
+                            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6f6a63', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{t('Reutilizar receta de', 'Reuse prescription from')}</p>
                             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                               {recetasSesion.map((r, i) => (
-                                <button key={i} onClick={() => { setReutilizarReceta(r.paciente); setPaciente(r.paciente); }}
-                                  style={{ padding: '5px 12px', borderRadius: '20px', border: `1.5px solid ${reutilizarReceta === r.paciente ? '#55624c' : '#e2ddd6'}`, background: reutilizarReceta === r.paciente ? '#f0f4ef' : 'white', color: reutilizarReceta === r.paciente ? '#55624c' : '#6f6a63', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)', transition: 'all 0.15s' }}>
-                                  ↩ {r.paciente}
-                                </button>
+                                <button key={i} onClick={() => { setReutilizarReceta(r.paciente); setPaciente(r.paciente); }} style={{ padding: '5px 12px', borderRadius: '20px', border: `1.5px solid ${reutilizarReceta === r.paciente ? '#55624c' : '#e2ddd6'}`, background: reutilizarReceta === r.paciente ? '#f0f4ef' : 'white', color: reutilizarReceta === r.paciente ? '#55624c' : '#6f6a63', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)', transition: 'all 0.15s' }}>↩ {r.paciente}</button>
                               ))}
                             </div>
                           </div>
                         )}
-                        <input type="text"
-                          placeholder={t('Ej: Rob, Mom, Para mí...', 'e.g. Rob, Mom, For me...')}
-                          value={paciente}
-                          onChange={e => { setPaciente(e.target.value); setReutilizarReceta(null); }}
-                          style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2ddd6', fontSize: '13px', fontFamily: 'var(--font-sans)', color: '#1d1d1d', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }}
-                          onFocus={e => (e.currentTarget.style.borderColor = '#55624c')}
-                          onBlur={e => (e.currentTarget.style.borderColor = '#e2ddd6')}
-                        />
+                        <input type="text" placeholder={t('Ej: Rob, Mom, Para mí...', 'e.g. Rob, Mom, For me...')} value={paciente} onChange={e => { setPaciente(e.target.value); setReutilizarReceta(null); }} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2ddd6', fontSize: '13px', fontFamily: 'var(--font-sans)', color: '#1d1d1d', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }} onFocus={e => (e.currentTarget.style.borderColor = '#55624c')} onBlur={e => (e.currentTarget.style.borderColor = '#e2ddd6')}/>
                       </div>
-
-                      {/* Resumen precio */}
                       <div style={{ background: '#faf9f7', borderRadius: '10px', padding: '1.1rem', marginBottom: '1.25rem', border: '1px solid rgba(0,0,0,0.06)' }}>
                         {[
                           { label: t('Armazón', 'Frame'), value: esRegalo ? `~~$${armazon?.precio || PRECIO_ARMAZON}~~ $0 🎁` : `$${precioArmazon}` },
@@ -855,7 +1002,6 @@ export default function DetalleArmazon() {
                           <span>Total</span><span>${total} USD</span>
                         </div>
                       </div>
-
                       {!tieneReceta && (
                         <div style={{ background: '#fffbeb', borderRadius: '8px', padding: '0.9rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid rgba(245,197,24,0.3)' }}>
                           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#d97706', flexShrink: 0 }}/>
@@ -866,12 +1012,7 @@ export default function DetalleArmazon() {
                           <button onClick={() => setDrawerEstado('inicio')} style={{ background: '#1d1d1d', border: 'none', borderRadius: '4px', padding: '5px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', color: 'white', fontFamily: 'var(--font-sans)' }}>{t('Agregar', 'Add')}</button>
                         </div>
                       )}
-
-                      <button onClick={handleAddToCart}
-                        style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = '#3f4a37')}
-                        onMouseLeave={e => (e.currentTarget.style.background = '#55624c')}
-                      >
+                      <button onClick={handleAddToCart} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = '#3f4a37')} onMouseLeave={e => (e.currentTarget.style.background = '#55624c')}>
                         {t('Agregar al carrito →', 'Add to cart →')}
                       </button>
                     </div>
@@ -884,8 +1025,7 @@ export default function DetalleArmazon() {
                       ? <button onClick={() => setPaso(p => p - 1)} style={{ background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: '#6f6a63', fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
                       : <button onClick={() => setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio')} style={{ background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: '#6f6a63', fontFamily: 'var(--font-sans)' }}>← {t('Mi receta', 'My prescription')}</button>
                     }
-                    <button onClick={() => { if (paso === 1 && !vision) return; if (paso === 2 && !material) return; setPaso(p => p + 1); }}
-                      style={{ background: (paso === 1 && !vision) || (paso === 2 && !material) ? '#e8e5e0' : '#55624c', color: (paso === 1 && !vision) || (paso === 2 && !material) ? '#9a9a9a' : 'white', border: 'none', borderRadius: '8px', padding: '10px 24px', fontSize: '12px', fontWeight: 600, cursor: (paso === 1 && !vision) || (paso === 2 && !material) ? 'not-allowed' : 'pointer', letterSpacing: '0.08em', fontFamily: 'var(--font-sans)' }}>
+                    <button onClick={() => { if (paso === 1 && !vision) return; if (paso === 2 && !material) return; setPaso(p => p + 1); }} style={{ background: (paso === 1 && !vision) || (paso === 2 && !material) ? '#e8e5e0' : '#55624c', color: (paso === 1 && !vision) || (paso === 2 && !material) ? '#9a9a9a' : 'white', border: 'none', borderRadius: '8px', padding: '10px 24px', fontSize: '12px', fontWeight: 600, cursor: (paso === 1 && !vision) || (paso === 2 && !material) ? 'not-allowed' : 'pointer', letterSpacing: '0.08em', fontFamily: 'var(--font-sans)' }}>
                       {paso === 3 ? t('Ver resumen →', 'See summary →') : t('Siguiente →', 'Next →')}
                     </button>
                   </div>
@@ -908,45 +1048,131 @@ export default function DetalleArmazon() {
       {/* ══ PRODUCTO PRINCIPAL ══ */}
       <div style={{ maxWidth: '1440px', margin: '0 auto', padding: esMobil ? '0 0 5rem' : '2rem 3rem 4rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 440px', gap: esMobil ? '0' : '6rem', alignItems: 'start' }}>
+
+          {/* ── GALERÍA ── */}
           <div style={{ display: 'flex', flexDirection: esMobil ? 'column' : 'row', gap: '16px' }}>
+
+            {/* Miniaturas desktop (columna izquierda) */}
             {fotos.length > 1 && !esMobil && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '68px', flexShrink: 0 }}>
                 {fotos.map((foto, i) => (
-                  <button key={i} onClick={() => setFotoActiva(i)} style={{ width: '68px', height: '68px', borderRadius: '8px', overflow: 'hidden', border: fotoActiva === i ? '2px solid #1d1d1d' : '2px solid transparent', background: 'white', cursor: 'pointer', padding: 0, transition: 'all 0.2s', boxShadow: '0 1px 6px rgba(0,0,0,0.06)', opacity: fotoActiva === i ? 1 : 0.65 }}>
+                  <button key={i} onClick={() => irFoto(i)} style={{ width: '68px', height: '68px', borderRadius: '8px', overflow: 'hidden', border: fotoActiva === i ? '2px solid #1d1d1d' : '2px solid transparent', background: 'white', cursor: 'pointer', padding: 0, transition: 'all 0.2s', boxShadow: '0 1px 6px rgba(0,0,0,0.06)', opacity: fotoActiva === i ? 1 : 0.65 }}>
                     <img src={foto} alt={`${armazon.nombre} ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', boxSizing: 'border-box' }}/>
                   </button>
                 ))}
               </div>
             )}
+
             <div style={{ flex: 1, position: 'relative' }}>
-              <div style={{ background: 'white', borderRadius: esMobil ? '0' : '20px', overflow: 'hidden', position: 'relative', aspectRatio: '1/1', boxShadow: esMobil ? 'none' : '0 2px 40px rgba(0,0,0,0.05)', cursor: fotos.length > 0 ? 'crosshair' : 'default' }}
-                onMouseMove={e => { if (esMobil) return; const rect = e.currentTarget.getBoundingClientRect(); setPosZoom({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 }); setZoomActivo(true); }}
+              {/* Contenedor principal imagen */}
+              <div
+                style={{
+                  background: 'white',
+                  borderRadius: esMobil ? '0' : '20px',
+                  overflow: 'hidden',
+                  position: 'relative',
+                  aspectRatio: '1/1',
+                  boxShadow: esMobil ? 'none' : '0 2px 40px rgba(0,0,0,0.05)',
+                  cursor: fotos.length > 0 ? (esMobil ? 'pointer' : 'crosshair') : 'default',
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                }}
+                // Desktop: hover zoom
+                onMouseMove={e => {
+                  if (esMobil) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setPosZoom({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 });
+                  setZoomActivo(true);
+                }}
                 onMouseLeave={() => setZoomActivo(false)}
-                onTouchStart={e => setTouchStart(e.touches[0].clientX)}
-                onTouchEnd={e => { if (touchStart === null) return; const diff = touchStart - e.changedTouches[0].clientX; if (Math.abs(diff) > 40) { if (diff > 0) setFotoActiva(prev => Math.min(prev + 1, fotos.length - 1)); else setFotoActiva(prev => Math.max(prev - 1, 0)); } setTouchStart(null); }}
+                // Desktop: click abre lightbox
+                onClick={() => { if (!esMobil && fotos.length > 0) setLightboxOpen(true); }}
+                // Móvil: swipe
+                onTouchStart={onTouchStartCarrusel}
+                onTouchMove={onTouchMoveCarrusel}
+                onTouchEnd={onTouchEndCarrusel}
               >
-                {fotos.length > 0 ? (
-                  <img src={fotos[fotoActiva] || fotos[0]} alt={armazon.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', padding: esMobil ? '1.5rem' : '3rem', boxSizing: 'border-box', transformOrigin: `${posZoom.x}% ${posZoom.y}%`, transform: zoomActivo ? 'scale(1.9)' : 'scale(1)', transition: zoomActivo ? 'none' : 'transform 0.4s ease' }}/>
-                ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem', boxSizing: 'border-box' }}>
-                    <LenteSVG color={armazon.color || '#1d1d1d'} forma={armazon.forma} size="large" solar={esSolar}/>
-                  </div>
+                {/* Track de imágenes con translate */}
+                <div style={{
+                  display: 'flex',
+                  width: `${fotos.length * 100}%`,
+                  height: '100%',
+                  transform: `translateX(calc(${-fotoActiva * (100 / fotos.length)}% + ${swipeOffset / fotos.length}px))`,
+                  transition: isSwiping ? 'none' : 'transform 0.32s cubic-bezier(0.4,0,0.2,1)',
+                  willChange: 'transform',
+                }}>
+                  {fotos.map((foto, i) => (
+                    <div key={i} style={{ width: `${100 / fotos.length}%`, height: '100%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img
+                        src={foto}
+                        alt={`${armazon.nombre} ${i + 1}`}
+                        style={{
+                          width: '100%', height: '100%',
+                          objectFit: 'contain',
+                          padding: esMobil ? '1.5rem' : '3rem',
+                          boxSizing: 'border-box',
+                          // Solo zoom desktop en imagen activa
+                          transformOrigin: `${posZoom.x}% ${posZoom.y}%`,
+                          transform: (!esMobil && i === fotoActiva && zoomActivo) ? 'scale(1.9)' : 'scale(1)',
+                          transition: zoomActivo ? 'none' : 'transform 0.4s ease',
+                          pointerEvents: 'none',
+                        }}
+                        draggable={false}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Overlay tap-to-zoom en móvil */}
+                {esMobil && fotos.length > 0 && (
+                  <button
+                    onClick={() => setLightboxOpen(true)}
+                    style={{ position: 'absolute', bottom: '14px', right: '14px', background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '8px', padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#6f6a63', fontFamily: 'var(--font-sans)', fontWeight: 500, backdropFilter: 'blur(4px)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    {t('Ampliar', 'Zoom')}
+                  </button>
                 )}
-                <button style={{ position: 'absolute', top: '16px', right: '16px', width: '36px', height: '36px', borderRadius: '50%', background: 'white', border: '1px solid rgba(0,0,0,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+
+                {/* Badge solar */}
+                {esSolar && <div style={{ position: 'absolute', bottom: '16px', left: '16px', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#55624c', background: '#f0f4ef', padding: '4px 10px', borderRadius: '20px', border: '1px solid #c8dbc4' }}>{t('Graduable', 'Rx Ready')}</div>}
+
+                {/* Favorito */}
+                <button style={{ position: 'absolute', top: '16px', right: '16px', width: '36px', height: '36px', borderRadius: '50%', background: 'white', border: '1px solid rgba(0,0,0,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', zIndex: 2 }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6f6a63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
-                {esSolar && <div style={{ position: 'absolute', bottom: '16px', left: '16px', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#55624c', background: '#f0f4ef', padding: '4px 10px', borderRadius: '20px', border: '1px solid #c8dbc4' }}>{t('Graduable', 'Rx Ready')}</div>}
+
+                {/* Flechas desktop */}
+                {!esMobil && fotos.length > 1 && (
+                  <>
+                    <button onClick={(e) => { e.stopPropagation(); fotoPrev(); }} disabled={fotoActiva === 0} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === 0 ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.92)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '50%', width: '36px', height: '36px', cursor: fotoActiva === 0 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: fotoActiva === 0 ? 'rgba(0,0,0,0.2)' : '#1d1d1d', fontSize: '18px', zIndex: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.2s' }}>‹</button>
+                    <button onClick={(e) => { e.stopPropagation(); fotoNext(); }} disabled={fotoActiva === fotos.length - 1} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === fotos.length - 1 ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.92)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '50%', width: '36px', height: '36px', cursor: fotoActiva === fotos.length - 1 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: fotoActiva === fotos.length - 1 ? 'rgba(0,0,0,0.2)' : '#1d1d1d', fontSize: '18px', zIndex: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.2s' }}>›</button>
+                  </>
+                )}
               </div>
+
+              {/* Miniaturas móvil (fila horizontal con scroll) */}
               {fotos.length > 1 && esMobil && (
-                <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '14px', padding: '0 1rem' }}>
+                <div style={{ display: 'flex', gap: '8px', padding: '12px 1.25rem 0', overflowX: 'auto', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+                  {fotos.map((foto, i) => (
+                    <button key={i} onClick={() => irFoto(i)} style={{ flexShrink: 0, width: '56px', height: '56px', borderRadius: '8px', overflow: 'hidden', border: fotoActiva === i ? '2px solid #1d1d1d' : '2px solid transparent', background: 'white', cursor: 'pointer', padding: 0, transition: 'all 0.2s', boxShadow: fotoActiva === i ? '0 2px 8px rgba(0,0,0,0.12)' : '0 1px 4px rgba(0,0,0,0.06)', opacity: fotoActiva === i ? 1 : 0.6 }}>
+                      <img src={foto} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px', boxSizing: 'border-box' }}/>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Dots móvil (cuando NO hay miniaturas visibles, fallback) */}
+              {fotos.length > 1 && esMobil && fotos.length <= 2 && (
+                <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '10px' }}>
                   {fotos.map((_, i) => (
-                    <button key={i} onClick={() => setFotoActiva(i)} style={{ width: fotoActiva === i ? '20px' : '8px', height: '8px', borderRadius: '4px', background: fotoActiva === i ? '#1d1d1d' : 'rgba(0,0,0,0.18)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s ease' }}/>
+                    <button key={i} onClick={() => irFoto(i)} style={{ width: fotoActiva === i ? '20px' : '8px', height: '8px', borderRadius: '4px', background: fotoActiva === i ? '#1d1d1d' : 'rgba(0,0,0,0.18)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s ease' }}/>
                   ))}
                 </div>
               )}
             </div>
           </div>
 
+          {/* ── INFO PRODUCTO ── */}
           <div style={{ position: esMobil ? 'relative' : 'sticky', top: esMobil ? 'auto' : '84px', padding: esMobil ? '1.5rem 1.25rem 0' : '0' }}>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#55624c', padding: '5px 12px', border: '1px solid #55624c', borderRadius: '2px' }}>
@@ -1160,7 +1386,10 @@ export default function DetalleArmazon() {
         </div>
       )}
 
-      <style>{`@keyframes slideUp { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: translateY(0) } }`}</style>
+      <style>{`
+        @keyframes slideUp { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: translateY(0) } }
+        ::-webkit-scrollbar { display: none; }
+      `}</style>
     </main>
   );
 }
