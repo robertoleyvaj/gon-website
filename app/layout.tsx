@@ -1,5 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import VerlyBot from "./components/verlybot";
@@ -90,13 +91,26 @@ export default function RootLayout({
         className="min-h-full flex flex-col"
         style={{ fontFamily: "var(--font-sans), sans-serif" }}
       >
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-QSNNCVBD50"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-QSNNCVBD50');
+          `}
+        </Script>
+
         <LangProvider>
           <CartProvider>
-  <FavoritosProvider>
-    {children}
-    <VerlyBot />
-  </FavoritosProvider>
-</CartProvider>
+            <FavoritosProvider>
+              {children}
+              <VerlyBot />
+            </FavoritosProvider>
+          </CartProvider>
         </LangProvider>
       </body>
     </html>
