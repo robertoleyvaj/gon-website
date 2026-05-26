@@ -137,6 +137,7 @@ export default function Home() {
         <Navbar />
         {quizOpen && <QuizModal onClose={() => setQuizOpen(false)} t={t} lang={lang} />}
 
+        {/* ── ARMAZONES DESTACADOS ── */}
         <section style={{ paddingTop: '80px', paddingBottom: '2rem' }}>
           <div style={{ padding: '0 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1rem' }}>
             <div>
@@ -150,13 +151,15 @@ export default function Home() {
               <Link key={a.id} href={`/armazon/${a.id}`} style={{ textDecoration: 'none', color: 'inherit', flexShrink: 0, scrollSnapAlign: 'start' }}>
                 <div style={{ width: '160px' }}>
                   <div style={{ width: '160px', height: '140px', background: a.color ? `${a.color}12` : 'var(--cream-dark)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.6rem', overflow: 'hidden', position: 'relative' }}>
-                    {a.imagen_url ? <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/> : (
-                      <svg width="90" height="48" viewBox="0 0 160 90" fill="none">
-                        <rect x="4" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color || 'var(--charcoal)'} strokeWidth="3.5"/>
-                        <rect x="92" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color || 'var(--charcoal)'} strokeWidth="3.5"/>
-                        <path d="M68 38 C72 32, 88 32, 92 38" stroke={a.color || 'var(--charcoal)'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-                      </svg>
-                    )}
+                    {a.imagen_url
+                      ? <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '8px', boxSizing: 'border-box' }}/>
+                      : (
+                        <svg width="90" height="48" viewBox="0 0 160 90" fill="none">
+                          <rect x="4" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color || 'var(--charcoal)'} strokeWidth="3.5"/>
+                          <rect x="92" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color || 'var(--charcoal)'} strokeWidth="3.5"/>
+                          <path d="M68 38 C72 32, 88 32, 92 38" stroke={a.color || 'var(--charcoal)'} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+                        </svg>
+                      )}
                     {a.badge && <div style={{ position: 'absolute', top: '8px', left: '8px', fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--charcoal)', background: 'var(--cream)', padding: '3px 7px', border: '1px solid var(--border)', borderRadius: '2px' }}>{a.badge}</div>}
                   </div>
                   <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 400, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 2px' }}>{a.forma}</p>
@@ -171,12 +174,15 @@ export default function Home() {
           </div>
         </section>
 
-        <section style={{ margin: '0 1.25rem 2.5rem', borderRadius: '10px', overflow: 'hidden', position: 'relative', height: '340px' }}>
+        {/* ── HERO BANNER ── */}
+        <section style={{ margin: '0 1.25rem 2rem', borderRadius: '10px', overflow: 'hidden', position: 'relative', height: '340px' }}>
           <img src="/hero-mobile.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(28,28,26,0.72) 0%, rgba(28,28,26,0.3) 55%, rgba(28,28,26,0.0) 100%)' }}/>
           <div style={{ position: 'absolute', bottom: '1.75rem', left: '1.5rem', right: '40%' }}>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 300, color: 'white', lineHeight: 1.15, margin: '0 0 0.5rem', letterSpacing: '-0.01em' }}>
-              {lang === 'es' ? <>Lentes que<br />se adaptan<br /><em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>a tu vida.</em></> : <>Eyewear that<br />fits<br /><em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>your life.</em></>}
+              {lang === 'es'
+                ? <>Lentes que<br />se adaptan<br /><em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>a tu vida.</em></>
+                : <>Eyewear that<br />fits<br /><em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>your life.</em></>}
             </h1>
             <button onClick={() => setQuizOpen(true)} style={{ display: 'inline-block', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--charcoal)', background: 'white', padding: '0.65rem 1.1rem', borderRadius: '2px', border: 'none', cursor: 'pointer' }}>
               {t('Encontrar mi par →', 'Find my frames →')}
@@ -184,8 +190,75 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── PROMO BANNER MÓVIL ── */}
+        <section style={{ margin: '0 1.25rem 2rem', background: 'var(--sage)', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
+          <div style={{ padding: '1.75rem 1.5rem' }}>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.65)', margin: '0 0 0.6rem' }}>
+              {t('Oferta de lanzamiento', 'Limited time offer')}
+            </p>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: 400, color: 'white', margin: '0 0 0.15rem', lineHeight: 1.05, letterSpacing: '-0.02em' }}>
+              {t('Lentes de sol', 'Sunglasses')}
+            </h2>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.8rem', fontWeight: 400, fontStyle: 'italic', color: 'rgba(255,255,255,0.75)', margin: '0 0 1rem', lineHeight: 1.05, letterSpacing: '-0.02em' }}>
+              {t('de regalo.', 'on us.')}
+            </h2>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.78rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, margin: '0 0 1.25rem', maxWidth: '280px' }}>
+              {t('Con cualquier compra de lentes graduados.', 'With any prescription glasses purchase.')}
+            </p>
+            <Link href="/Tienda?tipo=optico" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', color: 'var(--sage)', padding: '0.75rem 1.25rem', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
+              {t('Ver lentes graduados', 'Shop eyeglasses')}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            </Link>
+          </div>
+          {/* Círculo decorativo */}
+          <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '130px', height: '130px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)', pointerEvents: 'none' }}/>
+          <div style={{ position: 'absolute', bottom: '-20px', right: '40px', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', pointerEvents: 'none' }}/>
+        </section>
+
+        {/* ── PARA ÉL / PARA ELLA ── */}
+        <section style={{ margin: '0 1.25rem 2rem' }}>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '0.75rem' }}>
+            {t('Colecciones', 'Collections')}
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {[
+              { img: '/hero-hombre.jpg', titulo_es: 'Para él', titulo_en: 'For him', sub_es: 'Clásicos y duraderos', sub_en: 'Classic and durable', href: '/Tienda?tipo=optico&genero=hombre', pos: 'center 30%' },
+              { img: '/hero-mujer.jpg', titulo_es: 'Para ella', titulo_en: 'For her', sub_es: 'Modernos y versátiles', sub_en: 'Modern and versatile', href: '/Tienda?tipo=optico&genero=mujer', pos: 'center 20%' },
+            ].map((c, i) => (
+              <Link key={i} href={c.href} style={{ textDecoration: 'none', display: 'block' }}>
+                <div style={{ position: 'relative', height: '200px', borderRadius: '10px', overflow: 'hidden' }}>
+                  <img
+                    src={c.img}
+                    alt={lang === 'es' ? c.titulo_es : c.titulo_en}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: c.pos, display: 'block' }}
+                  />
+                  {/* Gradiente horizontal — texto a la izquierda */}
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.0) 100%)' }}/>
+                  {/* Texto */}
+                  <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 1.5rem' }}>
+                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', margin: '0 0 0.35rem' }}>
+                      {lang === 'es' ? c.sub_es : c.sub_en}
+                    </p>
+                    <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 400, color: 'white', margin: '0 0 0.75rem', lineHeight: 1, letterSpacing: '-0.02em' }}>
+                      {lang === 'es' ? c.titulo_es : c.titulo_en}
+                    </h3>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.85)' }}>
+                        {t('Explorar', 'Explore')}
+                      </span>
+                      <div style={{ width: '20px', height: '1px', background: 'rgba(255,255,255,0.5)' }}/>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* ── CTA DARK ── */}
         <section style={{ margin: '0 1.25rem 2.5rem', background: 'var(--charcoal)', borderRadius: '10px', padding: '2rem 1.5rem', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(74,89,64,0.15)' }}/>
+          <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(74,89,64,0.15)', pointerEvents: 'none' }}/>
           <div style={{ position: 'relative', zIndex: 1 }}>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'white', lineHeight: 1.15, margin: '0 0 0.4rem' }}>{t('Tu primer par.', 'Your first pair.')}</p>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(255,255,255,0.55)', margin: '0 0 1rem', lineHeight: 1.15 }}>{t('Nuestro mejor precio.', 'Our best price.')}</p>
@@ -210,6 +283,9 @@ export default function Home() {
     );
   }
 
+  // ════════════════════════════════
+  // DESKTOP
+  // ════════════════════════════════
   return (
     <main style={{ fontFamily: 'var(--font-sans)', margin: 0, padding: 0, background: 'var(--cream)', color: 'var(--charcoal)', overflowX: 'hidden' }}>
       <Navbar />
@@ -227,8 +303,7 @@ export default function Home() {
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(3.5rem, 5.5vw, 5rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1.25rem', maxWidth: '580px' }}>
             {lang === 'es'
               ? <>Lentes de calidad<br />que se adaptan<br /><em style={{ fontStyle: 'italic', color: 'var(--sage)' }}>a tu vida.</em></>
-              : <>Quality eyewear<br />that fits<br /><em style={{ fontStyle: 'italic', color: 'var(--sage)' }}>your life.</em></>
-            }
+              : <>Quality eyewear<br />that fits<br /><em style={{ fontStyle: 'italic', color: 'var(--sage)' }}>your life.</em></>}
           </h1>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '15px', color: 'var(--warm-gray)', lineHeight: 1.8, marginBottom: '2.5rem', maxWidth: '360px', fontWeight: 400 }}>
             {t('Diseños clásicos. Micas premium. Precios justos.', 'Classic designs. Premium lenses. Fair prices.')}
@@ -369,15 +444,17 @@ export default function Home() {
                   onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'none'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
                 >
                   <div style={{ aspectRatio: '4/3', background: '#f5f2ed', overflow: 'hidden', position: 'relative' }}>
-                    {a.imagen_url ? <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/> : (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <svg width="70" height="38" viewBox="0 0 160 90" fill="none" style={{ opacity: 0.12 }}>
-                          <rect x="4" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/>
-                          <rect x="92" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/>
-                          <path d="M68 38 C72 32, 88 32, 92 38" stroke="#1d1d1d" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-                        </svg>
-                      </div>
-                    )}
+                    {a.imagen_url
+                      ? <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px', boxSizing: 'border-box' }}/>
+                      : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <svg width="70" height="38" viewBox="0 0 160 90" fill="none" style={{ opacity: 0.12 }}>
+                            <rect x="4" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/>
+                            <rect x="92" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/>
+                            <path d="M68 38 C72 32, 88 32, 92 38" stroke="#1d1d1d" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                      )}
                     {a.badge && <div style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 8px', borderRadius: '3px', background: '#1d1d1d', color: 'white' }}>{a.badge}</div>}
                   </div>
                   <div style={{ padding: '1rem 1.1rem 1.1rem' }}>
@@ -394,7 +471,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 5. FOR HIM / FOR HER ── */}
+      {/* ── 5. PARA ÉL / PARA ELLA ── */}
       <section style={{ padding: '0 2rem 6rem', maxWidth: '1180px', margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
           {[
