@@ -14,10 +14,10 @@ const MENU = [
 
 const ESTADOS = ['pendiente', 'en proceso', 'enviado', 'entregado'];
 const ESTADO_COLORS: any = {
-  'pendiente': { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' },
-  'en proceso': { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' },
-  'enviado': { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },
-  'entregado': { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
+  'pendiente':   { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' },
+  'en proceso':  { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' },
+  'enviado':     { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },
+  'entregado':   { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
 };
 
 function orderCode(id: number): string { return `VRL-${2846 + id}`; }
@@ -47,62 +47,64 @@ const btnGhost: any = { background: 'white', color: 'var(--warm-gray)', border: 
 const btnDanger: any = { background: 'white', color: '#C0392B', border: '1px solid #C0392B', borderRadius: '4px', padding: '6px 14px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif' };
 const btnPrimary: any = { background: 'var(--charcoal)', color: 'white', border: 'none', borderRadius: '4px', padding: '9px 18px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans), sans-serif', letterSpacing: '0.06em' };
 
-// ── FOTO UPLOAD con progreso ───────────────────────────────────────────────
+// ── Sección con título ────────────────────────────────────────────────────
+function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+  return (
+    <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
+      <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>{titulo}</div>
+      {children}
+    </div>
+  );
+}
+
+// ── Fila de dato ──────────────────────────────────────────────────────────
+function FilaDato({ label, value, highlight }: { label: string; value: any; highlight?: boolean }) {
+  if (!value && value !== 0) return null;
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '6px 0', borderBottom: '1px solid var(--border)', gap: '1rem' }}>
+      <span style={{ fontSize: '11px', color: 'var(--warm-gray)', fontWeight: 500, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: '13px', fontWeight: highlight ? 600 : 400, color: highlight ? 'var(--charcoal)' : 'var(--charcoal)', textAlign: 'right' }}>{value}</span>
+    </div>
+  );
+}
+
+// ── FOTO UPLOAD ───────────────────────────────────────────────────────────
 function FotoUpload({ campo, label, valor, onUpload, onClear }: {
-  campo: string;
-  label: string;
-  valor: string;
+  campo: string; label: string; valor: string;
   onUpload: (file: File, campo: string) => Promise<void>;
   onClear: () => void;
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
-
   const handleFile = async (file: File) => {
-    setUploading(true);
-    setError('');
-    try {
-      await onUpload(file, campo);
-    } catch {
-      setError('Error al subir. Intenta de nuevo.');
-    }
+    setUploading(true); setError('');
+    try { await onUpload(file, campo); } catch { setError('Error al subir.'); }
     setUploading(false);
   };
-
   return (
     <div>
       <div style={{ fontSize: '10px', color: 'var(--warm-gray)', marginBottom: '4px', textAlign: 'center', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</div>
       {valor ? (
-        <div>
-          <div style={{ position: 'relative' }}>
-            <img src={valor} alt="" style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border)', display: 'block' }}/>
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', opacity: 0, transition: 'all 0.2s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.4)'; (e.currentTarget as HTMLDivElement).style.opacity = '1'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0)'; (e.currentTarget as HTMLDivElement).style.opacity = '0'; }}
-            >
-              <label style={{ background: 'white', color: 'var(--charcoal)', padding: '5px 10px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 500 }}>
-                <input type="file" accept="image/*" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}/>
-                Cambiar
-              </label>
-              <button type="button" onClick={onClear} style={{ background: '#C0392B', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer' }}>×</button>
-            </div>
+        <div style={{ position: 'relative' }}>
+          <img src={valor} alt="" style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '6px', border: '1px solid var(--border)', display: 'block' }}/>
+          <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', opacity: 0, transition: 'all 0.2s' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0.4)'; (e.currentTarget as HTMLDivElement).style.opacity = '1'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(0,0,0,0)'; (e.currentTarget as HTMLDivElement).style.opacity = '0'; }}>
+            <label style={{ background: 'white', color: 'var(--charcoal)', padding: '5px 10px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer', fontWeight: 500 }}>
+              <input type="file" accept="image/*" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}/>
+              Cambiar
+            </label>
+            <button type="button" onClick={onClear} style={{ background: '#C0392B', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px', fontSize: '11px', cursor: 'pointer' }}>×</button>
           </div>
           {uploading && <div style={{ marginTop: '4px', height: '3px', background: '#e5e7eb', borderRadius: '2px', overflow: 'hidden' }}><div style={{ height: '100%', background: 'var(--sage)', animation: 'progress 1s ease-in-out infinite' }}/></div>}
         </div>
       ) : (
         <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '1rem 0.5rem', borderRadius: '6px', border: uploading ? '1.5px solid var(--sage)' : '1.5px dashed var(--border)', cursor: uploading ? 'wait' : 'pointer', background: uploading ? '#f0f4ef' : 'var(--cream)', minHeight: '80px', justifyContent: 'center', transition: 'all 0.2s' }}>
           <input type="file" accept="image/*" style={{ display: 'none' }} disabled={uploading} onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}/>
-          {uploading ? (
-            <>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" strokeWidth="2" strokeLinecap="round" style={{ animation: 'spin 1s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-              <span style={{ fontSize: '10px', color: 'var(--sage)', fontWeight: 500 }}>Subiendo...</span>
-            </>
-          ) : (
-            <>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warm-gray)" strokeWidth="1.5" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span style={{ fontSize: '10px', color: 'var(--warm-gray)', textAlign: 'center' }}>Subir foto</span>
-            </>
-          )}
+          {uploading
+            ? <><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" strokeWidth="2" strokeLinecap="round" style={{ animation: 'spin 1s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg><span style={{ fontSize: '10px', color: 'var(--sage)', fontWeight: 500 }}>Subiendo...</span></>
+            : <><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--warm-gray)" strokeWidth="1.5" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span style={{ fontSize: '10px', color: 'var(--warm-gray)', textAlign: 'center' }}>Subir foto</span></>
+          }
         </label>
       )}
       {error && <div style={{ fontSize: '10px', color: '#C0392B', marginTop: '3px', textAlign: 'center' }}>{error}</div>}
@@ -110,7 +112,7 @@ function FotoUpload({ campo, label, valor, onUpload, onClear }: {
   );
 }
 
-function ColorPicker({ label, value, onChange }: { label: string, value: string, onChange: (v: string) => void }) {
+function ColorPicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div>
       <label style={labelStyle}>{label}</label>
@@ -124,46 +126,25 @@ function ColorPicker({ label, value, onChange }: { label: string, value: string,
 }
 
 function ArmazonForm({ data, onChange, onFotoUpload }: {
-  data: any;
-  onChange: (field: string, value: any) => void;
+  data: any; onChange: (field: string, value: any) => void;
   onFotoUpload: (file: File, campo: string) => Promise<void>;
 }) {
-  const handleMedidas = (val: string) => {
-    onChange('medidas', val);
-    onChange('talla', tallaDesdeMedias(val));
-  };
-
+  const handleMedidas = (val: string) => { onChange('medidas', val); onChange('talla', tallaDesdeMedias(val)); };
   const fotos = [
-    { campo: 'imagen_url', label: 'Principal' },
-    { campo: 'imagen2_url', label: 'Foto 2' },
-    { campo: 'imagen3_url', label: 'Foto 3' },
-    { campo: 'imagen4_url', label: 'Foto 4' },
+    { campo: 'imagen_url', label: 'Principal' }, { campo: 'imagen2_url', label: 'Foto 2' },
+    { campo: 'imagen3_url', label: 'Foto 3' }, { campo: 'imagen4_url', label: 'Foto 4' },
     { campo: 'imagen5_url', label: 'Lifestyle' },
   ];
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-
-      {/* FOTOS */}
       <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
         <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
           Fotos <span style={{ fontWeight: 400, color: 'var(--sage)' }}>— se guardan automáticamente al seleccionar</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
-          {fotos.map(f => (
-            <FotoUpload
-              key={f.campo}
-              campo={f.campo}
-              label={f.label}
-              valor={data[f.campo] || ''}
-              onUpload={onFotoUpload}
-              onClear={() => onChange(f.campo, '')}
-            />
-          ))}
+          {fotos.map(f => <FotoUpload key={f.campo} campo={f.campo} label={f.label} valor={data[f.campo] || ''} onUpload={onFotoUpload} onClear={() => onChange(f.campo, '')}/>)}
         </div>
       </div>
-
-      {/* INFO BÁSICA */}
       <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
         <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Información básica</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: '8px' }}>
@@ -183,18 +164,14 @@ function ArmazonForm({ data, onChange, onFotoUpload }: {
           </div>
         </div>
       </div>
-
-      {/* PRECIOS */}
       <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
         <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Precio e inventario</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
           <div><label style={labelStyle}>Precio ($)</label><input type="number" value={data.precio} onChange={e => onChange('precio', e.target.value)} style={inputStyle}/></div>
-          <div><label style={labelStyle}>Descuento (%)</label><input type="number" value={data.descuento || '0'} onChange={e => onChange('descuento', e.target.value)} style={inputStyle} placeholder="0"/></div>
+          <div><label style={labelStyle}>Descuento (%)</label><input type="number" value={data.descuento || '0'} onChange={e => onChange('descuento', e.target.value)} style={inputStyle}/></div>
           <div><label style={labelStyle}>Stock</label><input type="number" value={data.stock} onChange={e => onChange('stock', e.target.value)} style={inputStyle}/></div>
         </div>
       </div>
-
-      {/* CARACTERÍSTICAS */}
       <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
         <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Características</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
@@ -210,8 +187,7 @@ function ArmazonForm({ data, onChange, onFotoUpload }: {
           </div>
           <div><label style={labelStyle}>Tipo</label>
             <select value={data.tipo} onChange={e => onChange('tipo', e.target.value)} style={inputStyle}>
-              <option value="optico">Óptico</option>
-              <option value="solar">Solar</option>
+              <option value="optico">Óptico</option><option value="solar">Solar</option>
             </select>
           </div>
           <div><label style={labelStyle}>Medidas → Talla auto</label>
@@ -222,8 +198,6 @@ function ArmazonForm({ data, onChange, onFotoUpload }: {
           </div>
         </div>
       </div>
-
-      {/* COLORES */}
       <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
         <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Colores (hasta 3)</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
@@ -232,27 +206,21 @@ function ArmazonForm({ data, onChange, onFotoUpload }: {
           <ColorPicker label="Color 3" value={data.color3 || ''} onChange={v => onChange('color3', v)}/>
         </div>
       </div>
-
     </div>
   );
 }
 
-// ── MODAL NUEVO ARMAZÓN — flujo de 2 pasos ───────────────────────────────
+// ── MODAL NUEVO ARMAZÓN ───────────────────────────────────────────────────
 function ModalNuevoArmazon({ onClose, onSaved, subirFotoDirecto }: {
-  onClose: () => void;
-  onSaved: () => void;
+  onClose: () => void; onSaved: () => void;
   subirFotoDirecto: (file: File, campo: string, id: number) => Promise<string | null>;
 }) {
   const [data, setData] = useState<any>({ ...ARMAZON_VACIO });
   const [guardando, setGuardando] = useState(false);
   const [armazonId, setArmazonId] = useState<number | null>(null);
   const [guardado, setGuardado] = useState(false);
+  const onChange = useCallback((field: string, value: any) => setData((prev: any) => ({ ...prev, [field]: value })), []);
 
-  const onChange = useCallback((field: string, value: any) => {
-    setData((prev: any) => ({ ...prev, [field]: value }));
-  }, []);
-
-  // Guardar info básica primero (sin fotos)
   const guardarInfo = async () => {
     if (!data.nombre.trim()) { alert('El nombre es obligatorio'); return; }
     setGuardando(true);
@@ -271,13 +239,11 @@ function ModalNuevoArmazon({ onClose, onSaved, subirFotoDirecto }: {
     setGuardado(true);
   };
 
-  // Upload de foto — solo funciona después de tener ID
   const onFotoUpload = async (file: File, campo: string) => {
     if (!armazonId) return;
     const url = await subirFotoDirecto(file, campo, armazonId);
     if (url) {
       setData((prev: any) => ({ ...prev, [campo]: url }));
-      // Actualizar en BD inmediatamente
       await supabase.from('armazones').update({ [campo]: url }).eq('id', armazonId);
     }
   };
@@ -292,21 +258,18 @@ function ModalNuevoArmazon({ onClose, onSaved, subirFotoDirecto }: {
           </div>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: 'var(--warm-gray)' }}>×</button>
         </div>
-
         {!guardado ? (
-          // PASO 1: Solo info básica
           <div>
             <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1.25rem', fontSize: '12px', color: '#92400e' }}>
-              💡 Primero guarda la info básica, luego podrás subir las fotos sin perder nada.
+              💡 Primero guarda la info básica, luego podrás subir las fotos.
             </div>
-            {/* Info básica, características, precios, colores — sin fotos */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
                 <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Información básica</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: '8px' }}>
                   <div><label style={labelStyle}>Nombre *</label><input value={data.nombre} onChange={e => onChange('nombre', e.target.value)} style={{ ...inputStyle, borderColor: !data.nombre ? '#fca5a5' : undefined }} placeholder="Old Fashion"/></div>
                   <div><label style={labelStyle}>Modelo</label><input value={data.modelo || ''} onChange={e => onChange('modelo', e.target.value)} style={inputStyle} placeholder="VRL-001"/></div>
-                  <div><label style={labelStyle}>Marca</label><input value={data.marca} onChange={e => onChange('marca', e.target.value)} style={inputStyle} placeholder="Verly"/></div>
+                  <div><label style={labelStyle}>Marca</label><input value={data.marca} onChange={e => onChange('marca', e.target.value)} style={inputStyle}/></div>
                   <div><label style={labelStyle}>Material</label>
                     <select value={data.material || ''} onChange={e => onChange('material', e.target.value)} style={inputStyle}>
                       <option value="">Seleccionar</option>
@@ -343,8 +306,7 @@ function ModalNuevoArmazon({ onClose, onSaved, subirFotoDirecto }: {
                   </div>
                   <div><label style={labelStyle}>Tipo</label>
                     <select value={data.tipo} onChange={e => onChange('tipo', e.target.value)} style={inputStyle}>
-                      <option value="optico">Óptico</option>
-                      <option value="solar">Solar</option>
+                      <option value="optico">Óptico</option><option value="solar">Solar</option>
                     </select>
                   </div>
                   <div><label style={labelStyle}>Medidas</label>
@@ -372,37 +334,18 @@ function ModalNuevoArmazon({ onClose, onSaved, subirFotoDirecto }: {
             </div>
           </div>
         ) : (
-          // PASO 2: Subir fotos
           <div>
             <div style={{ background: '#f0f4ef', border: '1px solid #c8dbc4', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1.25rem', fontSize: '12px', color: '#3a4f33' }}>
-              ✓ Armazón <strong>{data.nombre}</strong> guardado. Ahora sube las fotos — cada una se guarda automáticamente al seleccionarla.
+              ✓ <strong>{data.nombre}</strong> guardado. Sube las fotos — cada una se guarda automáticamente.
             </div>
             <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
               <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Fotos del armazón</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
-                {[
-                  { campo: 'imagen_url', label: 'Principal' },
-                  { campo: 'imagen2_url', label: 'Foto 2' },
-                  { campo: 'imagen3_url', label: 'Foto 3' },
-                  { campo: 'imagen4_url', label: 'Foto 4' },
-                  { campo: 'imagen5_url', label: 'Lifestyle' },
-                ].map(f => (
-                  <FotoUpload
-                    key={f.campo}
-                    campo={f.campo}
-                    label={f.label}
-                    valor={data[f.campo] || ''}
-                    onUpload={onFotoUpload}
-                    onClear={async () => {
-                      onChange(f.campo, '');
-                      if (armazonId) await supabase.from('armazones').update({ [f.campo]: null }).eq('id', armazonId);
-                    }}
-                  />
+                {[{campo:'imagen_url',label:'Principal'},{campo:'imagen2_url',label:'Foto 2'},{campo:'imagen3_url',label:'Foto 3'},{campo:'imagen4_url',label:'Foto 4'},{campo:'imagen5_url',label:'Lifestyle'}].map(f => (
+                  <FotoUpload key={f.campo} campo={f.campo} label={f.label} valor={data[f.campo] || ''} onUpload={onFotoUpload}
+                    onClear={async () => { onChange(f.campo, ''); if (armazonId) await supabase.from('armazones').update({ [f.campo]: null }).eq('id', armazonId); }}/>
                 ))}
               </div>
-              <p style={{ fontSize: '11px', color: 'var(--warm-gray)', marginTop: '0.75rem', marginBottom: 0 }}>
-                Las fotos son opcionales — puedes agregarlas después editando el armazón.
-              </p>
             </div>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
               <button onClick={() => { onSaved(); onClose(); }} style={btnSage}>Listo, cerrar</button>
@@ -414,7 +357,266 @@ function ModalNuevoArmazon({ onClose, onSaved, subirFotoDirecto }: {
   );
 }
 
-// ── ADMIN ─────────────────────────────────────────────────────────────────
+// ── MODAL PEDIDO COMPLETO ─────────────────────────────────────────────────
+function ModalPedido({ pedido, onClose, onSaved }: { pedido: any; onClose: () => void; onSaved: () => void }) {
+  const [estado, setEstado] = useState(pedido.estado);
+  const [tracking, setTracking] = useState(pedido.tracking || '');
+  const [paqueteria, setPaqueteria] = useState(pedido.paqueteria || '');
+  const [notasAdmin, setNotasAdmin] = useState(pedido.notas_admin || '');
+  const [guardando, setGuardando] = useState(false);
+  const [costos, setCostos] = useState<any>(null);
+
+  const cfg = pedido.configuracion;
+  const receta = pedido.recetas?.[0];
+  const cliente = pedido.clientes;
+
+  useEffect(() => {
+    supabase.from('finanzas').select('*').eq('pedido_id', pedido.id).maybeSingle()
+      .then(({ data }) => { if (data) setCostos(data); });
+  }, [pedido.id]);
+
+  const guardar = async () => {
+    setGuardando(true);
+    await supabase.from('pedidos').update({
+      estado, tracking, paqueteria, notas_admin: notasAdmin,
+    }).eq('id', pedido.id);
+    if (costos) {
+      await supabase.from('finanzas').update({
+        costo_armazon: parseFloat(costos.costo_armazon) || 0,
+        costo_laboratorio: parseFloat(costos.costo_laboratorio) || 0,
+        otros_costos: parseFloat(costos.otros_costos) || 0,
+      }).eq('pedido_id', pedido.id);
+    }
+    setGuardando(false);
+    onSaved();
+    onClose();
+  };
+
+  const formatNum = (v: number | null) => {
+    if (v === null || v === undefined) return '—';
+    return (v >= 0 ? '+' : '') + v.toFixed(2);
+  };
+
+  const estadoActual = ESTADO_COLORS[estado] || ESTADO_COLORS['pendiente'];
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+      <div style={{ background: 'white', borderRadius: '12px', width: '100%', maxWidth: '720px', maxHeight: '92vh', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+
+        {/* Header */}
+        <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, background: 'white', zIndex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 600 }}>{orderCode(pedido.id)}</div>
+              <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{new Date(pedido.created_at).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' })}</div>
+            </div>
+            <span style={{ background: estadoActual.bg, color: estadoActual.text, border: `1px solid ${estadoActual.border}`, padding: '4px 12px', borderRadius: '20px', fontSize: '11px', fontWeight: 600 }}>{estado}</span>
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '22px', cursor: 'pointer', color: 'var(--warm-gray)', lineHeight: 1 }}>×</button>
+        </div>
+
+        <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+
+          {/* COLUMNA IZQUIERDA */}
+          <div>
+            {/* Cliente */}
+            <Seccion titulo="Paciente / Cliente">
+              <FilaDato label="Nombre" value={cliente?.nombre || pedido.paciente} highlight/>
+              <FilaDato label="Email" value={cliente?.email || pedido.cliente_email}/>
+              <FilaDato label="Teléfono" value={cliente?.telefono}/>
+              <FilaDato label="Dirección" value={cliente?.direccion}/>
+              {pedido.paciente && pedido.paciente !== cliente?.nombre && (
+                <FilaDato label="Para" value={pedido.paciente}/>
+              )}
+            </Seccion>
+
+            {/* Configuración de lentes */}
+            {cfg && (
+              <Seccion titulo="Configuración de lentes">
+                <FilaDato label="Armazón" value={`${pedido.armazones?.nombre || '—'} · $${pedido.armazones?.precio || 13}`}/>
+                <FilaDato label="Visión" value={cfg.vision_nombre ? `${cfg.vision_nombre} · +$${cfg.vision_precio}` : null}/>
+                <FilaDato label="Material" value={cfg.material_nombre ? `${cfg.material_nombre} · ${cfg.material_precio === 0 ? 'Incluido' : `+$${cfg.material_precio}`}` : null}/>
+                {cfg.filtros_nombres?.map((f: string, i: number) => (
+                  <FilaDato key={i} label={i === 0 ? 'Filtros' : ''} value={f}/>
+                ))}
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0 4px', borderTop: '1px solid var(--border)', marginTop: '4px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--charcoal)' }}>Total</span>
+                  <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--sage)' }}>${pedido.precio_venta} USD</span>
+                </div>
+              </Seccion>
+            )}
+
+            {!cfg && (
+              <Seccion titulo="Pedido">
+                <FilaDato label="Armazón" value={pedido.armazones?.nombre || pedido.notas_cliente}/>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0 4px', borderTop: '1px solid var(--border)', marginTop: '4px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600 }}>Total</span>
+                  <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--sage)' }}>${pedido.precio_venta} USD</span>
+                </div>
+              </Seccion>
+            )}
+
+            {/* Costos (editable) */}
+            <Seccion titulo="Costos de producción">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                {[
+                  { key: 'costo_armazon', label: 'Armazón' },
+                  { key: 'costo_laboratorio', label: 'Laboratorio' },
+                  { key: 'otros_costos', label: 'Otros' },
+                ].map(f => (
+                  <div key={f.key}>
+                    <label style={labelStyle}>{f.label}</label>
+                    <input type="number" value={costos?.[f.key] || ''} placeholder="0"
+                      onChange={e => setCostos((prev: any) => ({ ...prev, [f.key]: e.target.value }))}
+                      style={{ ...inputStyle, padding: '6px 8px' }}/>
+                  </div>
+                ))}
+              </div>
+              {costos && (
+                <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--warm-gray)', display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Ganancia estimada</span>
+                  <span style={{ fontWeight: 600, color: 'var(--sage)' }}>
+                    ${(pedido.precio_venta - (parseFloat(costos.costo_armazon)||0) - (parseFloat(costos.costo_laboratorio)||0) - (parseFloat(costos.otros_costos)||0)).toFixed(2)}
+                  </span>
+                </div>
+              )}
+            </Seccion>
+          </div>
+
+          {/* COLUMNA DERECHA */}
+          <div>
+            {/* Receta */}
+            <Seccion titulo={`Receta óptica${receta ? ` — ${receta.metodo === 'foto' ? '📷 Foto' : receta.metodo === 'manual' ? '✍ Manual' : receta.metodo === 'sin_graduacion' ? '👓 Sin graduación' : '⏳ Pendiente'}` : ' — Sin datos'}`}>
+              {receta?.metodo === 'foto' && receta?.imagen_url && (
+                <div style={{ marginBottom: '10px' }}>
+                  <a href={receta.imagen_url} target="_blank" rel="noopener noreferrer">
+                    <img src={receta.imagen_url} alt="Receta" style={{ width: '100%', maxHeight: '180px', objectFit: 'contain', borderRadius: '8px', border: '1px solid var(--border)', cursor: 'zoom-in' }}/>
+                  </a>
+                  <div style={{ fontSize: '10px', color: 'var(--warm-gray)', marginTop: '4px', textAlign: 'center' }}>Clic para ver en tamaño completo</div>
+                </div>
+              )}
+              {receta?.metodo === 'manual' && (
+                <div>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '8px' }}>
+                    <thead>
+                      <tr style={{ background: 'var(--cream-dark)' }}>
+                        <th style={{ padding: '6px 8px', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textAlign: 'left' }}>Ojo</th>
+                        <th style={{ padding: '6px 4px', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textAlign: 'center' }}>SPH</th>
+                        <th style={{ padding: '6px 4px', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textAlign: 'center' }}>CYL</th>
+                        <th style={{ padding: '6px 4px', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textAlign: 'center' }}>EJE</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                        <td style={{ padding: '8px', fontSize: '12px', fontWeight: 600 }}>OD</td>
+                        <td style={{ padding: '8px 4px', fontSize: '13px', textAlign: 'center', fontWeight: 500 }}>{formatNum(receta.sph_od)}</td>
+                        <td style={{ padding: '8px 4px', fontSize: '13px', textAlign: 'center', fontWeight: 500 }}>{formatNum(receta.cyl_od)}</td>
+                        <td style={{ padding: '8px 4px', fontSize: '13px', textAlign: 'center' }}>{receta.axis_od ?? '—'}°</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '8px', fontSize: '12px', fontWeight: 600 }}>OS</td>
+                        <td style={{ padding: '8px 4px', fontSize: '13px', textAlign: 'center', fontWeight: 500 }}>{formatNum(receta.sph_os)}</td>
+                        <td style={{ padding: '8px 4px', fontSize: '13px', textAlign: 'center', fontWeight: 500 }}>{formatNum(receta.cyl_os)}</td>
+                        <td style={{ padding: '8px 4px', fontSize: '13px', textAlign: 'center' }}>{receta.axis_os ?? '—'}°</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12px' }}>
+                    <div style={{ background: 'white', borderRadius: '6px', padding: '8px', border: '1px solid var(--border)', textAlign: 'center' }}>
+                      <div style={{ fontSize: '10px', color: 'var(--warm-gray)', marginBottom: '2px' }}>ADD</div>
+                      <div style={{ fontWeight: 600 }}>{receta.add_val ? `+${receta.add_val}` : '—'}</div>
+                    </div>
+                    <div style={{ background: 'white', borderRadius: '6px', padding: '8px', border: '1px solid var(--border)', textAlign: 'center' }}>
+                      <div style={{ fontSize: '10px', color: 'var(--warm-gray)', marginBottom: '2px' }}>DP / PD</div>
+                      <div style={{ fontWeight: 600 }}>{receta.dp ?? '—'}</div>
+                    </div>
+                  </div>
+                  {receta.prisma && <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--warm-gray)' }}>Prisma: {receta.prisma}</div>}
+                </div>
+              )}
+              {(!receta || receta.metodo === 'despues') && (
+                <div style={{ background: '#fffbeb', borderRadius: '6px', padding: '10px', fontSize: '12px', color: '#92400e', border: '1px solid #fcd34d' }}>
+                  ⚠ El paciente no ha enviado su receta todavía. Contactarlo antes de fabricar.
+                </div>
+              )}
+              {receta?.notas && <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--warm-gray)' }}>Notas: {receta.notas}</div>}
+            </Seccion>
+
+            {/* Estado y envío */}
+            <Seccion titulo="Estado del pedido">
+              <div style={{ marginBottom: '10px' }}>
+                <label style={labelStyle}>Estado</label>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  {ESTADOS.map(s => (
+                    <button key={s} onClick={() => setEstado(s)} style={{ padding: '6px 14px', borderRadius: '20px', border: `1.5px solid ${estado === s ? ESTADO_COLORS[s].border : 'var(--border)'}`, background: estado === s ? ESTADO_COLORS[s].bg : 'white', color: estado === s ? ESTADO_COLORS[s].text : 'var(--warm-gray)', fontSize: '11px', fontWeight: estado === s ? 600 : 400, cursor: 'pointer', fontFamily: 'var(--font-sans)', transition: 'all 0.15s' }}>
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+                <div><label style={labelStyle}>Tracking</label><input value={tracking} onChange={e => setTracking(e.target.value)} style={inputStyle} placeholder="Número de tracking"/></div>
+                <div><label style={labelStyle}>Paquetería</label><input value={paqueteria} onChange={e => setPaqueteria(e.target.value)} style={inputStyle} placeholder="FedEx, DHL..."/></div>
+              </div>
+              <div><label style={labelStyle}>Notas internas</label><textarea value={notasAdmin} onChange={e => setNotasAdmin(e.target.value)} style={{ ...inputStyle, resize: 'none' }} rows={2} placeholder="Notas visibles solo en admin"/></div>
+            </Seccion>
+
+            {/* Notificaciones */}
+            <Seccion titulo="Notificar al cliente">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {[
+                  { label: '🔧 En fabricación', tipo: 'fabricacion', requiere: 'pendiente' },
+                  { label: '📦 Enviado', tipo: 'enviado', requiere: 'en proceso' },
+                  { label: '✅ Entregado', tipo: 'entregado', requiere: 'enviado' },
+                ].map(btn => {
+                  const activo = estado === btn.requiere || (btn.tipo === 'enviado' && estado === 'en proceso');
+                  return (
+                    <button key={btn.tipo} disabled={!activo}
+                      onClick={async () => {
+                        if (btn.tipo === 'enviado') {
+                          const t = prompt('Número de tracking:'); if (!t) return;
+                          const p = prompt('Paquetería:') || 'paquetería';
+                          setTracking(t); setPaqueteria(p);
+                          const res = await fetch('/api/emails', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: 'enviado', order_id: pedido.id, tracking: t, paqueteria: p }) });
+                          if (res.ok) { setEstado('enviado'); alert('✓ Email de envío enviado'); }
+                        } else {
+                          if (!confirm(`¿Enviar notificación "${btn.label}"?`)) return;
+                          const res = await fetch('/api/emails', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: btn.tipo, order_id: pedido.id }) });
+                          if (res.ok) { if (btn.tipo === 'fabricacion') setEstado('en proceso'); if (btn.tipo === 'entregado') setEstado('entregado'); alert('✓ Email enviado'); }
+                        }
+                      }}
+                      style={{ padding: '8px 14px', borderRadius: '6px', border: '1px solid var(--border)', background: activo ? 'var(--cream)' : 'white', color: activo ? 'var(--charcoal)' : 'var(--warm-gray)', fontSize: '12px', fontWeight: activo ? 500 : 400, cursor: activo ? 'pointer' : 'not-allowed', opacity: activo ? 1 : 0.45, fontFamily: 'var(--font-sans)', textAlign: 'left', transition: 'all 0.15s' }}>
+                      {btn.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </Seccion>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', bottom: 0, background: 'white' }}>
+          <button onClick={async () => {
+            if (!confirm('¿Eliminar este pedido? Esta acción no se puede deshacer.')) return;
+            await supabase.from('recetas').delete().eq('pedido_id', pedido.id);
+            await supabase.from('finanzas').delete().eq('pedido_id', pedido.id);
+            await supabase.from('pedidos').delete().eq('id', pedido.id);
+            onSaved(); onClose();
+          }} style={btnDanger}>Eliminar pedido</button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={onClose} style={btnGhost}>Cancelar</button>
+            <button onClick={guardar} disabled={guardando} style={{ ...btnSage, opacity: guardando ? 0.6 : 1 }}>
+              {guardando ? 'Guardando...' : 'Guardar cambios'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── ADMIN PRINCIPAL ───────────────────────────────────────────────────────
 export default function Admin() {
   const [authed, setAuthed] = useState(false);
   const [user, setUser] = useState('');
@@ -471,7 +673,6 @@ export default function Admin() {
     setEditArmazon((prev: any) => ({ ...prev, [field]: value }));
   }, []);
 
-  // Upload para armazón en edición — sube y guarda en BD inmediatamente
   const onFotoUploadEdit = useCallback(async (file: File, campo: string) => {
     if (!editArmazon?.id) return;
     const url = await subirFotoDirecto(file, campo, editArmazon.id);
@@ -565,10 +766,12 @@ export default function Admin() {
                   <thead><tr style={{ background: 'var(--cream)' }}>{['#','Cliente','Armazón','Total','Estado','Fecha'].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>)}</tr></thead>
                   <tbody>
                     {pedidos.slice(0, 8).map(p => (
-                      <tr key={p.id} style={{ borderTop: '1px solid var(--border)' }}>
+                      <tr key={p.id} onClick={() => setEditPedido(p)} style={{ borderTop: '1px solid var(--border)', cursor: 'pointer' }}
+                        onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = 'var(--cream)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = 'white'}>
                         <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)', fontWeight: 500 }}>{orderCode(p.id)}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '13px' }}>{p.clientes?.nombre || '—'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--warm-gray)' }}>{p.armazones?.nombre || '—'}</td>
+                        <td style={{ padding: '12px 16px', fontSize: '13px' }}>{p.clientes?.nombre || p.cliente_email || '—'}</td>
+                        <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--warm-gray)' }}>{p.armazones?.nombre || (p.configuracion ? '✓ Config' : '—')}</td>
                         <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 600 }}>${p.precio_venta || 0}</td>
                         <td style={{ padding: '12px 16px' }}><span style={{ background: ESTADO_COLORS[p.estado]?.bg, color: ESTADO_COLORS[p.estado]?.text, border: `1px solid ${ESTADO_COLORS[p.estado]?.border}`, padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 500 }}>{p.estado}</span></td>
                         <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)' }}>{new Date(p.created_at).toLocaleDateString()}</td>
@@ -585,14 +788,15 @@ export default function Admin() {
           {modulo === 'pedidos' && (
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <p style={{ margin: 0, fontSize: '13px', color: 'var(--warm-gray)' }}>{pedidos.length} pedidos</p>
+                <p style={{ margin: 0, fontSize: '13px', color: 'var(--warm-gray)' }}>{pedidos.length} pedidos · {pedidosPendientes} pendientes</p>
                 <button onClick={() => setShowNewPedido(true)} style={btnPrimary}>+ Nuevo pedido</button>
               </div>
+
               {showNewPedido && (
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                   <div style={{ background: 'white', borderRadius: '12px', width: '100%', maxWidth: '680px', maxHeight: '90vh', overflowY: 'auto', padding: '2rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                      <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>Nuevo pedido</h3>
+                      <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>Nuevo pedido manual</h3>
                       <button onClick={() => setShowNewPedido(false)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: 'var(--warm-gray)' }}>×</button>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
@@ -605,29 +809,17 @@ export default function Admin() {
                       <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Receta óptica</div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
                         {[{key:'sph_od',label:'SPH OD'},{key:'cyl_od',label:'CYL OD'},{key:'axis_od',label:'EJE OD'},{key:'sph_os',label:'SPH OS'},{key:'cyl_os',label:'CYL OS'},{key:'axis_os',label:'EJE OS'},{key:'add_val',label:'ADD'},{key:'dp',label:'DP'}].map(f => (
-                          <div key={f.key}><label style={{...labelStyle, fontSize:'9px'}}>{f.label}</label><input type="number" step="0.25" value={newPedido.receta[f.key]} onChange={e => setNewPedido({...newPedido, receta: {...newPedido.receta, [f.key]: e.target.value}})} style={{...inputStyle, padding:'6px 8px'}} placeholder="—"/></div>
+                          <div key={f.key}><label style={{...labelStyle,fontSize:'9px'}}>{f.label}</label><input type="number" step="0.25" value={newPedido.receta[f.key]} onChange={e => setNewPedido({...newPedido, receta: {...newPedido.receta, [f.key]: e.target.value}})} style={{...inputStyle,padding:'6px 8px'}} placeholder="—"/></div>
                         ))}
                       </div>
-                    </div>
-                    <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
-                      <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Costos</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-                        {[{key:'costo_armazon',label:'Armazón'},{key:'costo_laboratorio',label:'Laboratorio'},{key:'otros_costos',label:'Otros'}].map(f => (
-                          <div key={f.key}><label style={{...labelStyle, fontSize:'9px'}}>{f.label}</label><input type="number" value={newPedido.finanzas[f.key]} onChange={e => setNewPedido({...newPedido, finanzas: {...newPedido.finanzas, [f.key]: e.target.value}})} style={{...inputStyle, padding:'6px 8px'}} placeholder="0"/></div>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                      <div><label style={labelStyle}>Notas internas</label><textarea value={newPedido.notas_admin} onChange={e => setNewPedido({...newPedido, notas_admin: e.target.value})} style={{...inputStyle, resize:'none'}} rows={2}/></div>
-                      <div><label style={labelStyle}>Notas del cliente</label><textarea value={newPedido.notas_cliente} onChange={e => setNewPedido({...newPedido, notas_cliente: e.target.value})} style={{...inputStyle, resize:'none'}} rows={2}/></div>
                     </div>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                       <button onClick={() => setShowNewPedido(false)} style={btnGhost}>Cancelar</button>
                       <button onClick={async () => {
                         const { data: ped } = await supabase.from('pedidos').insert({ cliente_id: newPedido.cliente_id || null, armazon_id: newPedido.armazon_id || null, estado: newPedido.estado, precio_venta: parseFloat(newPedido.precio_venta)||0, notas_admin: newPedido.notas_admin, notas_cliente: newPedido.notas_cliente }).select().single();
                         if (ped) {
-                          await supabase.from('recetas').insert({ pedido_id: ped.id, ...Object.fromEntries(Object.entries(newPedido.receta).map(([k,v]) => [k, parseFloat(v as string)||null])) });
-                          await supabase.from('finanzas').insert({ pedido_id: ped.id, precio_venta: parseFloat(newPedido.precio_venta)||0, ...Object.fromEntries(Object.entries(newPedido.finanzas).map(([k,v]) => [k, parseFloat(v as string)||0])) });
+                          await supabase.from('recetas').insert({ pedido_id: ped.id, metodo: 'manual', ...Object.fromEntries(Object.entries(newPedido.receta).map(([k,v]) => [k, parseFloat(v as string)||null])) });
+                          await supabase.from('finanzas').insert({ pedido_id: ped.id, precio_venta: parseFloat(newPedido.precio_venta)||0, costo_armazon: 0, costo_laboratorio: 0, otros_costos: 0 });
                         }
                         setShowNewPedido(false); cargarTodo();
                       }} style={btnSage}>Guardar pedido</button>
@@ -635,87 +827,68 @@ export default function Admin() {
                   </div>
                 </div>
               )}
+
               <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead><tr style={{ background: 'var(--cream)' }}>{['#','Cliente','Armazón','Total','Estado','Dirección','Tracking','Fecha',''].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>)}</tr></thead>
-                  <tbody>
-                    {pedidos.map(p => (
-                      <tr key={p.id} style={{ borderTop: '1px solid var(--border)' }}>
-                        <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)', fontWeight: 500 }}>{orderCode(p.id)}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 500 }}>{p.clientes?.nombre || '—'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--warm-gray)' }}>{p.armazones?.nombre || '—'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 600 }}>${p.precio_venta||0}</td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <select value={p.estado} onChange={async e => { await supabase.from('pedidos').update({ estado: e.target.value }).eq('id', p.id); cargarTodo(); }} style={{ padding: '4px 8px', borderRadius: '20px', border: `1px solid ${ESTADO_COLORS[p.estado]?.border}`, background: ESTADO_COLORS[p.estado]?.bg, color: ESTADO_COLORS[p.estado]?.text, fontSize: '11px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
-                            {ESTADOS.map(s => <option key={s} value={s}>{s}</option>)}
-                          </select>
-                        </td>
-                        <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.clientes?.direccion || '—'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)' }}>{p.tracking || '—'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)' }}>{new Date(p.created_at).toLocaleDateString()}</td>
-                        <td style={{ padding: '12px 16px' }}><button onClick={() => setEditPedido(p)} style={{ ...btnGhost, padding: '4px 12px', fontSize: '11px' }}>Ver</button></td>
-                      </tr>
+                  <thead><tr style={{ background: 'var(--cream)' }}>
+                    {['#','Paciente','Armazón','Configuración','Total','Estado','Receta','Fecha',''].map(h => (
+                      <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
+                  </tr></thead>
+                  <tbody>
+                    {pedidos.map(p => {
+                      const cfg = p.configuracion;
+                      const receta = p.recetas?.[0];
+                      const recetaLabel = !receta ? '—'
+                        : receta.metodo === 'manual' ? '✍ Manual'
+                        : receta.metodo === 'foto' ? '📷 Foto'
+                        : receta.metodo === 'sin_graduacion' ? '👓 Sin grad.'
+                        : '⏳ Pendiente';
+                      const recetaColor = receta?.metodo === 'manual' || receta?.metodo === 'foto' ? '#065F46'
+                        : receta?.metodo === 'sin_graduacion' ? '#1E40AF'
+                        : '#92400E';
+                      return (
+                        <tr key={p.id} style={{ borderTop: '1px solid var(--border)' }}>
+                          <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)', fontWeight: 500 }}>{orderCode(p.id)}</td>
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontSize: '13px', fontWeight: 500 }}>{p.clientes?.nombre || p.cliente_email?.split('@')[0] || '—'}</div>
+                            {p.paciente && p.paciente !== p.clientes?.nombre && <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>Para: {p.paciente}</div>}
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--warm-gray)' }}>{p.armazones?.nombre || '—'}</td>
+                          <td style={{ padding: '12px 16px', fontSize: '11px', color: 'var(--warm-gray)', maxWidth: '160px' }}>
+                            {cfg ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                {cfg.vision_nombre && <span>{cfg.vision_nombre}</span>}
+                                {cfg.material_nombre && <span>{cfg.material_nombre}</span>}
+                                {cfg.filtros_nombres?.length > 0 && <span style={{ color: 'var(--sage)' }}>{cfg.filtros_nombres.join(', ')}</span>}
+                              </div>
+                            ) : <span style={{ color: '#ccc' }}>—</span>}
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap' }}>${p.precio_venta||0}</td>
+                          <td style={{ padding: '12px 16px' }}>
+                            <span style={{ background: ESTADO_COLORS[p.estado]?.bg, color: ESTADO_COLORS[p.estado]?.text, border: `1px solid ${ESTADO_COLORS[p.estado]?.border}`, padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 500 }}>{p.estado}</span>
+                          </td>
+                          <td style={{ padding: '12px 16px' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 500, color: recetaColor }}>{recetaLabel}</span>
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)', whiteSpace: 'nowrap' }}>{new Date(p.created_at).toLocaleDateString()}</td>
+                          <td style={{ padding: '12px 16px' }}>
+                            <button onClick={() => setEditPedido(p)} style={{ ...btnGhost, padding: '4px 12px', fontSize: '11px' }}>Ver</button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                     {pedidos.length === 0 && <tr><td colSpan={9} style={{ padding: '3rem', textAlign: 'center', color: 'var(--warm-gray)', fontSize: '13px' }}>Sin pedidos aún</td></tr>}
                   </tbody>
                 </table>
               </div>
+
               {editPedido && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-                  <div style={{ background: 'white', borderRadius: '12px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', padding: '2rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                      <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>{orderCode(editPedido.id)}</h3>
-                      <button onClick={() => setEditPedido(null)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: 'var(--warm-gray)' }}>×</button>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                      <div><span style={labelStyle}>Cliente</span><p style={{ margin: 0, fontSize: '14px' }}>{editPedido.clientes?.nombre || '—'}</p></div>
-                      <div><span style={labelStyle}>Armazón</span><p style={{ margin: 0, fontSize: '14px' }}>{editPedido.armazones?.nombre || '—'}</p></div>
-                      <div><span style={labelStyle}>Total</span><p style={{ margin: 0, fontSize: '16px', fontWeight: 600 }}>${editPedido.precio_venta}</p></div>
-                      <div><label style={labelStyle}>Estado</label><select value={editPedido.estado} onChange={async e => { await supabase.from('pedidos').update({ estado: e.target.value }).eq('id', editPedido.id); setEditPedido({...editPedido, estado: e.target.value}); cargarTodo(); }} style={inputStyle}>{ESTADOS.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
-                    </div>
-                    {editPedido.clientes?.direccion && <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1rem' }}><span style={labelStyle}>Dirección de envío</span><p style={{ margin: 0, fontSize: '13px' }}>{editPedido.clientes.direccion}</p></div>}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                      <div><label style={labelStyle}>Tracking</label><input value={editPedido.tracking || ''} onChange={e => setEditPedido({...editPedido, tracking: e.target.value})} style={inputStyle} placeholder="Número de tracking"/></div>
-                      <div><label style={labelStyle}>Paquetería</label><input value={editPedido.paqueteria || ''} onChange={e => setEditPedido({...editPedido, paqueteria: e.target.value})} style={inputStyle} placeholder="FedEx, DHL..."/></div>
-                    </div>
-                    {editPedido.notas_cliente && <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1rem' }}><span style={labelStyle}>Detalle del pedido</span><p style={{ margin: 0, fontSize: '12px', color: 'var(--warm-gray)', lineHeight: 1.6 }}>{editPedido.notas_cliente}</p></div>}
-                    {editPedido.recetas?.[0] && (
-                      <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
-                        <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Receta óptica</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', fontSize: '12px' }}>
-                          {['sph_od','cyl_od','axis_od','sph_os','cyl_os','axis_os','add_val','dp'].map(k => (
-                            <div key={k}><span style={{ color: 'var(--warm-gray)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{k}</span><br/><strong>{editPedido.recetas[0][k] ?? '—'}</strong></div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem', marginBottom: '1rem' }}>
-                      <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Actualizar estado y notificar</div>
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                        <button disabled={editPedido.estado !== 'pendiente'} onClick={async () => {
-                          if (!confirm('¿Marcar como En Fabricación y notificar al cliente?')) return;
-                          const res = await fetch('/api/emails', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: 'fabricacion', order_id: editPedido.id }) });
-                          if (res.ok) { setEditPedido({...editPedido, estado: 'en proceso'}); cargarTodo(); alert('Email enviado'); }
-                        }} style={{ ...btnSage, opacity: editPedido.estado !== 'pendiente' ? 0.4 : 1, cursor: editPedido.estado !== 'pendiente' ? 'not-allowed' : 'pointer', fontSize: '11px', padding: '7px 14px' }}>En fabricación</button>
-                        <button disabled={editPedido.estado !== 'en proceso'} onClick={async () => {
-                          const tracking = prompt('Número de tracking:'); if (!tracking) return;
-                          const paqueteria = prompt('Paquetería:') || 'paquetería';
-                          const res = await fetch('/api/emails', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: 'enviado', order_id: editPedido.id, tracking, paqueteria }) });
-                          if (res.ok) { setEditPedido({...editPedido, estado: 'enviado', tracking, paqueteria}); cargarTodo(); alert('Email enviado'); }
-                        }} style={{ background: '#1E40AF', color: 'white', border: 'none', borderRadius: '4px', padding: '7px 14px', fontSize: '11px', fontWeight: 500, cursor: editPedido.estado !== 'en proceso' ? 'not-allowed' : 'pointer', opacity: editPedido.estado !== 'en proceso' ? 0.4 : 1, fontFamily: 'var(--font-sans)' }}>Enviado</button>
-                        <button disabled={editPedido.estado !== 'enviado'} onClick={async () => {
-                          if (!confirm('¿Marcar como Entregado?')) return;
-                          const res = await fetch('/api/emails', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tipo: 'entregado', order_id: editPedido.id }) });
-                          if (res.ok) { setEditPedido({...editPedido, estado: 'entregado'}); cargarTodo(); alert('Email enviado. 30 días programado.'); }
-                        }} style={{ background: '#065F46', color: 'white', border: 'none', borderRadius: '4px', padding: '7px 14px', fontSize: '11px', fontWeight: 500, cursor: editPedido.estado !== 'enviado' ? 'not-allowed' : 'pointer', opacity: editPedido.estado !== 'enviado' ? 0.4 : 1, fontFamily: 'var(--font-sans)' }}>Entregado</button>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                      <button onClick={async () => { await supabase.from('pedidos').update({ tracking: editPedido.tracking, paqueteria: editPedido.paqueteria, estado: editPedido.estado }).eq('id', editPedido.id); setEditPedido(null); cargarTodo(); }} style={btnSage}>Guardar cambios</button>
-                      <button onClick={async () => { if (confirm('¿Eliminar pedido?')) { await supabase.from('recetas').delete().eq('pedido_id', editPedido.id); await supabase.from('finanzas').delete().eq('pedido_id', editPedido.id); await supabase.from('pedidos').delete().eq('id', editPedido.id); setEditPedido(null); cargarTodo(); } }} style={btnDanger}>Eliminar</button>
-                    </div>
-                  </div>
-                </div>
+                <ModalPedido
+                  pedido={editPedido}
+                  onClose={() => setEditPedido(null)}
+                  onSaved={cargarTodo}
+                />
               )}
             </div>
           )}
@@ -779,8 +952,9 @@ export default function Admin() {
                     <div style={{ marginBottom: '1.5rem' }}>
                       <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Pedidos</div>
                       {pedidos.filter(p => p.cliente_id === editCliente.id).map(p => (
-                        <div key={p.id} style={{ background: 'var(--cream)', borderRadius: '6px', padding: '10px 14px', marginBottom: '6px', display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                          <span>{orderCode(p.id)} — {p.armazones?.nombre}</span>
+                        <div key={p.id} style={{ background: 'var(--cream)', borderRadius: '6px', padding: '10px 14px', marginBottom: '6px', display: 'flex', justifyContent: 'space-between', fontSize: '13px', cursor: 'pointer' }}
+                          onClick={() => { setEditCliente(null); setEditPedido(p); }}>
+                          <span>{orderCode(p.id)} — {p.armazones?.nombre || 'Pedido online'}</span>
                           <span style={{ fontWeight: 600 }}>${p.precio_venta}</span>
                         </div>
                       ))}
@@ -802,41 +976,19 @@ export default function Admin() {
                 <p style={{ margin: 0, fontSize: '13px', color: 'var(--warm-gray)' }}>{armazones.length} armazones</p>
                 <button onClick={() => setShowNewArmazon(true)} style={btnPrimary}>+ Nuevo armazón</button>
               </div>
-
-              {showNewArmazon && (
-                <ModalNuevoArmazon
-                  onClose={() => setShowNewArmazon(false)}
-                  onSaved={cargarTodo}
-                  subirFotoDirecto={subirFotoDirecto}
-                />
-              )}
-
+              {showNewArmazon && <ModalNuevoArmazon onClose={() => setShowNewArmazon(false)} onSaved={cargarTodo} subirFotoDirecto={subirFotoDirecto}/>}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem' }}>
                 {armazones.map(a => (
                   <div key={a.id} style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
-                    <div style={{ height: '160px', background: `${a.color || a.color1 || '#1A1A2E'}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                      {a.imagen_url
-                        ? <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
-                        : <svg width="100" height="56" viewBox="0 0 160 90" fill="none"><rect x="4" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color||'#1A1A2E'} strokeWidth="3.5"/><rect x="92" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color||'#1A1A2E'} strokeWidth="3.5"/><path d="M68 38 C72 32, 88 32, 92 38" stroke={a.color||'#1A1A2E'} strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>
-                      }
+                    <div style={{ height: '160px', background: `${a.color||a.color1||'#1A1A2E'}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                      {a.imagen_url ? <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/> : <svg width="100" height="56" viewBox="0 0 160 90" fill="none"><rect x="4" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color||'#1A1A2E'} strokeWidth="3.5"/><rect x="92" y="12" width="64" height="66" rx="14" fill="none" stroke={a.color||'#1A1A2E'} strokeWidth="3.5"/><path d="M68 38 C72 32, 88 32, 92 38" stroke={a.color||'#1A1A2E'} strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>}
                       <div style={{ position: 'absolute', top: '8px', right: '8px', background: a.activo ? '#D1FAE5' : '#FEE2E2', color: a.activo ? '#065F46' : '#991B1B', borderRadius: '20px', padding: '2px 8px', fontSize: '10px', fontWeight: 500 }}>{a.activo ? 'Activo' : 'Inactivo'}</div>
-                      {a.tipo === 'solar' && <div style={{ position: 'absolute', top: '8px', left: '8px', background: 'var(--charcoal)', color: 'white', borderRadius: '20px', padding: '2px 8px', fontSize: '10px', fontWeight: 500 }}>Solar</div>}
-                      {a.descuento > 0 && <div style={{ position: 'absolute', bottom: '8px', left: '8px', background: '#C0392B', color: 'white', borderRadius: '20px', padding: '2px 8px', fontSize: '10px', fontWeight: 600 }}>-{a.descuento}%</div>}
-                      <div style={{ position: 'absolute', bottom: '8px', right: '8px', display: 'flex', gap: '4px' }}>
-                        {[a.color1||a.color, a.color2, a.color3].filter(Boolean).map((c, i) => (
-                          <div key={i} style={{ width: '14px', height: '14px', borderRadius: '50%', background: c, border: '1.5px solid white' }}/>
-                        ))}
-                      </div>
                     </div>
                     <div style={{ padding: '1rem' }}>
                       <div style={{ fontWeight: 500, fontSize: '14px', marginBottom: '2px' }}>{a.nombre}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--warm-gray)', marginBottom: '2px', textTransform: 'capitalize' }}>{a.material && `${a.material} · `}{a.forma} · {a.genero}</div>
-                      {a.medidas && <div style={{ fontSize: '11px', color: 'var(--warm-gray)', marginBottom: '8px' }}>{a.medidas} · Talla {a.talla}</div>}
+                      <div style={{ fontSize: '11px', color: 'var(--warm-gray)', marginBottom: '8px', textTransform: 'capitalize' }}>{a.material && `${a.material} · `}{a.forma} · {a.genero}</div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <span style={{ fontWeight: 600, fontSize: '16px' }}>${a.precio}</span>
-                          {a.descuento > 0 && <span style={{ fontSize: '11px', color: '#C0392B', marginLeft: '6px' }}>-{a.descuento}%</span>}
-                        </div>
+                        <span style={{ fontWeight: 600, fontSize: '16px' }}>${a.precio}</span>
                         <div style={{ display: 'flex', gap: '6px' }}>
                           <button onClick={() => setEditArmazon({...a, color1: a.color1||a.color||'#1A1A2E'})} style={{ ...btnGhost, padding: '4px 12px', fontSize: '11px' }}>Editar</button>
                           <button onClick={async () => { if (confirm('¿Eliminar?')) { await supabase.from('armazones').delete().eq('id', a.id); cargarTodo(); } }} style={{ ...btnDanger, padding: '4px 12px', fontSize: '11px' }}>Eliminar</button>
@@ -846,8 +998,6 @@ export default function Admin() {
                   </div>
                 ))}
               </div>
-
-              {/* MODAL EDITAR */}
               {editArmazon && (
                 <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
                   <div style={{ background: 'white', borderRadius: '12px', width: '100%', maxWidth: '780px', maxHeight: '90vh', overflowY: 'auto', padding: '2rem' }}>
@@ -855,23 +1005,12 @@ export default function Admin() {
                       <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 500 }}>Editando: {editArmazon.nombre}</h3>
                       <button onClick={() => setEditArmazon(null)} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: 'var(--warm-gray)' }}>×</button>
                     </div>
-                    <ArmazonForm
-                      data={editArmazon}
-                      onChange={handleEditArmazonChange}
-                      onFotoUpload={onFotoUploadEdit}
-                    />
+                    <ArmazonForm data={editArmazon} onChange={handleEditArmazonChange} onFotoUpload={onFotoUploadEdit}/>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
                       <button onClick={() => setEditArmazon(null)} style={btnGhost}>Cancelar</button>
                       <button onClick={async () => {
-                        await supabase.from('armazones').update({
-                          ...editArmazon,
-                          precio: parseInt(editArmazon.precio),
-                          stock: parseInt(editArmazon.stock),
-                          descuento: parseFloat(editArmazon.descuento) || 0,
-                          color: editArmazon.color1 || editArmazon.color,
-                        }).eq('id', editArmazon.id);
-                        setEditArmazon(null);
-                        cargarTodo();
+                        await supabase.from('armazones').update({ ...editArmazon, precio: parseInt(editArmazon.precio), stock: parseInt(editArmazon.stock), descuento: parseFloat(editArmazon.descuento)||0, color: editArmazon.color1||editArmazon.color }).eq('id', editArmazon.id);
+                        setEditArmazon(null); cargarTodo();
                       }} style={btnSage}>Guardar cambios</button>
                     </div>
                   </div>
@@ -894,7 +1033,7 @@ export default function Admin() {
               <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
                 <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border)', fontSize: '13px', fontWeight: 500 }}>Desglose por pedido</div>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead><tr style={{ background: 'var(--cream)' }}>{['Pedido','Venta','C. Armazón','C. Lab','Otros','Ganancia','Margen'].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>)}</tr></thead>
+                  <thead><tr style={{ background: 'var(--cream)' }}>{['Pedido','Cliente','Venta','C. Armazón','C. Lab','Otros','Ganancia','Margen'].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>)}</tr></thead>
                   <tbody>
                     {pedidos.filter(p => p.finanzas?.[0]).map(p => {
                       const f = p.finanzas[0];
@@ -902,8 +1041,11 @@ export default function Admin() {
                       const gan = (p.precio_venta||0)-costos;
                       const margen = p.precio_venta>0?((gan/p.precio_venta)*100).toFixed(1):'0';
                       return (
-                        <tr key={p.id} style={{ borderTop: '1px solid var(--border)' }}>
+                        <tr key={p.id} style={{ borderTop: '1px solid var(--border)', cursor: 'pointer' }} onClick={() => setEditPedido(p)}
+                          onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = 'var(--cream)'}
+                          onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = 'white'}>
                           <td style={{ padding: '10px 16px', fontSize: '12px', color: 'var(--warm-gray)', fontWeight: 500 }}>{orderCode(p.id)}</td>
+                          <td style={{ padding: '10px 16px', fontSize: '13px' }}>{p.clientes?.nombre || '—'}</td>
                           <td style={{ padding: '10px 16px', fontSize: '13px', fontWeight: 600 }}>${p.precio_venta}</td>
                           <td style={{ padding: '10px 16px', fontSize: '13px', color: '#C0392B' }}>${f.costo_armazon||0}</td>
                           <td style={{ padding: '10px 16px', fontSize: '13px', color: '#C0392B' }}>${f.costo_laboratorio||0}</td>
@@ -913,7 +1055,7 @@ export default function Admin() {
                         </tr>
                       );
                     })}
-                    {pedidos.filter(p => p.finanzas?.[0]).length===0 && <tr><td colSpan={7} style={{ padding: '3rem', textAlign: 'center', color: 'var(--warm-gray)', fontSize: '13px' }}>Sin datos financieros aún</td></tr>}
+                    {pedidos.filter(p => p.finanzas?.[0]).length===0 && <tr><td colSpan={8} style={{ padding: '3rem', textAlign: 'center', color: 'var(--warm-gray)', fontSize: '13px' }}>Sin datos financieros aún</td></tr>}
                   </tbody>
                 </table>
               </div>
@@ -926,7 +1068,6 @@ export default function Admin() {
               <p style={{ fontSize: '13px', color: 'var(--warm-gray)' }}>Disponible en la siguiente fase.</p>
             </div>
           )}
-
           {modulo === 'marketing' && (
             <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', padding: '3rem', textAlign: 'center' }}>
               <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '0.5rem' }}>Marketing & UTM</p>
@@ -936,6 +1077,10 @@ export default function Admin() {
 
         </div>
       </div>
+
+      {editPedido && modulo !== 'pedidos' && (
+        <ModalPedido pedido={editPedido} onClose={() => setEditPedido(null)} onSaved={cargarTodo}/>
+      )}
 
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
