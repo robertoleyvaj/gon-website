@@ -1,6 +1,6 @@
 // app/armazon/[id]/page.tsx
 'use client';
-import { usePreciosVerly } from '../../../hooks/usePreciosVerly';
+import { usePreciosVerly } from '../../hooks/usePreciosVerly';
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
