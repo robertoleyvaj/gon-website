@@ -52,13 +52,13 @@ function QuizModal({ onClose, t, lang }: { onClose: () => void; t: any; lang: st
   const handleGenero = (val: string) => { router.push(`/Tienda?tipo=${tipo}&genero=${val}`); onClose(); };
 
   const paso1Cards = [
-    { val: 'optico', img: '/quiz-optico.jpg', title: t('Prescription glasses', 'Prescription glasses'), desc: t('Para tu visión diaria', 'For your daily vision'), icon: (<svg width="28" height="16" viewBox="0 0 110 55" fill="none"><rect x="2" y="7" width="44" height="38" rx="8" fill="none" stroke="white" strokeWidth="3"/><rect x="64" y="7" width="44" height="38" rx="8" fill="none" stroke="white" strokeWidth="3"/><path d="M46 22 C50 18, 60 18, 64 22" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"/><line x1="2" y1="22" x2="-5" y2="18" stroke="white" strokeWidth="2.5" strokeLinecap="round"/><line x1="108" y1="22" x2="115" y2="18" stroke="white" strokeWidth="2.5" strokeLinecap="round"/></svg>) },
-    { val: 'solar', img: '/quiz-solar.jpg', title: t('Sunglasses', 'Sunglasses'), desc: t('Protección y estilo', 'Protection and style'), icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>) },
+    { val: 'optico', img: '/quiz-optico.jpg', title: t('Prescription glasses', 'Prescription glasses'), desc: t('Para tu vision diaria', 'For your daily vision'), icon: (<svg width="28" height="16" viewBox="0 0 110 55" fill="none"><rect x="2" y="7" width="44" height="38" rx="8" fill="none" stroke="white" strokeWidth="3"/><rect x="64" y="7" width="44" height="38" rx="8" fill="none" stroke="white" strokeWidth="3"/><path d="M46 22 C50 18, 60 18, 64 22" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"/><line x1="2" y1="22" x2="-5" y2="18" stroke="white" strokeWidth="2.5" strokeLinecap="round"/><line x1="108" y1="22" x2="115" y2="18" stroke="white" strokeWidth="2.5" strokeLinecap="round"/></svg>) },
+    { val: 'solar', img: '/quiz-solar.jpg', title: t('Sunglasses', 'Sunglasses'), desc: t('Proteccion y estilo', 'Protection and style'), icon: (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>) },
   ];
 
   const paso2Cards = [
-    { val: 'hombre', img: tipo === 'solar' ? '/quiz-hombre-solar.jpg' : '/quiz-hombre.jpg', title: t('Hombre', 'Men'), desc: t('Clásicos, cómodos y resistentes', 'Classic, comfortable and durable') },
-    { val: 'mujer', img: tipo === 'solar' ? '/quiz-mujer-solar.jpg' : '/quiz-mujer.jpg', title: t('Mujer', 'Women'), desc: t('Modernos, ligeros y versátiles', 'Modern, lightweight and versatile') },
+    { val: 'hombre', img: tipo === 'solar' ? '/quiz-hombre-solar.jpg' : '/quiz-hombre.jpg', title: t('Hombre', 'Men'), desc: t('Clasicos, comodos y resistentes', 'Classic, comfortable and durable') },
+    { val: 'mujer', img: tipo === 'solar' ? '/quiz-mujer-solar.jpg' : '/quiz-mujer.jpg', title: t('Mujer', 'Women'), desc: t('Modernos, ligeros y versatiles', 'Modern, lightweight and versatile') },
   ];
 
   return (
@@ -69,12 +69,12 @@ function QuizModal({ onClose, t, lang }: { onClose: () => void; t: any; lang: st
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem' }}>
             <img src="/logo-trasparente.png" alt="Verly" style={{ height: '28px', opacity: 0.9, filter: 'brightness(0) invert(1)' }}/>
           </div>
-          <button onClick={onClose} style={{ position: 'absolute', top: 0, right: 0, width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '18px', backdropFilter: 'blur(4px)' }}>×</button>
+          <button onClick={onClose} style={{ position: 'absolute', top: 0, right: 0, width: '36px', height: '36px', borderRadius: '50%', background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '18px', backdropFilter: 'blur(4px)' }}>x</button>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: '0.75rem' }}>
             {paso === 1 ? t('Paso 1 de 2', 'Step 1 of 2') : t('Paso 2 de 2', 'Step 2 of 2')}
           </p>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 4vw, 2.8rem)', fontWeight: 400, color: 'white', margin: '0 0 0.5rem', lineHeight: 1.1 }}>
-            {paso === 1 ? t('¿Qué buscas?', 'What are you looking for?') : t('¿Para quién?', 'Who is it for?')}
+            {paso === 1 ? t('Que buscas?', 'What are you looking for?') : t('Para quien?', 'Who is it for?')}
           </h2>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', fontWeight: 500, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', margin: 0 }}>
             {paso === 1 ? t('Elige el tipo de lentes', 'Choose the type of lenses') : t('Personaliza tu experiencia', 'Personalize your experience')}
@@ -101,7 +101,7 @@ function QuizModal({ onClose, t, lang }: { onClose: () => void; t: any; lang: st
         </div>
         {paso === 2 && (
           <button onClick={() => setPaso(1)} style={{ marginTop: '1.25rem', background: 'none', border: 'none', fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontFamily: 'var(--font-sans)', textDecoration: 'underline' }}>
-            ← {t('Volver', 'Back')}
+            {t('Volver', 'Back')}
           </button>
         )}
       </div>
@@ -137,14 +137,13 @@ export default function Home() {
         <Navbar />
         {quizOpen && <QuizModal onClose={() => setQuizOpen(false)} t={t} lang={lang} />}
 
-        {/* ── ARMAZONES DESTACADOS ── */}
         <section style={{ paddingTop: '80px', paddingBottom: '2rem' }}>
           <div style={{ padding: '0 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1rem' }}>
             <div>
               <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '4px' }}>{t('Esta semana', 'This week')}</p>
               <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300, color: 'var(--charcoal)', margin: 0, lineHeight: 1.1 }}>{t('Armazones destacados', 'Featured frames')}</h2>
             </div>
-            <Link href="/Tienda" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', color: 'var(--warm-gray)', textDecoration: 'none', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{t('Ver todos →', 'View all →')}</Link>
+            <Link href="/Tienda" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', color: 'var(--warm-gray)', textDecoration: 'none', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>{t('Ver todos', 'View all')}</Link>
           </div>
           <div ref={carruselRef} style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingLeft: '1.25rem', paddingRight: '1.25rem', paddingBottom: '0.5rem', scrollSnapType: 'x mandatory', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
             {armazones.map(a => (
@@ -170,11 +169,10 @@ export default function Home() {
             ))}
           </div>
           <div style={{ padding: '1rem 1.25rem 0' }}>
-            <Link href="/Tienda" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.72rem', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--charcoal)', border: '1px solid var(--border)', padding: '0.85rem', borderRadius: '3px', textDecoration: 'none' }}>{t('Ver más armazones →', 'View more frames →')}</Link>
+            <Link href="/Tienda" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '0.72rem', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--charcoal)', border: '1px solid var(--border)', padding: '0.85rem', borderRadius: '3px', textDecoration: 'none' }}>{t('Ver mas armazones', 'View more frames')}</Link>
           </div>
         </section>
 
-        {/* ── HERO BANNER ── */}
         <section style={{ margin: '0 1.25rem 2rem', borderRadius: '10px', overflow: 'hidden', position: 'relative', height: '340px' }}>
           <img src="/hero-mobile.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(28,28,26,0.72) 0%, rgba(28,28,26,0.3) 55%, rgba(28,28,26,0.0) 100%)' }}/>
@@ -185,12 +183,11 @@ export default function Home() {
                 : <>Eyewear that<br />fits<br /><em style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.7)' }}>your life.</em></>}
             </h1>
             <button onClick={() => setQuizOpen(true)} style={{ display: 'inline-block', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--charcoal)', background: 'white', padding: '0.65rem 1.1rem', borderRadius: '2px', border: 'none', cursor: 'pointer' }}>
-              {t('Encontrar mi par →', 'Find my frames →')}
+              {t('Encontrar mi par', 'Find my frames')}
             </button>
           </div>
         </section>
 
-        {/* ── PROMO BANNER MÓVIL ── */}
         <section style={{ margin: '0 1.25rem 2rem', background: 'var(--sage)', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
           <div style={{ padding: '1.75rem 1.5rem' }}>
             <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.65)', margin: '0 0 0.6rem' }}>
@@ -210,31 +207,23 @@ export default function Home() {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
             </Link>
           </div>
-          {/* Círculo decorativo */}
           <div style={{ position: 'absolute', top: '-30px', right: '-30px', width: '130px', height: '130px', borderRadius: '50%', background: 'rgba(255,255,255,0.07)', pointerEvents: 'none' }}/>
           <div style={{ position: 'absolute', bottom: '-20px', right: '40px', width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', pointerEvents: 'none' }}/>
         </section>
 
-        {/* ── PARA ÉL / PARA ELLA ── */}
         <section style={{ margin: '0 1.25rem 2rem' }}>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 500, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '0.75rem' }}>
             {t('Colecciones', 'Collections')}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {[
-              { img: '/hero-hombre.jpg', titulo_es: 'Para él', titulo_en: 'For him', sub_es: 'Clásicos y duraderos', sub_en: 'Classic and durable', href: '/Tienda?tipo=optico&genero=hombre', pos: 'center 30%' },
-              { img: '/hero-mujer.jpg', titulo_es: 'Para ella', titulo_en: 'For her', sub_es: 'Modernos y versátiles', sub_en: 'Modern and versatile', href: '/Tienda?tipo=optico&genero=mujer', pos: 'center 20%' },
+              { img: '/hero-hombre.jpg', titulo_es: 'Para el', titulo_en: 'For him', sub_es: 'Clasicos y duraderos', sub_en: 'Classic and durable', href: '/Tienda?tipo=optico&genero=hombre', pos: 'center 30%' },
+              { img: '/hero-mujer.jpg', titulo_es: 'Para ella', titulo_en: 'For her', sub_es: 'Modernos y versatiles', sub_en: 'Modern and versatile', href: '/Tienda?tipo=optico&genero=mujer', pos: 'center 20%' },
             ].map((c, i) => (
               <Link key={i} href={c.href} style={{ textDecoration: 'none', display: 'block' }}>
                 <div style={{ position: 'relative', height: '200px', borderRadius: '10px', overflow: 'hidden' }}>
-                  <img
-                    src={c.img}
-                    alt={lang === 'es' ? c.titulo_es : c.titulo_en}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: c.pos, display: 'block' }}
-                  />
-                  {/* Gradiente horizontal — texto a la izquierda */}
+                  <img src={c.img} alt={lang === 'es' ? c.titulo_es : c.titulo_en} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: c.pos, display: 'block' }}/>
                   <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.0) 100%)' }}/>
-                  {/* Texto */}
                   <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 1.5rem' }}>
                     <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', margin: '0 0 0.35rem' }}>
                       {lang === 'es' ? c.sub_es : c.sub_en}
@@ -243,9 +232,7 @@ export default function Home() {
                       {lang === 'es' ? c.titulo_es : c.titulo_en}
                     </h3>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.85)' }}>
-                        {t('Explorar', 'Explore')}
-                      </span>
+                      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.85)' }}>{t('Explorar', 'Explore')}</span>
                       <div style={{ width: '20px', height: '1px', background: 'rgba(255,255,255,0.5)' }}/>
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
                     </div>
@@ -256,14 +243,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CTA DARK ── */}
         <section style={{ margin: '0 1.25rem 2.5rem', background: 'var(--charcoal)', borderRadius: '10px', padding: '2rem 1.5rem', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', borderRadius: '50%', background: 'rgba(74,89,64,0.15)', pointerEvents: 'none' }}/>
           <div style={{ position: 'relative', zIndex: 1 }}>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'white', lineHeight: 1.15, margin: '0 0 0.4rem' }}>{t('Tu primer par.', 'Your first pair.')}</p>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(255,255,255,0.55)', margin: '0 0 1rem', lineHeight: 1.15 }}>{t('Nuestro mejor precio.', 'Our best price.')}</p>
             <button onClick={() => setQuizOpen(true)} style={{ display: 'inline-block', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--charcoal)', background: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', border: 'none', cursor: 'pointer' }}>
-              {t('Encontrar mi par →', 'Find my frames →')}
+              {t('Encontrar mi par', 'Find my frames')}
             </button>
           </div>
         </section>
@@ -276,22 +262,18 @@ export default function Home() {
               <a key={i} href={l.href} style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>{l.label}</a>
             ))}
           </div>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', color: 'rgba(255,255,255,0.15)', margin: 0 }}>© 2026 Verly Optical</p>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', color: 'rgba(255,255,255,0.15)', margin: 0 }}>2026 Verly Optical</p>
         </footer>
         <style>{`div::-webkit-scrollbar { display: none; }`}</style>
       </main>
     );
   }
 
-  // ════════════════════════════════
-  // DESKTOP
-  // ════════════════════════════════
   return (
     <main style={{ fontFamily: 'var(--font-sans)', margin: 0, padding: 0, background: 'var(--cream)', color: 'var(--charcoal)', overflowX: 'hidden' }}>
       <Navbar />
       {quizOpen && <QuizModal onClose={() => setQuizOpen(false)} t={t} lang={lang} />}
 
-      {/* ── 1. HERO ── */}
       <section style={{ position: 'relative', width: '100%', minHeight: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
         <img src="/hero-man.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
         <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.08)' }}/>
@@ -306,11 +288,11 @@ export default function Home() {
               : <>Quality eyewear<br />that fits<br /><em style={{ fontStyle: 'italic', color: 'var(--sage)' }}>your life.</em></>}
           </h1>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '15px', color: 'var(--warm-gray)', lineHeight: 1.8, marginBottom: '2.5rem', maxWidth: '360px', fontWeight: 400 }}>
-            {t('Diseños clásicos. Micas premium. Precios justos.', 'Classic designs. Premium lenses. Fair prices.')}
+            {t('Disenos clasicos. Micas premium. Precios justos.', 'Classic designs. Premium lenses. Fair prices.')}
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <button onClick={() => setQuizOpen(true)} style={{ background: 'var(--sage)', color: 'white', padding: '15px 36px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, letterSpacing: '1.2px', textTransform: 'uppercase', border: 'none', cursor: 'pointer' }}>
-              {t('Encontrar mi par →', 'Find my frames →')}
+              {t('Encontrar mi par', 'Find my frames')}
             </button>
             <Link href="/Tienda" style={{ background: 'rgba(255,255,255,0.8)', color: 'var(--charcoal)', padding: '14px 28px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase', border: '1px solid var(--border)', display: 'inline-block', backdropFilter: 'blur(8px)' }}>
               {t('Ver todo', 'Browse all')}
@@ -323,7 +305,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 2. PROMO BANNER ── */}
       <Reveal>
         <section style={{ position: 'relative', width: '100%', height: '500px', overflow: 'hidden' }}>
           <img src="/promo-banner.jpg" alt="Verly Promo" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}/>
@@ -352,7 +333,6 @@ export default function Home() {
         </section>
       </Reveal>
 
-      {/* ── 3. HOW IT WORKS ── */}
       <Reveal>
         <section style={{ background: 'var(--cream)', padding: '8rem 2rem', overflow: 'hidden' }}>
           <style>{`
@@ -385,9 +365,9 @@ export default function Home() {
           <div className="how-editorial-wrap">
             <Reveal>
               <div className="how-editorial-header">
-                <p className="how-eyebrow">{t('Cómo funciona', 'How it works')}</p>
+                <p className="how-eyebrow">{t('Como funciona', 'How it works')}</p>
                 <h2 className="how-title">
-                  {lang === 'es' ? <>Cuatro pasos simples.<br/>Mejor visión.</> : <>Four simple steps.<br/>Better vision.</>}
+                  {lang === 'es' ? <>Cuatro pasos simples.<br/>Mejor vision.</> : <>Four simple steps.<br/>Better vision.</>}
                 </h2>
                 <div className="how-subline">
                   <span/><p>{t('De tu receta a tu puerta.', 'From your prescription to your door.')}</p><span/>
@@ -396,10 +376,10 @@ export default function Home() {
             </Reveal>
             <div className="how-grid">
               {[
-                { num: '01', title_es: 'Elige tu armazón', title_en: 'Choose your frame', desc_es: 'Explora nuestra colección y encuentra el estilo perfecto para ti.', desc_en: 'Explore our collection and find the perfect style for you.', img: '/proceso-01.jpg', delay: 0 },
-                { num: '02', title_es: 'Sube tu receta', title_en: 'Upload your Rx', desc_es: 'Toma una foto de tu receta o escribe los números manualmente.', desc_en: 'Upload a photo of your prescription or type the numbers manually.', img: '/proceso-02.jpg', delay: 100 },
-                { num: '03', title_es: 'Fabricamos tus lentes', title_en: 'We craft your lenses', desc_es: 'Micas hechas con precisión según tu graduación, material y filtros.', desc_en: 'Precision lenses made for your prescription, material and filters.', img: '/proceso-03.jpg', delay: 160 },
-                { num: '04', title_es: 'Recíbelos en casa', title_en: 'Delivered to your door', desc_es: 'Envío rápido y seguro. Porque ver bien debería ser sencillo.', desc_en: 'Fast, secure shipping. Because great vision should feel effortless.', img: '/proceso-04.jpg', delay: 220 },
+                { num: '01', title_es: 'Elige tu armazon', title_en: 'Choose your frame', desc_es: 'Explora nuestra coleccion y encuentra el estilo perfecto para ti.', desc_en: 'Explore our collection and find the perfect style for you.', img: '/proceso-01.jpg', delay: 0 },
+                { num: '02', title_es: 'Sube tu receta', title_en: 'Upload your Rx', desc_es: 'Toma una foto de tu receta o escribe los numeros manualmente.', desc_en: 'Upload a photo of your prescription or type the numbers manually.', img: '/proceso-02.jpg', delay: 100 },
+                { num: '03', title_es: 'Fabricamos tus lentes', title_en: 'We craft your lenses', desc_es: 'Micas hechas con precision segun tu graduacion, material y filtros.', desc_en: 'Precision lenses made for your prescription, material and filters.', img: '/proceso-03.jpg', delay: 160 },
+                { num: '04', title_es: 'Recibelos en casa', title_en: 'Delivered to your door', desc_es: 'Envio rapido y seguro. Porque ver bien deberia ser sencillo.', desc_en: 'Fast, secure shipping. Because great vision should feel effortless.', img: '/proceso-04.jpg', delay: 220 },
               ].map((step, i) => (
                 <Reveal key={i} delay={step.delay} direction="up">
                   <article className="how-card">
@@ -422,13 +402,12 @@ export default function Home() {
         </section>
       </Reveal>
 
-      {/* ── 4. BEST SELLERS ── */}
       <section style={{ padding: '5rem 2rem', maxWidth: '1180px', margin: '0 auto' }}>
         <Reveal>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem' }}>
             <div>
               <p style={{ fontFamily: 'var(--font-sans)', fontSize: '10px', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--sage)', margin: '0 0 6px' }}>{t('Best sellers', 'Best sellers')}</p>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 400, color: 'var(--charcoal)', margin: 0 }}>{t('Los más populares', 'Most popular')}</h2>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 400, color: 'var(--charcoal)', margin: 0 }}>{t('Los mas populares', 'Most popular')}</h2>
             </div>
             <Link href="/Tienda" style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--warm-gray)', textDecoration: 'none', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '6px' }}>
               {t('Ver todos', 'View all')} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
@@ -461,7 +440,7 @@ export default function Home() {
                     <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: 400, color: '#1d1d1d', marginBottom: '6px' }}>{a.nombre}</div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#1d1d1d' }}>${a.precio}</div>
-                      <div style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--sage)' }}>{t('Ver →', 'View →')}</div>
+                      <div style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--sage)' }}>{t('Ver', 'View')}</div>
                     </div>
                   </div>
                 </div>
@@ -471,11 +450,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 5. PARA ÉL / PARA ELLA ── */}
       <section style={{ padding: '0 2rem 6rem', maxWidth: '1180px', margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
           {[
-            { img: '/hero-hombre.jpg', titulo_es: 'Para él', titulo_en: 'For him', href: '/Tienda?tipo=optico&genero=hombre' },
+            { img: '/hero-hombre.jpg', titulo_es: 'Para el', titulo_en: 'For him', href: '/Tienda?tipo=optico&genero=hombre' },
             { img: '/hero-mujer.jpg', titulo_es: 'Para ella', titulo_en: 'For her', href: '/Tienda?tipo=optico&genero=mujer' },
           ].map((c, i) => (
             <Reveal key={i} delay={i * 150} direction={i === 0 ? 'left' : 'right'}>
@@ -503,7 +481,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 6. FAQ ── */}
       <section id="faq" style={{ padding: '6rem 2rem', maxWidth: '640px', margin: '0 auto' }}>
         <Reveal>
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -512,11 +489,11 @@ export default function Home() {
           </div>
         </Reveal>
         {[
-          { q_es: '¿Necesito aseguranza médica?', q_en: 'Do I need health insurance?', a_es: 'No. Vendemos directamente al cliente, sin necesidad de seguro médico.', a_en: 'No. We sell directly to you, no insurance needed.' },
-          { q_es: '¿Cuánto tarda la entrega?', q_en: 'How long does delivery take?', a_es: 'Envío express en 3 a 5 días hábiles.', a_en: 'Express delivery in 3 to 5 business days.' },
-          { q_es: '¿Cómo ingreso mi graduación?', q_en: 'How do I enter my prescription?', a_es: 'Puedes escribir los números o subir una foto de tu receta.', a_en: 'You can enter the numbers manually or upload a photo.' },
-          { q_es: '¿Puedo devolver mis lentes?', q_en: 'Can I return my glasses?', a_es: 'Sí, tienes 30 días para hacer una devolución sin complicaciones.', a_en: 'Yes, you have 30 days for a hassle-free return.' },
-          { q_es: '¿Qué métodos de pago aceptan?', q_en: 'What payment methods do you accept?', a_es: 'Aceptamos todas las tarjetas de crédito y débito.', a_en: 'We accept all major credit and debit cards.' },
+          { q_es: 'Necesito aseguranza medica?', q_en: 'Do I need health insurance?', a_es: 'No. Vendemos directamente al cliente, sin necesidad de seguro medico.', a_en: 'No. We sell directly to you, no insurance needed.' },
+          { q_es: 'Cuanto tarda la entrega?', q_en: 'How long does delivery take?', a_es: 'Envio express en 3 a 5 dias habiles.', a_en: 'Express delivery in 3 to 5 business days.' },
+          { q_es: 'Como ingreso mi graduacion?', q_en: 'How do I enter my prescription?', a_es: 'Puedes escribir los numeros o subir una foto de tu receta.', a_en: 'You can enter the numbers manually or upload a photo.' },
+          { q_es: 'Puedo devolver mis lentes?', q_en: 'Can I return my glasses?', a_es: 'Si, tienes 30 dias para hacer una devolucion sin complicaciones.', a_en: 'Yes, you have 30 days for a hassle-free return.' },
+          { q_es: 'Que metodos de pago aceptan?', q_en: 'What payment methods do you accept?', a_es: 'Aceptamos todas las tarjetas de credito y debito.', a_en: 'We accept all major credit and debit cards.' },
         ].map((f, i) => (
           <Reveal key={i} delay={i * 60}>
             <details style={{ borderBottom: '1px solid var(--border)', overflow: 'hidden' }}>
@@ -532,7 +509,6 @@ export default function Home() {
         ))}
       </section>
 
-      {/* ── FOOTER ── */}
       <footer style={{ background: 'var(--charcoal)', color: 'rgba(255,255,255,0.35)', padding: '4rem 2rem 2rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '2.5rem', maxWidth: '1100px', margin: '0 auto 3rem' }}>
           <div>
@@ -560,12 +536,12 @@ export default function Home() {
               <a href="mailto:customerservice@verlyoptical.com" style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.3)', textDecoration: 'none', fontSize: '13px' }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.7)')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
-              >{t('Contáctanos', 'Contact us')}</a>
+              >{t('Contactanos', 'Contact us')}</a>
             </div>
           </div>
         </div>
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.5rem', textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '12px', maxWidth: '1100px', margin: '0 auto', color: 'rgba(255,255,255,0.2)' }}>
-          © 2026 Verly Optical
+          2026 Verly Optical
         </div>
       </footer>
     </main>
