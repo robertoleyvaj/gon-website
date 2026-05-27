@@ -1,332 +1,171 @@
-import Image from "next/image";
+// app/components/Navbar.tsx
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import type { Metadata } from "next";
+import { usePathname } from "next/navigation";
+import { useLang } from "./LanguageContext";
+import { useCart } from "../context/CartContext";
+import { useFavoritos } from "../context/FavoritosContext";
+import CartDrawer from "./CartDrawer";
+import FavoritosDrawer from "./FavoritosDrawer";
 
-export const metadata: Metadata = {
-  title: "Verly Optical — Affordable Prescription Glasses Online",
-  description:
-    "Shop affordable prescription glasses, blue light glasses, progressive lenses, and photochromic lenses. Complete pairs from $28. Free shipping on all orders.",
-  keywords: [
-    "affordable prescription glasses",
-    "blue light glasses",
-    "progressive glasses online",
-    "photochromic lenses",
-    "bifocal glasses",
-    "men's glasses",
-    "women's glasses",
-    "prescription eyeglasses",
-  ],
-  openGraph: {
-    title: "Verly Optical — Affordable Prescription Glasses",
-    description: "Complete prescription glasses from $28. Blue light, progressive, photochromic & more.",
-    url: "https://verlyoptical.com",
-    siteName: "Verly Optical",
-    images: [{ url: "/hero-man.jpg", width: 1200, height: 630, alt: "Verly Optical eyeglasses" }],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Verly Optical — Affordable Prescription Glasses",
-    description: "Complete prescription glasses from $28.",
-    images: ["/hero-man.jpg"],
-  },
-  alternates: { canonical: "https://verlyoptical.com" },
-};
-
-const collections = [
-  {
-    title: "Blue Light Glasses",
-    desc: "Protect your eyes during long screen hours. Essential AR coating blocks up to 40% of harmful blue light.",
-    href: "/blue-light-glasses",
-    tag: "Most popular",
-  },
-  {
-    title: "Progressive Lenses",
-    desc: "See clearly at every distance — near, intermediate, and far — with no visible line on the lens.",
-    href: "/progressive-glasses",
-    tag: "Best for 40+",
-  },
-  {
-    title: "Photochromic Lenses",
-    desc: "Lenses that automatically darken in sunlight and clear indoors. One pair for every environment.",
-    href: "/photochromic-glasses",
-    tag: "Outdoor life",
-  },
-  {
-    title: "Bifocal Glasses",
-    desc: "Classic dual-focus lenses offering sharp near and distance vision in one affordable frame.",
-    href: "/bifocal-glasses",
-    tag: "Classic choice",
-  },
-  {
-    title: "Men's Glasses",
-    desc: "From minimal wire frames to bold acetate — prescription eyeglasses built for everyday wear.",
-    href: "/mens-glasses",
-    tag: "New styles",
-  },
-  {
-    title: "Women's Glasses",
-    desc: "Timeless shapes and editorial silhouettes. Prescription-ready with your choice of lens treatment.",
-    href: "/womens-glasses",
-    tag: "New styles",
-  },
-];
-
-const features = [
-  { icon: "◎", label: "Free shipping", desc: "On every order, always" },
-  { icon: "◈", label: "From $28 complete", desc: "Frame + single vision lenses" },
-  { icon: "◉", label: "90-day returns", desc: "Hassle-free guarantee" },
-  { icon: "◌", label: "Prescription verified", desc: "By licensed opticians" },
-];
-
-export default function HomePage() {
+function LangSwitcher() {
+  const { lang, setLang } = useLang();
   return (
-    <main>
+    <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+      {(["es", "en"] as const).map((l) => (
+        <button
+          key={l}
+          onClick={() => setLang(l)}
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            fontFamily: "var(--font-sans)", fontSize: "0.65rem", fontWeight: lang === l ? 600 : 400,
+            letterSpacing: "0.1em", textTransform: "uppercase",
+            color: lang === l ? "var(--charcoal)" : "var(--warm-gray)",
+            padding: "4px 6px", transition: "color 0.2s ease",
+            borderBottom: lang === l ? "1px solid var(--charcoal)" : "1px solid transparent",
+          }}
+        >{l}</button>
+      ))}
+    </div>
+  );
+}
 
-      {/* ── HERO ───────────────────────────────────────────── */}
-      <section className="relative w-full overflow-hidden" style={{ height: "92vh", minHeight: 520 }}>
-        <Image
-          src="/hero-man.jpg"
-          alt="Man wearing Verly Optical prescription glasses"
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#1C1C1A]/60 via-[#1C1C1A]/20 to-transparent" />
+function FavoritosIcon() {
+  const { totalFavoritos, setFavoritosOpen } = useFavoritos();
+  return (
+    <button
+      onClick={() => setFavoritosOpen(true)}
+      style={{ background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--charcoal)", transition: "color 0.2s ease" }}
+      aria-label="Favorites"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill={totalFavoritos > 0 ? "var(--sage)" : "none"} stroke={totalFavoritos > 0 ? "var(--sage)" : "currentColor"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      {totalFavoritos > 0 && (
+        <span style={{ position: "absolute", top: "-2px", right: "-2px", background: "var(--sage)", color: "white", borderRadius: "50%", width: "16px", height: "16px", fontSize: "9px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-sans)" }}>
+          {totalFavoritos > 9 ? '9+' : totalFavoritos}
+        </span>
+      )}
+    </button>
+  );
+}
 
-        <div className="absolute inset-0 flex flex-col justify-end pb-16 px-6 md:px-16 max-w-7xl mx-auto left-0 right-0">
-          <p
-            className="text-[11px] tracking-[0.22em] uppercase text-[#EDE8DF]/70 mb-4"
-            style={{ fontFamily: "var(--font-sans)" }}
-          >
-            Prescription eyewear
-          </p>
-          <h1
-            className="text-[48px] md:text-[72px] lg:text-[88px] text-[#F7F4EF] leading-[0.95] font-light max-w-2xl"
-            style={{ fontFamily: "var(--font-serif)" }}
-          >
-            See the world<br />
-            <em>clearly.</em>
-          </h1>
-          <p
-            className="mt-5 text-[15px] md:text-[17px] text-[#EDE8DF]/80 max-w-sm leading-relaxed"
-            style={{ fontFamily: "var(--font-sans)" }}
-          >
-            Affordable prescription glasses, blue light lenses & progressive eyewear. Complete pairs from $28.
-          </p>
-          <div className="flex flex-wrap gap-3 mt-8">
-            <Link
-              href="/Tienda"
-              className="px-7 py-3.5 text-[12px] tracking-[0.12em] uppercase text-[#F7F4EF] bg-[#4A5940] hover:bg-[#3d4c34] transition-colors rounded-sm"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              Shop all frames
-            </Link>
-            <Link
-              href="/blue-light-glasses"
-              className="px-7 py-3.5 text-[12px] tracking-[0.12em] uppercase text-[#F7F4EF] border border-[#F7F4EF]/40 hover:border-[#F7F4EF]/80 transition-colors rounded-sm"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              Blue light glasses
-            </Link>
-          </div>
-        </div>
-      </section>
+function CartIcon() {
+  const { totalItems, setCartOpen } = useCart();
+  return (
+    <button
+      onClick={() => setCartOpen(true)}
+      style={{ background: "none", border: "none", cursor: "pointer", position: "relative", padding: "4px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--charcoal)", transition: "color 0.2s ease" }}
+      aria-label="Cart"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      {totalItems > 0 && (
+        <span style={{ position: "absolute", top: "-2px", right: "-2px", background: "#55624c", color: "white", borderRadius: "50%", width: "16px", height: "16px", fontSize: "9px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-sans)" }}>
+          {totalItems > 9 ? '9+' : totalItems}
+        </span>
+      )}
+    </button>
+  );
+}
 
-      {/* ── FEATURES BAR ────────────────────────────────────── */}
-      <section className="bg-[#4A5940] py-5 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          {features.map((f) => (
-            <div key={f.label} className="flex items-center gap-3">
-              <span className="text-[20px] text-[#EDE8DF]/50">{f.icon}</span>
-              <div>
-                <p
-                  className="text-[12px] text-[#F7F4EF] font-medium tracking-wide"
-                  style={{ fontFamily: "var(--font-sans)" }}
-                >
-                  {f.label}
-                </p>
-                <p
-                  className="text-[11px] text-[#EDE8DF]/60"
-                  style={{ fontFamily: "var(--font-sans)" }}
-                >
-                  {f.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
-      {/* ── SHOP BY NEED ────────────────────────────────────── */}
-      <section className="bg-[#F7F4EF] py-20 px-6" aria-labelledby="collections-heading">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <p
-                className="text-[10px] tracking-[0.22em] uppercase text-[#8C8680] mb-3"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                Collections
-              </p>
-              <h2
-                id="collections-heading"
-                className="text-[36px] md:text-[48px] text-[#1C1C1A] leading-tight font-light"
-                style={{ fontFamily: "var(--font-serif)" }}
-              >
-                Shop by lens type
-              </h2>
-            </div>
-            <Link
-              href="/Tienda"
-              className="hidden md:flex items-center gap-2 text-[12px] tracking-[0.1em] uppercase text-[#4A5940] hover:text-[#1C1C1A] transition-colors"
-              style={{ fontFamily: "var(--font-sans)" }}
-            >
-              All frames
-              <svg width="16" height="10" viewBox="0 0 16 10" fill="none">
-                <path d="M1 5h14M11 1l4 4-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </Link>
-          </div>
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {collections.map((col) => (
-              <Link
-                key={col.href}
-                href={col.href}
-                className="group relative flex flex-col justify-between p-6 md:p-7 bg-[#EDE8DF] hover:bg-[#E4DED5] transition-all duration-300 rounded-sm min-h-[180px]"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <h3
-                    className="text-[20px] md:text-[22px] text-[#1C1C1A] leading-tight font-light group-hover:text-[#4A5940] transition-colors"
-                    style={{ fontFamily: "var(--font-serif)" }}
-                  >
-                    {col.title}
-                  </h3>
-                  <span
-                    className="flex-shrink-0 text-[10px] tracking-[0.1em] uppercase text-[#4A5940] bg-[#4A5940]/10 px-2 py-1 rounded-full"
-                    style={{ fontFamily: "var(--font-sans)" }}
-                  >
-                    {col.tag}
-                  </span>
-                </div>
-                <div>
-                  <p
-                    className="text-[13px] text-[#8C8680] leading-relaxed mt-3 mb-5"
-                    style={{ fontFamily: "var(--font-sans)" }}
-                  >
-                    {col.desc}
-                  </p>
-                  <span
-                    className="flex items-center gap-2 text-[11px] tracking-[0.1em] uppercase text-[#4A5940] group-hover:gap-3 transition-all duration-200"
-                    style={{ fontFamily: "var(--font-sans)" }}
-                  >
-                    Shop now
-                    <svg width="14" height="8" viewBox="0 0 14 8" fill="none">
-                      <path d="M1 4h12M9 1l3 3-3 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </span>
-                </div>
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
+  const navLinks = [
+    { href: "/Tienda", label: "Eyeglasses" },
+    { href: "/sunglasses", label: "Sunglasses" },
+  ];
+
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+
+  return (
+    <>
+      <CartDrawer />
+      <FavoritosDrawer />
+
+      <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, transition: "background 0.4s ease, box-shadow 0.4s ease", background: scrolled ? "rgba(247, 244, 239, 0.92)" : "transparent", backdropFilter: scrolled ? "blur(12px)" : "none", boxShadow: scrolled ? "0 1px 0 var(--border)" : "none" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 2rem", height: scrolled ? "60px" : "68px", display: "flex", alignItems: "center", justifyContent: "space-between", transition: "height 0.4s ease" }}>
+
+          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
+            <img src="/logo-trasparente.png" alt="Verly Optical" style={{ height: scrolled ? "32px" : "38px", width: "auto", transition: "height 0.4s ease", objectFit: "contain" }}/>
+          </Link>
+
+          <nav className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: "2.5rem" }}>
+            {navLinks.map(({ href, label }) => (
+              <Link key={href} href={href} className="nav-link" style={{ fontFamily: "var(--font-sans)", fontSize: "0.78rem", fontWeight: 400, letterSpacing: "0.1em", textTransform: "uppercase", color: isActive(href) ? "var(--sage)" : "var(--charcoal)", textDecoration: "none", position: "relative", paddingBottom: "2px", transition: "color 0.2s ease" }}>
+                {label}
+                <span className="nav-underline" style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "1px", background: "var(--sage)", transform: isActive(href) ? "scaleX(1)" : "scaleX(0)", transformOrigin: "left", transition: "transform 0.3s ease" }}/>
               </Link>
             ))}
+          </nav>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+            <LangSwitcher />
+            <FavoritosIcon />
+            <CartIcon />
+            <Link href="/Tienda" className="cta-btn desktop-nav" style={{ fontFamily: "var(--font-sans)", fontSize: "0.72rem", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--cream)", background: "var(--charcoal)", padding: "0.55rem 1.25rem", borderRadius: "2px", textDecoration: "none", transition: "background 0.2s ease", whiteSpace: "nowrap" }}>
+              Shop Now
+            </Link>
+            <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu" className="hamburger" style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex", flexDirection: "column", gap: "5px", alignItems: "flex-end" }}>
+              <span style={{ display: "block", width: "22px", height: "1px", background: "var(--charcoal)", transition: "transform 0.3s ease, opacity 0.3s ease", transform: menuOpen ? "translateY(6px) rotate(45deg)" : "none" }}/>
+              <span style={{ display: "block", width: "16px", height: "1px", background: "var(--charcoal)", transition: "transform 0.3s ease, opacity 0.3s ease", opacity: menuOpen ? 0 : 1 }}/>
+              <span style={{ display: "block", width: "22px", height: "1px", background: "var(--charcoal)", transition: "transform 0.3s ease, opacity 0.3s ease", transform: menuOpen ? "translateY(-6px) rotate(-45deg)" : "none" }}/>
+            </button>
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* ── SEO COPY SECTION ─────────────────────────────────── */}
-      <section className="bg-[#EDE8DF] py-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16">
-            <div>
-              <h2
-                className="text-[28px] md:text-[34px] text-[#1C1C1A] leading-tight font-light mb-5"
-                style={{ fontFamily: "var(--font-serif)" }}
-              >
-                Affordable prescription glasses — without compromise
-              </h2>
-              <p
-                className="text-[14px] text-[#8C8680] leading-relaxed mb-4"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                At Verly Optical, every pair of prescription eyeglasses starts at just $28 — frame and lenses included. We believe that quality vision care shouldn't require a premium price tag.
-              </p>
-              <p
-                className="text-[14px] text-[#8C8680] leading-relaxed mb-6"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                Whether you need <Link href="/blue-light-glasses" className="text-[#4A5940] underline underline-offset-2">blue light glasses</Link> for daily screen use, <Link href="/progressive-glasses" className="text-[#4A5940] underline underline-offset-2">progressive lenses</Link> for all-distance clarity, or classic <Link href="/bifocal-glasses" className="text-[#4A5940] underline underline-offset-2">bifocal glasses</Link> — our licensed opticians verify every prescription before your order ships.
-              </p>
-              <Link
-                href="/Tienda"
-                className="inline-flex items-center gap-2 text-[12px] tracking-[0.1em] uppercase text-[#4A5940] font-medium hover:text-[#1C1C1A] transition-colors"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                Browse all frames →
-              </Link>
-            </div>
-
-            <div>
-              <h2
-                className="text-[28px] md:text-[34px] text-[#1C1C1A] leading-tight font-light mb-5"
-                style={{ fontFamily: "var(--font-serif)" }}
-              >
-                The right lens for your lifestyle
-              </h2>
-              <p
-                className="text-[14px] text-[#8C8680] leading-relaxed mb-4"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                Not all lenses are the same. <Link href="/photochromic-glasses" className="text-[#4A5940] underline underline-offset-2">Photochromic lenses</Link> automatically adapt to changing light — perfect for people who move between indoors and outdoors throughout the day.
-              </p>
-              <p
-                className="text-[14px] text-[#8C8680] leading-relaxed mb-6"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                For <Link href="/mens-glasses" className="text-[#4A5940] underline underline-offset-2">men's glasses</Link> and <Link href="/womens-glasses" className="text-[#4A5940] underline underline-offset-2">women's glasses</Link> alike, our configurator walks you through every lens option — material, coating, and filter — so you build exactly what you need.
-              </p>
-              <Link
-                href="/lenses"
-                className="inline-flex items-center gap-2 text-[12px] tracking-[0.1em] uppercase text-[#4A5940] font-medium hover:text-[#1C1C1A] transition-colors"
-                style={{ fontFamily: "var(--font-sans)" }}
-              >
-                Learn about lenses →
-              </Link>
-            </div>
+      {/* Mobile Menu */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 99, background: "var(--cream)", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem", opacity: menuOpen ? 1 : 0, pointerEvents: menuOpen ? "all" : "none", transition: "opacity 0.35s ease" }}>
+        <nav style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+          {navLinks.map(({ href, label }, i) => (
+            <Link key={href} href={href} style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(2.5rem, 10vw, 4rem)", fontWeight: 300, color: isActive(href) ? "var(--sage)" : "var(--charcoal)", textDecoration: "none", borderBottom: "1px solid var(--border)", paddingBottom: "1rem", paddingTop: i === 0 ? 0 : "1rem", letterSpacing: "-0.01em", opacity: menuOpen ? 1 : 0, transform: menuOpen ? "translateY(0)" : "translateY(16px)", transition: `opacity 0.4s ease ${i * 0.08 + 0.1}s, transform 0.4s ease ${i * 0.08 + 0.1}s` }}>
+              {label}
+            </Link>
+          ))}
+          <Link href="/Tienda" style={{ marginTop: "2.5rem", fontFamily: "var(--font-sans)", fontSize: "0.78rem", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--cream)", background: "var(--charcoal)", padding: "1rem 2rem", textDecoration: "none", textAlign: "center", borderRadius: "2px", opacity: menuOpen ? 1 : 0, transition: "opacity 0.4s ease 0.35s" }}>
+            Shop Now
+          </Link>
+          <div style={{ marginTop: "2rem", opacity: menuOpen ? 1 : 0, transition: "opacity 0.4s ease 0.4s" }}>
+            <LangSwitcher />
           </div>
-        </div>
-      </section>
+        </nav>
+        <p style={{ position: "absolute", bottom: "2.5rem", left: "2rem", fontFamily: "var(--font-sans)", fontSize: "0.7rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--warm-gray)" }}>Verly Optical</p>
+      </div>
 
-      {/* ── CTA FINAL ────────────────────────────────────────── */}
-      <section className="bg-[#1C1C1A] py-24 px-6 text-center">
-        <p
-          className="text-[10px] tracking-[0.22em] uppercase text-[#8C8680] mb-5"
-          style={{ fontFamily: "var(--font-sans)" }}
-        >
-          Complete pair from $28
-        </p>
-        <h2
-          className="text-[40px] md:text-[60px] text-[#F7F4EF] leading-tight font-light mb-6 max-w-2xl mx-auto"
-          style={{ fontFamily: "var(--font-serif)" }}
-        >
-          Ready to see better?
-        </h2>
-        <p
-          className="text-[15px] text-[#8C8680] mb-10 max-w-md mx-auto leading-relaxed"
-          style={{ fontFamily: "var(--font-sans)" }}
-        >
-          Upload your prescription or start with your frame — our configurator does the rest.
-        </p>
-        <Link
-          href="/Tienda"
-          className="inline-block px-10 py-4 text-[12px] tracking-[0.14em] uppercase text-[#1C1C1A] bg-[#F7F4EF] hover:bg-[#EDE8DF] transition-colors rounded-sm"
-          style={{ fontFamily: "var(--font-sans)" }}
-        >
-          Find your frames
-        </Link>
-      </section>
-
-    </main>
+      <style jsx global>{`
+        .nav-link:hover span.nav-underline { transform: scaleX(1) !important; }
+        .nav-link:hover { color: var(--sage) !important; }
+        .cta-btn:hover { background: var(--sage) !important; }
+        @media (min-width: 768px) {
+          .hamburger { display: none !important; }
+          .desktop-nav { display: flex !important; }
+        }
+        @media (max-width: 767px) {
+          .desktop-nav { display: none !important; }
+          .hamburger { display: flex !important; }
+        }
+      `}</style>
+    </>
   );
 }
