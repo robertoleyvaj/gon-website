@@ -618,9 +618,6 @@ function ModalPedido({ pedido, onClose, onSaved }: { pedido: any; onClose: () =>
 
 // ── ADMIN PRINCIPAL ───────────────────────────────────────────────────────
 export default function Admin() {
-  const [authed, setAuthed] = useState(false);
-  const [user, setUser] = useState('');
-  const [pass, setPass] = useState('');
   const [modulo, setModulo] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -645,7 +642,7 @@ export default function Admin() {
   });
   const [newCliente, setNewCliente] = useState({ nombre: '', email: '', telefono: '', direccion: '', notas: '' });
 
-  useEffect(() => { if (authed) cargarTodo(); }, [authed]);
+  useEffect(() => { cargarTodo(); }, []);
 
   async function cargarTodo() {
     const [{ data: a }, { data: p }, { data: c }, { data: f }] = await Promise.all([
@@ -687,24 +684,6 @@ export default function Admin() {
   const ganancia = totalVentas - totalCostos;
   const pedidosPendientes = pedidos.filter(p => p.estado === 'pendiente').length;
 
-  if (!authed) return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-sans), sans-serif' }}>
-      <div style={{ background: 'white', borderRadius: '12px', padding: '2.5rem', width: '360px', boxShadow: '0 4px 24px rgba(0,0,0,0.06)', border: '1px solid var(--border)' }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <img src="/logo-trasparente.png" alt="Verly" style={{ height: '36px', marginBottom: '1rem' }}/>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', fontWeight: 500, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: 0 }}>Panel de administración</p>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <input placeholder="Usuario" value={user} onChange={e => setUser(e.target.value)} style={inputStyle}/>
-          <input type="password" placeholder="Contraseña" value={pass} onChange={e => setPass(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && (user === 'admin@verlyoptical.com' && pass === 'verly2024' ? setAuthed(true) : alert('Credenciales incorrectas'))}
-            style={inputStyle}/>
-          <button onClick={() => user === 'admin@verlyoptical.com' && pass === 'verly2024' ? setAuthed(true) : alert('Credenciales incorrectas')}
-            style={{ ...btnPrimary, padding: '12px', marginTop: '4px' }}>Entrar</button>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'var(--font-sans), sans-serif', background: 'var(--cream)', color: 'var(--charcoal)' }}>
@@ -735,7 +714,16 @@ export default function Admin() {
           <h2 style={{ margin: 0, fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)', letterSpacing: '0.02em' }}>{MENU.find(m => m.id === modulo)?.label}</h2>
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <a href="/" target="_blank" style={{ color: 'var(--warm-gray)', fontSize: '12px', textDecoration: 'none' }}>Ver sitio →</a>
-            <button onClick={() => setAuthed(false)} style={{ ...btnGhost, padding: '6px 12px', fontSize: '11px' }}>Salir</button>
+            <button
+  onClick={async () => {
+    await supabase.auth.signOut();
+    await fetch('/api/admin-auth', { method: 'DELETE' });
+    window.location.href = '/admin-login';
+  }}
+  style={{ ...btnGhost, padding: '6px 12px', fontSize: '11px' }}
+>
+  Salir
+</button>
           </div>
         </div>
 

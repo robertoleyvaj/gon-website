@@ -35,6 +35,8 @@ type RecetaData = {
 type RecetaEstado = 'sin_receta' | 'manual' | 'foto' | 'despues' | 'sin_graduacion' | 'guardada';
 
 const PRECIO_ARMAZON = 13;
+const TURQUESA = '#2BBFB3';
+const TURQUESA_DARK = '#1fa89f';
 
 const visionOpts = [
   { id: 'mono', nombre: 'Monofocal básico', nombre_en: 'Single Vision', desc_es: 'Para ver de lejos o cerca. Ideal para uso diario.', desc_en: 'For distance or near vision. Great for everyday use.', precio: 15 },
@@ -120,6 +122,7 @@ const AXIS_OPTS = range(1, 180, 1);
 const ADD_OPTS = range(0.75, 3.50, 0.25);
 const DP_OPTS = range(35, 79, 0.5);
 
+// ── CeldaReceta ──────────────────────────────────────────
 function CeldaReceta({ value, onChange, options, disabled, unit }: {
   value: number | null; onChange: (v: number | null) => void;
   options: number[]; disabled?: boolean; unit?: 'axis' | 'dp' | 'add' | 'sph' | 'cyl';
@@ -177,27 +180,37 @@ function CeldaReceta({ value, onChange, options, disabled, unit }: {
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
-      <button onClick={() => !disabled && setOpen(!open)} disabled={disabled} style={{ width: '100%', padding: '8px 4px', background: disabled ? '#F5F5F5' : open ? '#f0f4ef' : isEmpty ? '#FAFAFA' : 'white', border: `1.5px solid ${disabled ? '#e5e5e5' : open ? '#55624c' : isEmpty ? '#e5e5e5' : '#55624c'}`, borderRadius: '6px', cursor: disabled ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-sans), sans-serif', transition: 'all 0.15s', textAlign: 'center' }}>
-        <span style={{ fontSize: '14px', fontWeight: 600, letterSpacing: '-0.3px', color: disabled ? '#ccc' : isEmpty ? '#9a9a9a' : value === 0 ? '#9a9a9a' : '#1d1d1d' }}>
+      <button
+        onClick={() => !disabled && setOpen(!open)}
+        disabled={disabled}
+        style={{
+          width: '100%', padding: '8px 4px',
+          background: disabled ? 'var(--cream)' : open ? 'rgba(74,89,64,0.07)' : isEmpty ? 'var(--cream)' : 'white',
+          border: `1.5px solid ${disabled ? 'var(--border)' : open ? 'var(--sage)' : isEmpty ? 'var(--border)' : 'var(--sage)'}`,
+          borderRadius: '4px', cursor: disabled ? 'not-allowed' : 'pointer',
+          fontFamily: 'var(--font-sans)', transition: 'all 0.15s', textAlign: 'center',
+        }}
+      >
+        <span style={{ fontSize: '14px', fontWeight: 600, letterSpacing: '-0.3px', color: disabled ? 'var(--border)' : isEmpty ? 'var(--warm-gray)' : value === 0 ? 'var(--warm-gray)' : 'var(--charcoal)' }}>
           {disabled ? '—' : isEmpty ? '—' : formatVal(value!)}
         </span>
       </button>
       {open && !disabled && (
-        <div style={{ position: 'absolute', ...(abreArriba ? { bottom: 'calc(100% + 4px)', top: 'auto' } : { top: 'calc(100% + 4px)', bottom: 'auto' }), left: '50%', transform: 'translateX(-50%)', width: usarGrid ? '200px' : '130px', background: 'white', borderRadius: '8px', zIndex: 500, boxShadow: '0 8px 32px rgba(0,0,0,0.10)', border: '1px solid #e5e5e5', overflow: 'hidden' }}>
-          <div style={{ padding: '6px', borderBottom: '1px solid #f0f0f0', background: '#fafaf9' }}>
-            <input ref={inputRef} type="text" placeholder={unit === 'axis' ? 'Ej: 90' : unit === 'dp' ? 'Ej: 63' : 'Ej: -1.25'} value={busqueda} onChange={e => setBusqueda(e.target.value)} style={{ width: '100%', padding: '5px 8px', borderRadius: '4px', border: '1px solid #e5e5e5', fontSize: '12px', outline: 'none', boxSizing: 'border-box', textAlign: 'center', background: 'white', fontFamily: 'var(--font-sans)' }}/>
+        <div style={{ position: 'absolute', ...(abreArriba ? { bottom: 'calc(100% + 4px)', top: 'auto' } : { top: 'calc(100% + 4px)', bottom: 'auto' }), left: '50%', transform: 'translateX(-50%)', width: usarGrid ? '200px' : '130px', background: 'white', borderRadius: '6px', zIndex: 500, boxShadow: '0 8px 32px rgba(28,28,26,0.10)', border: '1px solid var(--border)', overflow: 'hidden' }}>
+          <div style={{ padding: '6px', borderBottom: '1px solid var(--border)', background: 'var(--cream)' }}>
+            <input ref={inputRef} type="text" placeholder={unit === 'axis' ? 'Ej: 90' : unit === 'dp' ? 'Ej: 63' : 'Ej: -1.25'} value={busqueda} onChange={e => setBusqueda(e.target.value)} style={{ width: '100%', padding: '5px 8px', borderRadius: '3px', border: '1px solid var(--border)', fontSize: '12px', outline: 'none', boxSizing: 'border-box', textAlign: 'center', background: 'white', fontFamily: 'var(--font-sans)' }}/>
           </div>
-          <div onClick={() => { onChange(null); setOpen(false); }} style={{ padding: '7px', cursor: 'pointer', fontSize: '13px', color: '#9a9a9a', fontWeight: 500, textAlign: 'center', borderBottom: '1px solid #f0f0f0', background: isEmpty ? '#f5f1eb' : 'white' }}>—</div>
+          <div onClick={() => { onChange(null); setOpen(false); }} style={{ padding: '7px', cursor: 'pointer', fontSize: '13px', color: 'var(--warm-gray)', fontWeight: 500, textAlign: 'center', borderBottom: '1px solid var(--border)', background: isEmpty ? 'var(--cream-dark)' : 'white' }}>—</div>
           {usarGrid ? (
             <div ref={listRef} style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2px', padding: '6px', maxHeight: '200px', overflowY: 'auto' }}>
               {opcionesFiltradas.map(opt => (
-                <div key={opt} data-val={opt} onClick={() => { onChange(opt); setOpen(false); setBusqueda(''); }} style={{ padding: '8px 4px', cursor: 'pointer', textAlign: 'center', fontSize: '12px', fontWeight: value === opt ? 700 : 400, color: value === opt ? 'white' : '#1d1d1d', background: value === opt ? '#55624c' : '#faf9f7', borderRadius: '4px', transition: 'all 0.1s' }}>{formatVal(opt)}</div>
+                <div key={opt} data-val={opt} onClick={() => { onChange(opt); setOpen(false); setBusqueda(''); }} style={{ padding: '8px 4px', cursor: 'pointer', textAlign: 'center', fontSize: '12px', fontWeight: value === opt ? 700 : 400, color: value === opt ? 'white' : 'var(--charcoal)', background: value === opt ? 'var(--sage)' : 'var(--cream)', borderRadius: '3px', transition: 'all 0.1s' }}>{formatVal(opt)}</div>
               ))}
             </div>
           ) : (
             <div ref={listRef} style={{ maxHeight: '200px', overflowY: 'auto' }}>
               {opcionesFiltradas.map(opt => (
-                <div key={opt} data-val={opt} onClick={() => { onChange(opt); setOpen(false); setBusqueda(''); }} style={{ padding: '8px', cursor: 'pointer', textAlign: 'center', fontSize: '13px', fontWeight: value === opt ? 700 : 400, color: value === opt ? '#55624c' : '#1d1d1d', background: value === opt ? '#f0f4ef' : 'white', borderBottom: '1px solid #f5f5f5', transition: 'background 0.1s' }}>{formatVal(opt)}</div>
+                <div key={opt} data-val={opt} onClick={() => { onChange(opt); setOpen(false); setBusqueda(''); }} style={{ padding: '8px', cursor: 'pointer', textAlign: 'center', fontSize: '13px', fontWeight: value === opt ? 700 : 400, color: value === opt ? 'var(--sage)' : 'var(--charcoal)', background: value === opt ? 'rgba(74,89,64,0.07)' : 'white', borderBottom: '1px solid var(--cream)', transition: 'background 0.1s' }}>{formatVal(opt)}</div>
               ))}
             </div>
           )}
@@ -207,25 +220,26 @@ function CeldaReceta({ value, onChange, options, disabled, unit }: {
   );
 }
 
+// ── FormReceta ───────────────────────────────────────────
 function FormReceta({ receta, onChange, errores, t }: { receta: RecetaData; onChange: (r: RecetaData) => void; errores: string[]; t: (es: string, en: string) => string; }) {
   const cylOdActivo = receta.cyl_od !== null && receta.cyl_od !== 0;
   const cylOsActivo = receta.cyl_os !== null && receta.cyl_os !== 0;
   return (
-    <div style={{ background: 'white', borderRadius: '8px', border: '1px solid #e8e5e0', overflow: 'visible' }}>
+    <div style={{ background: 'white', borderRadius: '6px', border: '1px solid var(--border)', overflow: 'visible' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', overflow: 'visible' }}>
         <thead>
-          <tr style={{ background: '#faf9f7' }}>
-            <th style={{ padding: '10px 8px', width: '52px', borderBottom: '1px solid #f0ede8' }}></th>
-            <th style={{ padding: '10px 4px', fontSize: '11px', fontWeight: 600, color: '#6f6a63', letterSpacing: '1px', textAlign: 'center', borderBottom: '1px solid #f0ede8' }}>SPH *</th>
-            <th style={{ padding: '10px 4px', fontSize: '11px', fontWeight: 600, color: '#6f6a63', letterSpacing: '1px', textAlign: 'center', borderBottom: '1px solid #f0ede8' }}>CYL</th>
-            <th style={{ padding: '10px 4px', fontSize: '11px', fontWeight: 600, color: '#6f6a63', letterSpacing: '1px', textAlign: 'center', borderBottom: '1px solid #f0ede8' }}>{t('EJE', 'AXIS')}</th>
+          <tr style={{ background: 'var(--cream)' }}>
+            <th style={{ padding: '10px 8px', width: '52px', borderBottom: '1px solid var(--border)' }}></th>
+            <th style={{ padding: '10px 4px', fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '1px', textAlign: 'center', borderBottom: '1px solid var(--border)' }}>SPH *</th>
+            <th style={{ padding: '10px 4px', fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '1px', textAlign: 'center', borderBottom: '1px solid var(--border)' }}>CYL</th>
+            <th style={{ padding: '10px 4px', fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '1px', textAlign: 'center', borderBottom: '1px solid var(--border)' }}>{t('EJE', 'AXIS')}</th>
           </tr>
         </thead>
         <tbody>
-          <tr style={{ borderBottom: '1px solid #f5f3ef' }}>
+          <tr style={{ borderBottom: '1px solid var(--cream)' }}>
             <td style={{ padding: '8px', textAlign: 'center' }}>
-              <span style={{ background: '#55624c', color: 'white', padding: '3px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 700, display: 'block', marginBottom: '2px' }}>OD</span>
-              <span style={{ fontSize: '9px', color: '#6f6a63' }}>{t('Der.', 'Right')}</span>
+              <span style={{ background: 'var(--sage)', color: 'white', padding: '3px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 700, display: 'block', marginBottom: '2px' }}>OD</span>
+              <span style={{ fontSize: '9px', color: 'var(--warm-gray)' }}>{t('Der.', 'Right')}</span>
             </td>
             <td style={{ padding: '6px 4px' }}><CeldaReceta value={receta.sph_od} onChange={v => onChange({ ...receta, sph_od: v })} options={SPH_OPTS} unit="sph"/></td>
             <td style={{ padding: '6px 4px' }}><CeldaReceta value={receta.cyl_od} onChange={v => onChange({ ...receta, cyl_od: v, axis_od: (!v || v === 0) ? null : receta.axis_od })} options={CYL_OPTS} unit="cyl"/></td>
@@ -233,8 +247,8 @@ function FormReceta({ receta, onChange, errores, t }: { receta: RecetaData; onCh
           </tr>
           <tr>
             <td style={{ padding: '8px', textAlign: 'center' }}>
-              <span style={{ background: '#6f7f62', color: 'white', padding: '3px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 700, display: 'block', marginBottom: '2px' }}>OS</span>
-              <span style={{ fontSize: '9px', color: '#6f6a63' }}>{t('Izq.', 'Left')}</span>
+              <span style={{ background: 'var(--sage-light)', color: 'white', padding: '3px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 700, display: 'block', marginBottom: '2px' }}>OS</span>
+              <span style={{ fontSize: '9px', color: 'var(--warm-gray)' }}>{t('Izq.', 'Left')}</span>
             </td>
             <td style={{ padding: '6px 4px' }}><CeldaReceta value={receta.sph_os} onChange={v => onChange({ ...receta, sph_os: v })} options={SPH_OPTS} unit="sph"/></td>
             <td style={{ padding: '6px 4px' }}><CeldaReceta value={receta.cyl_os} onChange={v => onChange({ ...receta, cyl_os: v, axis_os: (!v || v === 0) ? null : receta.axis_os })} options={CYL_OPTS} unit="cyl"/></td>
@@ -242,19 +256,19 @@ function FormReceta({ receta, onChange, errores, t }: { receta: RecetaData; onCh
           </tr>
         </tbody>
       </table>
-      <div style={{ padding: '10px 8px', background: '#faf9f7', borderTop: '1px solid #f0ede8', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+      <div style={{ padding: '10px 8px', background: 'var(--cream)', borderTop: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
         <div>
-          <div style={{ fontSize: '10px', fontWeight: 600, color: '#6f6a63', letterSpacing: '0.5px', textAlign: 'center', marginBottom: '5px' }}>ADD <span style={{ fontWeight: 400, fontSize: '9px' }}>({t('ambos ojos', 'both eyes')})</span></div>
+          <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.5px', textAlign: 'center', marginBottom: '5px' }}>ADD <span style={{ fontWeight: 400, fontSize: '9px' }}>({t('ambos ojos', 'both eyes')})</span></div>
           <CeldaReceta value={receta.add} onChange={v => onChange({ ...receta, add: v })} options={ADD_OPTS} unit="add"/>
         </div>
         <div>
-          <div style={{ fontSize: '10px', fontWeight: 600, color: '#6f6a63', letterSpacing: '0.5px', textAlign: 'center', marginBottom: '5px' }}>DP / PD <span style={{ fontWeight: 400, fontSize: '9px' }}>({t('total', 'total')})</span></div>
+          <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.5px', textAlign: 'center', marginBottom: '5px' }}>DP / PD <span style={{ fontWeight: 400, fontSize: '9px' }}>({t('total', 'total')})</span></div>
           <CeldaReceta value={receta.dp} onChange={v => onChange({ ...receta, dp: v })} options={DP_OPTS} unit="dp"/>
         </div>
       </div>
-      <div style={{ padding: '8px 10px', borderTop: '1px solid #f0ede8' }}>
-        <div style={{ fontSize: '10px', fontWeight: 600, color: '#6f6a63', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>{t('Prisma / Notas', 'Prism / Notes')}</div>
-        <input type="text" placeholder={t('Ej: 1.0 base OUT OD', 'Ex: 1.0 base OUT OD')} value={receta.prisma} onChange={e => onChange({ ...receta, prisma: e.target.value })} style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #e8e5e0', fontSize: '12px', color: '#1d1d1d', outline: 'none', boxSizing: 'border-box', fontFamily: 'var(--font-sans)' }} onFocus={e => (e.currentTarget.style.borderColor = '#55624c')} onBlur={e => (e.currentTarget.style.borderColor = '#e8e5e0')}/>
+      <div style={{ padding: '8px 10px', borderTop: '1px solid var(--border)' }}>
+        <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '5px' }}>{t('Prisma / Notas', 'Prism / Notes')}</div>
+        <input type="text" placeholder={t('Ej: 1.0 base OUT OD', 'Ex: 1.0 base OUT OD')} value={receta.prisma} onChange={e => onChange({ ...receta, prisma: e.target.value })} style={{ width: '100%', padding: '8px 10px', borderRadius: '4px', border: '1px solid var(--border)', fontSize: '12px', color: 'var(--charcoal)', outline: 'none', boxSizing: 'border-box', fontFamily: 'var(--font-sans)' }} onFocus={e => (e.currentTarget.style.borderColor = 'var(--sage)')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}/>
       </div>
       {errores.length > 0 && (
         <div style={{ padding: '8px 10px', borderTop: '1px solid #ffe0e0', background: '#fff5f5' }}>
@@ -313,68 +327,90 @@ function LenteSVG({ color, forma, size = 'large', solar = false }: { color: stri
   );
 }
 
-function VerlyModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }: { paquete: PaqueteVerly; armazonNombre: string; onAceptar: (extrasIds: string[]) => void; onManual: () => void; lang: 'es' | 'en'; }) {
+// ── VerlyModalPaquete ─────────────────────────────────────
+function VerlyModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }: {
+  paquete: PaqueteVerly; armazonNombre: string;
+  onAceptar: (extrasIds: string[]) => void; onManual: () => void; lang: 'es' | 'en';
+}) {
   const [paso, setPaso] = useState<'paquete' | 'upsell'>('paquete');
   const [extras, setExtras] = useState<string[]>([]);
   const toggleExtra = (id: string) => setExtras(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]);
   const precioExtras = extras.reduce((sum, id) => sum + (paquete.upsells.find(u => u.id === id)?.precio || 0), 0);
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-      <div style={{ background: 'white', borderRadius: '16px', width: '100%', maxWidth: '440px', boxShadow: '0 24px 64px rgba(0,0,0,0.15)', overflow: 'hidden', animation: 'slideUp 0.3s ease-out', maxHeight: '90vh', overflowY: 'auto' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(28,28,26,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+      <div style={{ background: 'white', borderRadius: '12px', width: '100%', maxWidth: '440px', boxShadow: '0 24px 64px rgba(28,28,26,0.18)', overflow: 'hidden', animation: 'slideUp 0.3s ease-out', maxHeight: '90vh', overflowY: 'auto' }}>
         {paso === 'paquete' ? (
           <>
-            <div style={{ background: '#1d1d1d', padding: '1.5rem', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: '0.5rem' }}>{lang === 'es' ? 'Verly recomienda' : 'Verly recommends'}</div>
+            <div style={{ background: 'var(--charcoal)', padding: '1.5rem', textAlign: 'center' }}>
+              <div style={{ fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginBottom: '0.5rem' }}>{lang === 'es' ? 'Verly recomienda' : 'Verly recommends'}</div>
               <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300, color: 'white', lineHeight: 1.2 }}>{lang === 'es' ? 'El paquete perfecto para ti' : 'The perfect package for you'}</div>
             </div>
             <div style={{ padding: '1.25rem 1.5rem' }}>
-              <div style={{ background: '#faf9f7', borderRadius: '8px', padding: '0.85rem 1rem', marginBottom: '1.25rem', fontSize: '13px', color: '#1d1d1d', lineHeight: 1.6 }}>{paquete.explicacion}</div>
-              <div style={{ border: '1px solid #e8e5e0', borderRadius: '8px', overflow: 'hidden', marginBottom: '1.25rem' }}>
-                <div style={{ background: '#f5f1eb', padding: '0.65rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1d1d1d' }}>{lang === 'es' ? `Paquete ${paquete.condicion}` : `${paquete.condicion} Package`}</span>
-                  <span style={{ background: '#55624c', color: 'white', padding: '2px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 500 }}>-{paquete.descuento}% OFF</span>
+              <div style={{ background: 'var(--cream)', borderRadius: '6px', padding: '0.85rem 1rem', marginBottom: '1.25rem', fontSize: '13px', color: 'var(--charcoal)', lineHeight: 1.6 }}>{paquete.explicacion}</div>
+              <div style={{ border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden', marginBottom: '1.25rem' }}>
+                <div style={{ background: 'var(--cream-dark)', padding: '0.65rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--charcoal)' }}>{lang === 'es' ? `Paquete ${paquete.condicion}` : `${paquete.condicion} Package`}</span>
+                  <span style={{ background: 'var(--sage)', color: 'white', padding: '2px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 500 }}>-{paquete.descuento}% OFF</span>
                 </div>
                 <div style={{ padding: '0.75rem 1rem' }}>
-                  {[{ label: armazonNombre, valor: `$${PRECIO_ARMAZON}` }, { label: lang === 'es' ? paquete.vision.nombre : paquete.vision.nombre_en, valor: `+$${paquete.vision.precio}` }, { label: lang === 'es' ? paquete.material.nombre : paquete.material.nombre_en, valor: paquete.material.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+$${paquete.material.precio}` }, { label: lang === 'es' ? paquete.filtroBase.nombre : paquete.filtroBase.nombre_en, valor: `+$${paquete.filtroBase.precio}` }].map((item, i) => (
-                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', padding: '6px 0', borderBottom: i < 3 ? '1px solid #f5f3ef' : 'none' }}>
-                      <span style={{ color: '#6f6a63' }}>{item.label}</span><span style={{ fontWeight: 500 }}>{item.valor}</span>
+                  {[
+                    { label: armazonNombre, valor: `$${PRECIO_ARMAZON}` },
+                    { label: lang === 'es' ? paquete.vision.nombre : paquete.vision.nombre_en, valor: `+$${paquete.vision.precio}` },
+                    { label: lang === 'es' ? paquete.material.nombre : paquete.material.nombre_en, valor: paquete.material.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+$${paquete.material.precio}` },
+                    { label: lang === 'es' ? paquete.filtroBase.nombre : paquete.filtroBase.nombre_en, valor: `+$${paquete.filtroBase.precio}` },
+                  ].map((item, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', padding: '6px 0', borderBottom: i < 3 ? '1px solid var(--cream)' : 'none' }}>
+                      <span style={{ color: 'var(--warm-gray)' }}>{item.label}</span><span style={{ fontWeight: 500 }}>{item.valor}</span>
                     </div>
                   ))}
                 </div>
-                <div style={{ padding: '0.75rem 1rem', background: '#faf9f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '0.75rem 1rem', background: 'var(--cream)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontSize: '11px', color: '#9a9a9a', textDecoration: 'line-through' }}>${paquete.precioOriginal} USD</div>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: '#55624c' }}>${paquete.precioFinal} USD</div>
+                    <div style={{ fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>${paquete.precioOriginal} USD</div>
+                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--sage)' }}>${paquete.precioFinal} USD</div>
                   </div>
-                  <div style={{ fontSize: '11px', color: '#6f6a63' }}>{lang === 'es' ? `Ahorras $${paquete.descuento}` : `You save $${paquete.descuento}`}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{lang === 'es' ? `Ahorras $${paquete.descuento}` : `You save $${paquete.descuento}`}</div>
                 </div>
               </div>
-              <button onClick={() => setPaso('upsell')} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px', fontFamily: 'var(--font-sans)' }}>{lang === 'es' ? 'Sí, quiero este paquete →' : 'Yes, I want this package →'}</button>
-              <button onClick={onManual} style={{ width: '100%', background: 'white', color: '#6f6a63', border: '1px solid #e8e5e0', borderRadius: '6px', padding: '12px', fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>{lang === 'es' ? 'Prefiero elegir manualmente' : 'I prefer to choose manually'}</button>
+              {/* DRAWER ACTION → TURQUESA */}
+              <button onClick={() => setPaso('upsell')} style={{ width: '100%', background: TURQUESA, color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = TURQUESA_DARK)} onMouseLeave={e => (e.currentTarget.style.background = TURQUESA)}>
+                {lang === 'es' ? 'Sí, quiero este paquete →' : 'Yes, I want this package →'}
+              </button>
+              <button onClick={onManual} style={{ width: '100%', background: 'white', color: 'var(--warm-gray)', border: '1px solid var(--border)', borderRadius: '6px', padding: '12px', fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                {lang === 'es' ? 'Prefiero elegir manualmente' : 'I prefer to choose manually'}
+              </button>
             </div>
           </>
         ) : (
           <>
-            <div style={{ background: '#f5f1eb', padding: '1.25rem 1.5rem', textAlign: 'center', borderBottom: '1px solid #e8e5e0' }}>
-              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: '#1d1d1d' }}>{lang === 'es' ? '¿Le añadimos algo más?' : 'Shall we add anything else?'}</div>
-              <div style={{ fontSize: '0.72rem', letterSpacing: '0.08em', color: '#6f6a63', marginTop: '4px' }}>{lang === 'es' ? 'Opcional' : 'Optional'}</div>
+            <div style={{ background: 'var(--cream-dark)', padding: '1.25rem 1.5rem', textAlign: 'center', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: 'var(--charcoal)' }}>{lang === 'es' ? '¿Le añadimos algo más?' : 'Shall we add anything else?'}</div>
+              <div style={{ fontSize: '0.7rem', letterSpacing: '0.08em', color: 'var(--warm-gray)', marginTop: '4px' }}>{lang === 'es' ? 'Opcional' : 'Optional'}</div>
             </div>
             <div style={{ padding: '1.25rem 1.5rem' }}>
               {paquete.upsells.map(u => (
-                <div key={u.id} onClick={() => toggleExtra(u.id)} style={{ border: extras.includes(u.id) ? '1.5px solid #55624c' : '1px solid #e8e5e0', borderRadius: '8px', padding: '1rem', cursor: 'pointer', background: extras.includes(u.id) ? '#f0f4ef' : 'white', marginBottom: '0.75rem', transition: 'all 0.15s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div key={u.id} onClick={() => toggleExtra(u.id)} style={{ border: extras.includes(u.id) ? `1.5px solid var(--sage)` : '1px solid var(--border)', borderRadius: '6px', padding: '1rem', cursor: 'pointer', background: extras.includes(u.id) ? 'rgba(74,89,64,0.06)' : 'white', marginBottom: '0.75rem', transition: 'all 0.15s', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ width: '20px', height: '20px', borderRadius: '4px', border: '1.5px solid', borderColor: extras.includes(u.id) ? '#55624c' : '#e8e5e0', background: extras.includes(u.id) ? '#55624c' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '11px', flexShrink: 0 }}>{extras.includes(u.id) ? '✓' : ''}</div>
-                    <div><div style={{ fontSize: '13px', fontWeight: 500, color: '#1d1d1d' }}>{u.nombre}</div><div style={{ fontSize: '12px', color: '#6f6a63', marginTop: '2px' }}>{u.razon}</div></div>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '3px', border: '1.5px solid', borderColor: extras.includes(u.id) ? 'var(--sage)' : 'var(--border)', background: extras.includes(u.id) ? 'var(--sage)' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '11px', flexShrink: 0 }}>{extras.includes(u.id) ? '✓' : ''}</div>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--charcoal)' }}>{u.nombre}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{u.razon}</div>
+                    </div>
                   </div>
-                  <div style={{ fontSize: '13px', fontWeight: 500, color: '#55624c', flexShrink: 0 }}>+${u.precio}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--sage)', flexShrink: 0 }}>+${u.precio}</div>
                 </div>
               ))}
-              <div style={{ background: '#faf9f7', borderRadius: '8px', padding: '0.9rem 1rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.8rem', color: '#6f6a63' }}>Total</span>
-                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: '#1d1d1d' }}>${paquete.precioFinal + precioExtras} USD</span>
+              <div style={{ background: 'var(--cream)', borderRadius: '6px', padding: '0.9rem 1rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--warm-gray)' }}>Total</span>
+                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--charcoal)' }}>${paquete.precioFinal + precioExtras} USD</span>
               </div>
-              <button onClick={() => onAceptar(extras)} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px', fontFamily: 'var(--font-sans)' }}>{lang === 'es' ? 'Ir al resumen →' : 'Go to summary →'}</button>
-              <button onClick={() => onAceptar([])} style={{ width: '100%', background: 'white', color: '#6f6a63', border: '1px solid #e8e5e0', borderRadius: '6px', padding: '11px', fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>{lang === 'es' ? 'No gracias, ir al resumen' : 'No thanks, go to summary'}</button>
+              {/* DRAWER ACTION → TURQUESA */}
+              <button onClick={() => onAceptar(extras)} style={{ width: '100%', background: TURQUESA, color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = TURQUESA_DARK)} onMouseLeave={e => (e.currentTarget.style.background = TURQUESA)}>
+                {lang === 'es' ? 'Ir al resumen →' : 'Go to summary →'}
+              </button>
+              <button onClick={() => onAceptar([])} style={{ width: '100%', background: 'white', color: 'var(--warm-gray)', border: '1px solid var(--border)', borderRadius: '6px', padding: '11px', fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                {lang === 'es' ? 'No gracias, ir al resumen' : 'No thanks, go to summary'}
+              </button>
             </div>
           </>
         )}
@@ -383,32 +419,35 @@ function VerlyModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }
   );
 }
 
+// ── SelectorColores ──────────────────────────────────────
 function SelectorColores({ colores, valorActivo, onChange, lang }: { colores: { id: string; nombre_es: string; nombre_en: string; hex: string }[]; valorActivo: string; onChange: (id: string) => void; lang: string; }) {
   return (
     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
       {colores.map(c => (
         <div key={c.id} onClick={() => onChange(c.id)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: c.hex, border: valorActivo === c.id ? '2.5px solid #1d1d1d' : '2.5px solid transparent', outline: valorActivo === c.id ? '1.5px solid #55624c' : 'none', outlineOffset: '2px', boxShadow: '0 2px 6px rgba(0,0,0,0.12)', transition: 'all 0.15s' }}/>
-          <span style={{ fontSize: '10px', fontWeight: valorActivo === c.id ? 600 : 400, color: valorActivo === c.id ? '#1d1d1d' : '#6f6a63' }}>{lang === 'es' ? c.nombre_es : c.nombre_en}</span>
+          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: c.hex, border: valorActivo === c.id ? '2.5px solid var(--charcoal)' : '2.5px solid transparent', outline: valorActivo === c.id ? '1.5px solid var(--sage)' : 'none', outlineOffset: '2px', boxShadow: '0 2px 6px rgba(28,28,26,0.12)', transition: 'all 0.15s' }}/>
+          <span style={{ fontSize: '10px', fontWeight: valorActivo === c.id ? 600 : 400, color: valorActivo === c.id ? 'var(--charcoal)' : 'var(--warm-gray)' }}>{lang === 'es' ? c.nombre_es : c.nombre_en}</span>
         </div>
       ))}
     </div>
   );
 }
 
+// ── Acordeon ─────────────────────────────────────────────
 function Acordeon({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ borderTop: '1px solid rgba(0,0,0,0.06)' }}>
-      <button onClick={() => setOpen(!open)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: '14px', fontWeight: 400, color: '#1d1d1d', textAlign: 'left', letterSpacing: '0.01em' }}>
+    <div style={{ borderTop: '1px solid var(--border)' }}>
+      <button onClick={() => setOpen(!open)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: '14px', fontWeight: 400, color: 'var(--charcoal)', textAlign: 'left', letterSpacing: '0.01em' }}>
         {titulo}
-        <span style={{ fontSize: '20px', color: '#9a9a9a', transform: open ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform 0.25s', display: 'inline-block', lineHeight: 1 }}>+</span>
+        <span style={{ fontSize: '20px', color: 'var(--warm-gray)', transform: open ? 'rotate(45deg)' : 'rotate(0)', transition: 'transform 0.25s', display: 'inline-block', lineHeight: 1 }}>+</span>
       </button>
-      {open && <div style={{ paddingBottom: '1.25rem', fontSize: '13px', color: '#6f6a63', lineHeight: 1.8 }}>{children}</div>}
+      {open && <div style={{ paddingBottom: '1.25rem', fontSize: '13px', color: 'var(--warm-gray)', lineHeight: 1.8 }}>{children}</div>}
     </div>
   );
 }
 
+// ── PAGE ─────────────────────────────────────────────────
 export default function DetalleArmazon() {
   const { id } = useParams();
   const searchParams = useSearchParams();
@@ -441,9 +480,6 @@ export default function DetalleArmazon() {
   const [colorPolarizado, setColorPolarizado] = useState('negro');
   const [colorTinte, setColorTinte] = useState('negro');
   const [soloArmazon, setSoloArmazon] = useState(false);
-  // app/armazon/[id]/page.tsx
-// ── REEMPLAZAR DESDE: const [fotoActiva, setFotoActiva] = useState(0);
-// ── HASTA: el final del archivo (export default DetalleArmazon)
 
   const [fotoActiva, setFotoActiva] = useState(0);
   const [posZoom, setPosZoom] = useState({ x: 50, y: 50 });
@@ -454,7 +490,6 @@ export default function DetalleArmazon() {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
 
-  // Lightbox pinch-to-zoom
   const [lbScale, setLbScale] = useState(1);
   const [lbPos, setLbPos] = useState({ x: 0, y: 0 });
   const [lbPinchStart, setLbPinchStart] = useState<number | null>(null);
@@ -464,11 +499,10 @@ export default function DetalleArmazon() {
   useEffect(() => {
     const check = () => setEsMobil(window.innerWidth <= 768);
     check();
-    window.addEventListener('resize', check);
+    window.addEventListener('resize', check, { passive: true });
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // Bloquear scroll cuando lightbox está abierto
   useEffect(() => {
     if (lightboxOpen) {
       document.body.style.overflow = 'hidden';
@@ -483,10 +517,10 @@ export default function DetalleArmazon() {
   const precioVision = (preciosDB.vision.find((v: any) => v.id === vision)?.precio || visionOpts.find(v => v.id === vision)?.precio || 0);
   const precioMaterial = (preciosDB.material.find((m: any) => m.id === material)?.precio || materialOpts.find(m => m.id === material)?.precio || 0);
   const precioFiltros = filtros.reduce((total, fid) => {
-  const precioDB = preciosDB.filtro.find((f: any) => f.id === fid)?.precio;
-  const precioLocal = filtroOpts.find((f: any) => f.id === fid)?.precio || 0;
-  return total + (precioDB || precioLocal);
-}, 0);
+    const precioDB = preciosDB.filtro.find((f: any) => f.id === fid)?.precio;
+    const precioLocal = filtroOpts.find((f: any) => f.id === fid)?.precio || 0;
+    return total + (precioDB || precioLocal);
+  }, 0);
   const total = soloArmazon ? precioArmazon : precioArmazon + precioVision + precioMaterial + precioFiltros;
 
   const toggleFiltro = (fid: string) => setFiltros(prev => prev.includes(fid) ? prev.filter(f => f !== fid) : [...prev, fid]);
@@ -599,246 +633,182 @@ export default function DetalleArmazon() {
   const fotoLifestyle = armazon?.imagen5_url || null;
   const partesMedidas = armazon?.medidas?.split('-') || [];
 
-  // ── Helpers navegación carrusel
-  const irFoto = (idx: number) => {
-    setFotoActiva(Math.max(0, Math.min(idx, fotos.length - 1)));
-    setSwipeOffset(0);
-  };
+  const irFoto = (idx: number) => { setFotoActiva(Math.max(0, Math.min(idx, fotos.length - 1))); setSwipeOffset(0); };
   const fotoPrev = () => irFoto(fotoActiva - 1);
   const fotoNext = () => irFoto(fotoActiva + 1);
 
-  // ── Touch handlers carrusel (swipe con rubber-band visual)
-  const onTouchStartCarrusel = (e: React.TouchEvent) => {
-    setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
-    setIsSwiping(false);
-    setSwipeOffset(0);
-  };
+  const onTouchStartCarrusel = (e: React.TouchEvent) => { setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY }); setIsSwiping(false); setSwipeOffset(0); };
   const onTouchMoveCarrusel = (e: React.TouchEvent) => {
     if (!touchStart) return;
     const dx = e.touches[0].clientX - touchStart.x;
     const dy = e.touches[0].clientY - touchStart.y;
-    if (!isSwiping && Math.abs(dy) > Math.abs(dx)) return; // scroll vertical
+    if (!isSwiping && Math.abs(dy) > Math.abs(dx)) return;
     setIsSwiping(true);
-    // rubber-band en los extremos
     let offset = dx;
-    if ((fotoActiva === 0 && dx > 0) || (fotoActiva === fotos.length - 1 && dx < 0)) {
-      offset = dx * 0.25;
-    }
+    if ((fotoActiva === 0 && dx > 0) || (fotoActiva === fotos.length - 1 && dx < 0)) offset = dx * 0.25;
     setSwipeOffset(offset);
   };
   const onTouchEndCarrusel = (e: React.TouchEvent) => {
     if (!touchStart || !isSwiping) { setTouchStart(null); setSwipeOffset(0); setIsSwiping(false); return; }
     const dx = touchStart.x - e.changedTouches[0].clientX;
-    if (Math.abs(dx) > 50) {
-      if (dx > 0) fotoNext(); else fotoPrev();
-    } else {
-      setSwipeOffset(0);
-    }
-    setTouchStart(null);
-    setIsSwiping(false);
+    if (Math.abs(dx) > 50) { if (dx > 0) fotoNext(); else fotoPrev(); } else { setSwipeOffset(0); }
+    setTouchStart(null); setIsSwiping(false);
   };
 
-  // ── Lightbox touch handlers (pinch zoom + drag)
   const onLbTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      setLbPinchStart(d);
-    } else if (e.touches.length === 1 && lbScale > 1) {
-      setLbDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY, px: lbPos.x, py: lbPos.y });
-    }
+    if (e.touches.length === 2) { const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); setLbPinchStart(d); }
+    else if (e.touches.length === 1 && lbScale > 1) { setLbDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY, px: lbPos.x, py: lbPos.y }); }
   };
   const onLbTouchMove = (e: React.TouchEvent) => {
     e.stopPropagation();
-    if (e.touches.length === 2 && lbPinchStart !== null) {
-      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      const newScale = Math.min(4, Math.max(1, lbScale * (d / lbPinchStart)));
-      setLbScale(newScale);
-      setLbPinchStart(d);
-    } else if (e.touches.length === 1 && lbDragStart && lbScale > 1) {
-      const dx = e.touches[0].clientX - lbDragStart.x;
-      const dy = e.touches[0].clientY - lbDragStart.y;
-      setLbPos({ x: lbDragStart.px + dx, y: lbDragStart.py + dy });
-    }
+    if (e.touches.length === 2 && lbPinchStart !== null) { const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); const newScale = Math.min(4, Math.max(1, lbScale * (d / lbPinchStart))); setLbScale(newScale); setLbPinchStart(d); }
+    else if (e.touches.length === 1 && lbDragStart && lbScale > 1) { const dx = e.touches[0].clientX - lbDragStart.x; const dy = e.touches[0].clientY - lbDragStart.y; setLbPos({ x: lbDragStart.px + dx, y: lbDragStart.py + dy }); }
   };
-  const onLbTouchEnd = () => {
-    setLbPinchStart(null);
-    setLbDragStart(null);
-    if (lbScale < 1.1) { setLbScale(1); setLbPos({ x: 0, y: 0 }); }
-  };
-  // Doble tap para zoom en lightbox
+  const onLbTouchEnd = () => { setLbPinchStart(null); setLbDragStart(null); if (lbScale < 1.1) { setLbScale(1); setLbPos({ x: 0, y: 0 }); } };
   const lastTap = useRef<number>(0);
   const onLbDoubleTap = () => {
     const now = Date.now();
-    if (now - lastTap.current < 300) {
-      if (lbScale > 1) { setLbScale(1); setLbPos({ x: 0, y: 0 }); }
-      else { setLbScale(2.5); }
-    }
+    if (now - lastTap.current < 300) { if (lbScale > 1) { setLbScale(1); setLbPos({ x: 0, y: 0 }); } else { setLbScale(2.5); } }
     lastTap.current = now;
   };
 
   if (loading) return (
-    <main style={{ fontFamily: 'var(--font-sans), sans-serif', background: '#f5f1eb', minHeight: '100vh' }}>
+    <main style={{ background: 'var(--cream)', minHeight: '100vh' }}>
       <Navbar />
-      <div style={{ textAlign: 'center', padding: '8rem', color: '#6f6a63', fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300 }}>{t('Cargando...', 'Loading...')}</div>
+      <div style={{ textAlign: 'center', padding: '8rem', color: 'var(--warm-gray)', fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300 }}>{t('Cargando...', 'Loading...')}</div>
     </main>
   );
 
   if (!armazon) return (
-    <main style={{ fontFamily: 'var(--font-sans), sans-serif', background: '#f5f1eb', minHeight: '100vh' }}>
+    <main style={{ background: 'var(--cream)', minHeight: '100vh' }}>
       <Navbar />
-      <div style={{ textAlign: 'center', padding: '8rem', color: '#6f6a63' }}>
+      <div style={{ textAlign: 'center', padding: '8rem', color: 'var(--warm-gray)' }}>
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300 }}>{t('Armazón no encontrado.', 'Frame not found.')}</p>
-        <a href="/Tienda" style={{ color: '#55624c', fontSize: '0.8rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t('← Volver', '← Back')}</a>
+        <a href="/Tienda" style={{ color: 'var(--sage)', fontSize: '0.8rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t('← Volver', '← Back')}</a>
       </div>
     </main>
   );
 
   return (
-    <main style={{ fontFamily: 'var(--font-sans), sans-serif', background: '#f5f1eb', minHeight: '100vh', color: '#1d1d1d' }}>
+    <main style={{ fontFamily: 'var(--font-sans)', background: 'var(--cream)', minHeight: '100vh', color: 'var(--charcoal)' }}>
       <Navbar />
       {verlyModal && paqueteVerly && <VerlyModalPaquete paquete={paqueteVerly} armazonNombre={armazon.nombre} onAceptar={aceptarPaquete} onManual={elegirManual} lang={lang || 'en'}/>}
-      {drawerOpen && <div onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 200, backdropFilter: 'blur(2px)' }}/>}
+      {drawerOpen && <div onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,26,0.35)', zIndex: 200, backdropFilter: 'blur(2px)' }}/>}
 
-      {/* ══ LIGHTBOX ══ */}
+      {/* ── LIGHTBOX ── */}
       {lightboxOpen && fotos.length > 0 && (
-        <div
-          style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.95)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
-          onClick={(e) => { if (e.target === e.currentTarget) { setLightboxOpen(false); } }}
-        >
-          {/* Header lightbox */}
+        <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.95)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }} onClick={e => { if (e.target === e.currentTarget) setLightboxOpen(false); }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 10 }}>
             <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', fontFamily: 'var(--font-sans)' }}>{fotoActiva + 1} / {fotos.length}</span>
             <button onClick={() => setLightboxOpen(false)} style={{ background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', color: 'white', fontSize: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
           </div>
-
-          {/* Imagen con pinch zoom */}
-          <div
-            ref={lbRef}
-            style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: lbScale > 1 ? 'grab' : 'zoom-in' }}
-            onTouchStart={onLbTouchStart}
-            onTouchMove={onLbTouchMove}
-            onTouchEnd={onLbTouchEnd}
-            onClick={onLbDoubleTap}
-          >
-            <img
-              src={fotos[fotoActiva]}
-              alt={armazon.nombre}
-              style={{
-                maxWidth: '100vw', maxHeight: '100vh',
-                objectFit: 'contain',
-                transform: `scale(${lbScale}) translate(${lbPos.x / lbScale}px, ${lbPos.y / lbScale}px)`,
-                transition: lbPinchStart || lbDragStart ? 'none' : 'transform 0.2s ease',
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
-                touchAction: 'none',
-              }}
-              draggable={false}
-            />
+          <div ref={lbRef} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: lbScale > 1 ? 'grab' : 'zoom-in' }} onTouchStart={onLbTouchStart} onTouchMove={onLbTouchMove} onTouchEnd={onLbTouchEnd} onClick={onLbDoubleTap}>
+            <img src={fotos[fotoActiva]} alt={armazon.nombre} style={{ maxWidth: '100vw', maxHeight: '100vh', objectFit: 'contain', transform: `scale(${lbScale}) translate(${lbPos.x / lbScale}px, ${lbPos.y / lbScale}px)`, transition: lbPinchStart || lbDragStart ? 'none' : 'transform 0.2s ease', userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'none' }} draggable={false}/>
           </div>
-
-          {/* Hint doble tap */}
-          {lbScale === 1 && (
-            <div style={{ position: 'absolute', bottom: '5rem', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.35)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', whiteSpace: 'nowrap' }}>
-              {t('Doble toque para zoom · Pellizca para ampliar', 'Double tap to zoom · Pinch to enlarge')}
-            </div>
-          )}
-
-          {/* Flechas desktop */}
+          {lbScale === 1 && <div style={{ position: 'absolute', bottom: '5rem', left: '50%', transform: 'translateX(-50%)', color: 'rgba(255,255,255,0.3)', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', whiteSpace: 'nowrap' }}>{t('Doble toque para zoom', 'Double tap to zoom')}</div>}
           {!esMobil && fotos.length > 1 && (
             <>
               <button onClick={fotoPrev} disabled={fotoActiva === 0} style={{ position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === 0 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: fotoActiva === 0 ? 'default' : 'pointer', color: fotoActiva === 0 ? 'rgba(255,255,255,0.2)' : 'white', fontSize: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
               <button onClick={fotoNext} disabled={fotoActiva === fotos.length - 1} style={{ position: 'absolute', right: '1.5rem', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === fotos.length - 1 ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%', width: '48px', height: '48px', cursor: fotoActiva === fotos.length - 1 ? 'default' : 'pointer', color: fotoActiva === fotos.length - 1 ? 'rgba(255,255,255,0.2)' : 'white', fontSize: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
             </>
           )}
-
-          {/* Miniaturas lightbox */}
           {fotos.length > 1 && (
             <div style={{ position: 'absolute', bottom: '1.25rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px' }}>
-              {fotos.map((f, i) => (
-                <button key={i} onClick={() => irFoto(i)} style={{ width: '44px', height: '44px', borderRadius: '6px', overflow: 'hidden', border: fotoActiva === i ? '2px solid white' : '2px solid rgba(255,255,255,0.2)', background: 'transparent', cursor: 'pointer', padding: 0, opacity: fotoActiva === i ? 1 : 0.5, transition: 'all 0.2s' }}>
-                  <img src={f} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
-                </button>
-              ))}
+              {fotos.map((f, i) => <button key={i} onClick={() => irFoto(i)} style={{ width: '44px', height: '44px', borderRadius: '4px', overflow: 'hidden', border: fotoActiva === i ? '2px solid white' : '2px solid rgba(255,255,255,0.2)', background: 'transparent', cursor: 'pointer', padding: 0, opacity: fotoActiva === i ? 1 : 0.5, transition: 'all 0.2s' }}><img src={f} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/></button>)}
             </div>
           )}
         </div>
       )}
 
-      {/* ══ DRAWER ══ */}
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', maxWidth: '100vw', background: 'white', zIndex: 201, boxShadow: '-2px 0 40px rgba(0,0,0,0.08)', transform: drawerOpen ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-        <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'white', zIndex: 1 }}>
+      {/* ── DRAWER ── */}
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '480px', maxWidth: '100vw', background: 'white', zIndex: 201, boxShadow: '-2px 0 48px rgba(28,28,26,0.08)', transform: drawerOpen ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+
+        {/* Drawer header */}
+        <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'white', zIndex: 1 }}>
           <div>
-            <p style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#9a9a9a', margin: 0 }}>{t('Personalizando', 'Customizing')}</p>
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, margin: '3px 0 0', color: '#1d1d1d' }}>{armazon.nombre}</h3>
+            <p style={{ fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: 0 }}>{t('Personalizando', 'Customizing')}</p>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, margin: '3px 0 0', color: 'var(--charcoal)' }}>{armazon.nombre}</h3>
           </div>
-          <button onClick={() => setDrawerOpen(false)} style={{ background: '#f5f3ef', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '18px', color: '#6f6a63', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+          <button onClick={() => setDrawerOpen(false)} style={{ background: 'var(--cream)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '18px', color: 'var(--warm-gray)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
         </div>
 
+        {/* Estado: inicio_solar */}
         {drawerEstado === 'inicio_solar' && (
           <div style={{ padding: '2rem', flex: 1 }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300, color: '#1d1d1d', marginBottom: '0.5rem' }}>{t('¿Cómo quieres tus lentes?', 'How do you want your lenses?')}</p>
-              <p style={{ fontSize: '0.8rem', color: '#6f6a63' }}>{t('Puedes llevarlos como vienen o personalizarlos.', 'Wear them as-is or customize them.')}</p>
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '0.5rem' }}>{t('¿Cómo quieres tus lentes?', 'How do you want your lenses?')}</p>
+              <p style={{ fontSize: '0.8rem', color: 'var(--warm-gray)' }}>{t('Puedes llevarlos como vienen o personalizarlos.', 'Wear them as-is or customize them.')}</p>
             </div>
             {[
               { title: t('Solo el armazón', 'Frame only'), precio: `$${precioArmazon} USD`, desc: t('Incluye lentes oscuros estándar. Sin graduación.', 'Includes standard dark lenses. No prescription.'), dark: false, onClick: () => { setSoloArmazon(true); setDrawerEstado('config'); setPaso(4); } },
               { title: t('Personalizar mis micas', 'Customize my lenses'), precio: `${t('desde', 'from')} $${precioArmazon + 15}`, desc: t('Agregar graduación, polarizado, fotocromático y más.', 'Add prescription, polarized, photochromic and more.'), dark: true, onClick: () => { setSoloArmazon(false); setDrawerEstado('inicio'); } }
             ].map((opt, i) => (
-              <div key={i} onClick={opt.onClick} style={{ border: opt.dark ? 'none' : '1px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '1.5rem', cursor: 'pointer', background: opt.dark ? '#1d1d1d' : '#faf9f7', marginBottom: '0.75rem', transition: 'all 0.2s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)'; }}
+              <div key={i} onClick={opt.onClick} style={{ border: opt.dark ? 'none' : '1px solid var(--border)', borderRadius: '8px', padding: '1.5rem', cursor: 'pointer', background: opt.dark ? 'var(--charcoal)' : 'var(--cream)', marginBottom: '0.75rem', transition: 'all 0.2s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(28,28,26,0.08)'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: opt.dark ? 'white' : '#1d1d1d' }}>{opt.title}</span>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 500, color: opt.dark ? 'rgba(255,255,255,0.7)' : '#6f6a63' }}>{opt.precio}</span>
+                  <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: opt.dark ? 'white' : 'var(--charcoal)' }}>{opt.title}</span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 500, color: opt.dark ? 'rgba(255,255,255,0.65)' : 'var(--warm-gray)' }}>{opt.precio}</span>
                 </div>
-                <p style={{ fontSize: '0.8rem', color: opt.dark ? 'rgba(255,255,255,0.6)' : '#6f6a63', lineHeight: 1.6, margin: 0 }}>{opt.desc}</p>
+                <p style={{ fontSize: '0.8rem', color: opt.dark ? 'rgba(255,255,255,0.55)' : 'var(--warm-gray)', lineHeight: 1.6, margin: 0 }}>{opt.desc}</p>
               </div>
             ))}
           </div>
         )}
 
+        {/* Estado: inicio */}
         {drawerEstado === 'inicio' && (
           <div style={{ padding: '2rem', flex: 1 }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: '#1d1d1d', marginBottom: '6px' }}>{t('¿Tienes tu graduación?', 'Do you have your prescription?')}</p>
-              <p style={{ fontSize: '0.8rem', color: '#6f6a63' }}>{t('Úsala para personalizar tus micas o agrégala después', 'Use it to customize your lenses or add it later')}</p>
+              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '6px' }}>{t('¿Tienes tu graduación?', 'Do you have your prescription?')}</p>
+              <p style={{ fontSize: '0.8rem', color: 'var(--warm-gray)' }}>{t('Úsala para personalizar tus micas o agrégala después', 'Use it to customize your lenses or add it later')}</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {[
-                { icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>), title: t('Escribir manualmente', 'Enter manually'), sub: t('SPH, CYL, EJE, ADD, PD', 'SPH, CYL, AXIS, ADD, PD'), onClick: () => setDrawerEstado('manual') },
-                { icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>), title: t('Subir foto de mi receta', 'Upload prescription photo'), sub: t('Foto, PDF o captura de pantalla', 'Photo, PDF or screenshot'), onClick: () => setDrawerEstado('foto') },
-                { icon: (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>), title: t('La agregaré después', "I'll add it later"), sub: t('Agrega tu receta antes de pagar', 'Add your prescription before paying'), onClick: () => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); } }
+                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, title: t('Escribir manualmente', 'Enter manually'), sub: t('SPH, CYL, EJE, ADD, PD', 'SPH, CYL, AXIS, ADD, PD'), onClick: () => setDrawerEstado('manual') },
+                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>, title: t('Subir foto de mi receta', 'Upload prescription photo'), sub: t('Foto, PDF o captura de pantalla', 'Photo, PDF or screenshot'), onClick: () => setDrawerEstado('foto') },
+                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, title: t('La agregaré después', "I'll add it later"), sub: t('Agrega tu receta antes de pagar', 'Add your prescription before paying'), onClick: () => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); } },
               ].map((opt, i) => (
-                <button key={i} onClick={opt.onClick} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '1.1rem 1.25rem', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.08)', background: '#faf9f7', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s', fontFamily: 'var(--font-sans)' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#55624c'; (e.currentTarget as HTMLButtonElement).style.background = '#f0f4ef'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,0,0,0.08)'; (e.currentTarget as HTMLButtonElement).style.background = '#faf9f7'; }}>
-                  <div style={{ color: '#55624c', flexShrink: 0 }}>{opt.icon}</div>
-                  <div style={{ flex: 1 }}><div style={{ fontSize: '14px', fontWeight: 500, color: '#1d1d1d' }}>{opt.title}</div><div style={{ fontSize: '12px', color: '#6f6a63', marginTop: '2px' }}>{opt.sub}</div></div>
-                  <span style={{ color: '#9a9a9a', fontSize: '18px' }}>›</span>
+                <button key={i} onClick={opt.onClick} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '1.1rem 1.25rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--cream)', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s', fontFamily: 'var(--font-sans)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--sage)'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(74,89,64,0.06)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--cream)'; }}>
+                  <div style={{ color: 'var(--sage)', flexShrink: 0 }}>{opt.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{opt.title}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{opt.sub}</div>
+                  </div>
+                  <span style={{ color: 'var(--warm-gray)', fontSize: '18px' }}>›</span>
                 </button>
               ))}
             </div>
-            {esSolar && <button onClick={() => setDrawerEstado('inicio_solar')} style={{ width: '100%', marginTop: '1rem', background: 'none', border: 'none', color: '#6f6a63', fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>← {t('Volver', 'Back')}</button>}
+            {esSolar && <button onClick={() => setDrawerEstado('inicio_solar')} style={{ width: '100%', marginTop: '1rem', background: 'none', border: 'none', color: 'var(--warm-gray)', fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>← {t('Volver', 'Back')}</button>}
           </div>
         )}
 
+        {/* Estado: manual */}
         {drawerEstado === 'manual' && (
           <div style={{ padding: '2rem', flex: 1 }}>
-            <button onClick={() => setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio')} style={{ background: 'none', border: 'none', color: '#55624c', fontSize: '13px', cursor: 'pointer', marginBottom: '1.5rem', padding: 0, fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 300, color: '#1d1d1d', marginBottom: '1rem' }}>{t('Tu receta óptica', 'Your optical prescription')}</p>
+            <button onClick={() => setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio')} style={{ background: 'none', border: 'none', color: 'var(--sage)', fontSize: '13px', cursor: 'pointer', marginBottom: '1.5rem', padding: 0, fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '1rem' }}>{t('Tu receta óptica', 'Your optical prescription')}</p>
             <FormReceta receta={receta} onChange={setReceta} errores={errores} t={t}/>
-            <button onClick={guardarRecetaManual} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '8px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '1rem', fontFamily: 'var(--font-sans)' }}>{t('Guardar y ver recomendación →', 'Save & see recommendation →')}</button>
-            <button onClick={() => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); }} style={{ width: '100%', background: 'none', border: 'none', color: '#9a9a9a', fontSize: '12px', cursor: 'pointer', fontFamily: 'var(--font-sans)', padding: '10px', marginTop: '4px' }}>{t('Continuar sin receta por ahora', 'Continue without prescription for now')}</button>
+            {/* DRAWER ACTION → TURQUESA */}
+            <button onClick={guardarRecetaManual} style={{ width: '100%', background: TURQUESA, color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '1rem', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = TURQUESA_DARK)} onMouseLeave={e => (e.currentTarget.style.background = TURQUESA)}>
+              {t('Guardar y ver recomendación →', 'Save & see recommendation →')}
+            </button>
+            <button onClick={() => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); }} style={{ width: '100%', background: 'none', border: 'none', color: 'var(--warm-gray)', fontSize: '12px', cursor: 'pointer', fontFamily: 'var(--font-sans)', padding: '10px', marginTop: '4px' }}>
+              {t('Continuar sin receta por ahora', 'Continue without prescription for now')}
+            </button>
           </div>
         )}
 
+        {/* Estado: foto */}
         {drawerEstado === 'foto' && (
           <div style={{ padding: '2rem', flex: 1 }}>
-            <button onClick={() => setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio')} style={{ background: 'none', border: 'none', color: '#55624c', fontSize: '13px', cursor: 'pointer', marginBottom: '1.5rem', padding: 0, fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 300, marginBottom: '1rem' }}>{t('Sube tu receta', 'Upload your prescription')}</p>
+            <button onClick={() => setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio')} style={{ background: 'none', border: 'none', color: 'var(--sage)', fontSize: '13px', cursor: 'pointer', marginBottom: '1.5rem', padding: 0, fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '1rem' }}>{t('Sube tu receta', 'Upload your prescription')}</p>
             {fotoReceta ? (
               <div style={{ marginBottom: '1rem' }}>
-                <img src={fotoReceta} alt="receta" style={{ width: '100%', borderRadius: '8px', maxHeight: '200px', objectFit: 'contain', border: '1px solid #e8e5e0' }}/>
+                <img src={fotoReceta} alt="receta" style={{ width: '100%', borderRadius: '6px', maxHeight: '200px', objectFit: 'contain', border: '1px solid var(--border)' }}/>
                 <button onClick={() => setFotoReceta('')} style={{ background: 'none', border: 'none', color: '#c0392b', fontSize: '12px', cursor: 'pointer', marginTop: '8px', fontFamily: 'var(--font-sans)' }}>{t('Quitar foto', 'Remove photo')}</button>
               </div>
             ) : (
@@ -847,25 +817,36 @@ export default function DetalleArmazon() {
                   { title: t('Subir archivo', 'Upload file'), sub: 'JPG, PNG, PDF', capture: undefined, accept: 'image/*,.pdf' },
                   { title: t('Tomar foto ahora', 'Take photo now'), sub: t('Usa la cámara de tu dispositivo', 'Use your device camera'), capture: 'environment' as const, accept: 'image/*' }
                 ].map((opt, i) => (
-                  <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '1.1rem 1.25rem', borderRadius: '10px', border: '1px dashed rgba(0,0,0,0.12)', cursor: 'pointer', background: '#faf9f7' }}>
+                  <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '1.1rem 1.25rem', borderRadius: '8px', border: '1px dashed var(--border)', cursor: 'pointer', background: 'var(--cream)' }}>
                     <input type="file" accept={opt.accept} capture={opt.capture} style={{ display: 'none' }} onChange={e => { const file = e.target.files?.[0]; if (file) setFotoReceta(URL.createObjectURL(file)); }}/>
-                    <div><div style={{ fontSize: '13px', fontWeight: 500, color: '#1d1d1d' }}>{opt.title}</div><div style={{ fontSize: '12px', color: '#6f6a63' }}>{opt.sub}</div></div>
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--charcoal)' }}>{opt.title}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>{opt.sub}</div>
+                    </div>
                   </label>
                 ))}
               </div>
             )}
-            {fotoReceta && <button onClick={() => { setRecetaEstado('foto'); setDrawerEstado('config'); setPaso(1); }} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '8px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)' }}>{t('Foto guardada — continuar →', 'Photo saved — continue →')}</button>}
-            <button onClick={() => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); }} style={{ width: '100%', background: 'none', border: 'none', color: '#9a9a9a', fontSize: '12px', cursor: 'pointer', fontFamily: 'var(--font-sans)', padding: '10px', marginTop: '8px' }}>{t('Continuar sin foto por ahora', 'Continue without photo for now')}</button>
+            {fotoReceta && (
+              // DRAWER ACTION → TURQUESA
+              <button onClick={() => { setRecetaEstado('foto'); setDrawerEstado('config'); setPaso(1); }} style={{ width: '100%', background: TURQUESA, color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = TURQUESA_DARK)} onMouseLeave={e => (e.currentTarget.style.background = TURQUESA)}>
+                {t('Foto guardada — continuar →', 'Photo saved — continue →')}
+              </button>
+            )}
+            <button onClick={() => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); }} style={{ width: '100%', background: 'none', border: 'none', color: 'var(--warm-gray)', fontSize: '12px', cursor: 'pointer', fontFamily: 'var(--font-sans)', padding: '10px', marginTop: '8px' }}>
+              {t('Continuar sin foto por ahora', 'Continue without photo for now')}
+            </button>
           </div>
         )}
 
+        {/* Estado: config */}
         {drawerEstado === 'config' && (
           <>
             {tieneReceta && (
-              <div style={{ padding: '10px 1.5rem', background: '#f0f4ef', borderBottom: '1px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#55624c', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', flexShrink: 0 }}>✓</div>
-                <div style={{ flex: 1, fontSize: '11px', color: '#1d1d1d', fontWeight: 500 }}>{resumenReceta()}</div>
-                <button onClick={() => setDrawerEstado('inicio')} style={{ background: 'none', border: 'none', color: '#55624c', fontSize: '11px', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>{t('Editar', 'Edit')}</button>
+              <div style={{ padding: '10px 1.5rem', background: 'rgba(74,89,64,0.08)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'var(--sage)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', flexShrink: 0 }}>✓</div>
+                <div style={{ flex: 1, fontSize: '11px', color: 'var(--charcoal)', fontWeight: 500 }}>{resumenReceta()}</div>
+                <button onClick={() => setDrawerEstado('inicio')} style={{ background: 'none', border: 'none', color: 'var(--sage)', fontSize: '11px', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>{t('Editar', 'Edit')}</button>
               </div>
             )}
             {recetaEstado === 'despues' && (
@@ -878,43 +859,48 @@ export default function DetalleArmazon() {
 
             {soloArmazon ? (
               <div style={{ padding: '2rem', flex: 1 }}>
-                <div style={{ background: '#faf9f7', borderRadius: '10px', padding: '1.25rem', marginBottom: '1.5rem', border: '1px solid rgba(0,0,0,0.06)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}><span style={{ color: '#6f6a63' }}>{armazon.nombre}</span><span style={{ fontWeight: 500 }}>${precioArmazon}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px' }}><span style={{ color: '#6f6a63' }}>{t('Lentes oscuros estándar', 'Standard dark lenses')}</span><span style={{ color: '#55624c', fontWeight: 500 }}>{t('Incluido', 'Included')}</span></div>
+                <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1.25rem', marginBottom: '1.5rem', border: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px', borderBottom: '1px solid var(--border)' }}><span style={{ color: 'var(--warm-gray)' }}>{armazon.nombre}</span><span style={{ fontWeight: 500 }}>${precioArmazon}</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px' }}><span style={{ color: 'var(--warm-gray)' }}>{t('Lentes oscuros estándar', 'Standard dark lenses')}</span><span style={{ color: 'var(--sage)', fontWeight: 500 }}>{t('Incluido', 'Included')}</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}><span>Total</span><span>${precioArmazon} USD</span></div>
                 </div>
-                <button onClick={() => { setSoloArmazon(false); setDrawerEstado('inicio_solar'); }} style={{ width: '100%', background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '11px', fontSize: '12px', color: '#6f6a63', cursor: 'pointer', fontFamily: 'var(--font-sans)', marginBottom: '10px' }}>{t('← Personalizar mis micas', '← Customize my lenses')}</button>
-                <button onClick={handleAddToCart} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)' }}>
+                <button onClick={() => { setSoloArmazon(false); setDrawerEstado('inicio_solar'); }} style={{ width: '100%', background: 'none', border: '1px solid var(--border)', borderRadius: '6px', padding: '11px', fontSize: '12px', color: 'var(--warm-gray)', cursor: 'pointer', fontFamily: 'var(--font-sans)', marginBottom: '10px' }}>
+                  {t('← Personalizar mis micas', '← Customize my lenses')}
+                </button>
+                {/* DRAWER ACTION → TURQUESA */}
+                <button onClick={handleAddToCart} style={{ width: '100%', background: TURQUESA, color: 'white', border: 'none', borderRadius: '6px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = TURQUESA_DARK)} onMouseLeave={e => (e.currentTarget.style.background = TURQUESA)}>
                   {t('Agregar al carrito →', 'Add to cart →')}
                 </button>
               </div>
             ) : (
               <>
-                <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                {/* Stepper */}
+                <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {pasos.map((p, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: paso > i + 1 ? '#55624c' : 'white', border: paso >= i + 1 ? '1.5px solid #55624c' : '1.5px solid #e8e5e0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '11px', color: paso > i + 1 ? 'white' : paso === i + 1 ? '#55624c' : '#9a9a9a' }}>{paso > i + 1 ? '✓' : i + 1}</div>
-                          <span style={{ fontSize: '9px', fontWeight: 500, letterSpacing: '0.06em', color: paso >= i + 1 ? '#55624c' : '#9a9a9a' }}>{p}</span>
+                          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: paso > i + 1 ? 'var(--sage)' : 'white', border: paso >= i + 1 ? '1.5px solid var(--sage)' : '1.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '11px', color: paso > i + 1 ? 'white' : paso === i + 1 ? 'var(--sage)' : 'var(--warm-gray)' }}>{paso > i + 1 ? '✓' : i + 1}</div>
+                          <span style={{ fontSize: '9px', fontWeight: 500, letterSpacing: '0.06em', color: paso >= i + 1 ? 'var(--sage)' : 'var(--warm-gray)' }}>{p}</span>
                         </div>
-                        {i < pasos.length - 1 && <div style={{ width: '36px', height: '1px', background: paso > i + 1 ? '#55624c' : '#e8e5e0', margin: '0 4px 16px' }}/>}
+                        {i < pasos.length - 1 && <div style={{ width: '36px', height: '1px', background: paso > i + 1 ? 'var(--sage)' : 'var(--border)', margin: '0 4px 16px' }}/>}
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div style={{ padding: '2rem', flex: 1 }}>
+                  {/* Paso 1: Visión */}
                   {paso === 1 && (
                     <div>
-                      <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '0.25rem' }}>{t('Tipo de visión', 'Vision type')}</h4>
-                      <p style={{ fontSize: '0.78rem', color: '#6f6a63', marginBottom: '1.25rem' }}>{t('¿Cómo ves?', 'How do you see?')}</p>
+                      <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '0.25rem', color: 'var(--charcoal)' }}>{t('Tipo de visión', 'Vision type')}</h4>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', marginBottom: '1.25rem' }}>{t('¿Cómo ves?', 'How do you see?')}</p>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {visionOpts.map(o => (
-                          <div key={o.id} onClick={() => setVision(o.id)} style={{ border: vision === o.id ? '1.5px solid #55624c' : '1px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '1rem 1.1rem', cursor: 'pointer', background: vision === o.id ? '#f0f4ef' : '#faf9f7', transition: 'all 0.15s' }}>
+                          <div key={o.id} onClick={() => setVision(o.id)} style={{ border: vision === o.id ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: vision === o.id ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div><div style={{ fontSize: '14px', fontWeight: 500 }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: '#6f6a63', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: '#55624c' }}>+${o.precio}</div>
+                              <div><div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
+                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>+${o.precio}</div>
                             </div>
                           </div>
                         ))}
@@ -922,16 +908,17 @@ export default function DetalleArmazon() {
                     </div>
                   )}
 
+                  {/* Paso 2: Material */}
                   {paso === 2 && (
                     <div>
-                      <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '0.25rem' }}>{t('Material de la mica', 'Lens material')}</h4>
-                      <p style={{ fontSize: '0.78rem', color: '#6f6a63', marginBottom: '1.25rem' }}>{t('Afecta el grosor y peso.', 'Affects thickness and weight.')}</p>
+                      <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '0.25rem', color: 'var(--charcoal)' }}>{t('Material de la mica', 'Lens material')}</h4>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', marginBottom: '1.25rem' }}>{t('Afecta el grosor y peso.', 'Affects thickness and weight.')}</p>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {materialOpts.map(o => (
-                          <div key={o.id} onClick={() => setMaterial(o.id)} style={{ border: material === o.id ? '1.5px solid #55624c' : '1px solid rgba(0,0,0,0.08)', borderRadius: '10px', padding: '1rem 1.1rem', cursor: 'pointer', background: material === o.id ? '#f0f4ef' : '#faf9f7', transition: 'all 0.15s' }}>
+                          <div key={o.id} onClick={() => setMaterial(o.id)} style={{ border: material === o.id ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: material === o.id ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div><div style={{ fontSize: '14px', fontWeight: 500 }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: '#6f6a63', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: '#55624c' }}>{o.precio === 0 ? t('Incluido', 'Included') : `+$${o.precio}`}</div>
+                              <div><div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
+                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>{o.precio === 0 ? t('Incluido', 'Included') : `+$${o.precio}`}</div>
                             </div>
                           </div>
                         ))}
@@ -939,27 +926,31 @@ export default function DetalleArmazon() {
                     </div>
                   )}
 
+                  {/* Paso 3: Filtros */}
                   {paso === 3 && (
                     <div>
-                      <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '0.25rem' }}>{t('Filtros y protecciones', 'Filters & coatings')}</h4>
-                      <p style={{ fontSize: '0.78rem', color: '#6f6a63', marginBottom: '1.25rem' }}>{t('Opcionales. Puedes elegir varios.', 'Optional. You can choose multiple.')}</p>
+                      <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '0.25rem', color: 'var(--charcoal)' }}>{t('Filtros y protecciones', 'Filters & coatings')}</h4>
+                      <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', marginBottom: '1.25rem' }}>{t('Opcionales. Puedes elegir varios.', 'Optional. You can choose multiple.')}</p>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {filtrosActivos.map(o => {
                           const tieneColores = (o.id === 'foto' || o.id === 'pol' || o.id === 'tinte') && filtros.includes(o.id);
                           return (
                             <div key={o.id}>
-                              <div onClick={() => toggleFiltro(o.id)} style={{ border: filtros.includes(o.id) ? '1.5px solid #55624c' : '1px solid rgba(0,0,0,0.08)', borderRadius: tieneColores ? '10px 10px 0 0' : '10px', padding: '1rem 1.1rem', cursor: 'pointer', background: filtros.includes(o.id) ? '#f0f4ef' : '#faf9f7', transition: 'all 0.15s' }}>
+                              <div onClick={() => toggleFiltro(o.id)} style={{ border: filtros.includes(o.id) ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: tieneColores ? '8px 8px 0 0' : '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: filtros.includes(o.id) ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <div style={{ width: '18px', height: '18px', borderRadius: '4px', border: '1.5px solid', borderColor: filtros.includes(o.id) ? '#55624c' : '#d0ccc5', background: filtros.includes(o.id) ? '#55624c' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '10px', flexShrink: 0 }}>{filtros.includes(o.id) ? '✓' : ''}</div>
-                                    <div><div style={{ fontSize: '13px', fontWeight: 500 }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: '#6f6a63' }}>{t(o.desc_es, o.desc_en)}</div></div>
+                                    <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: '1.5px solid', borderColor: filtros.includes(o.id) ? 'var(--sage)' : 'var(--border)', background: filtros.includes(o.id) ? 'var(--sage)' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '10px', flexShrink: 0 }}>{filtros.includes(o.id) ? '✓' : ''}</div>
+                                    <div>
+                                      <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div>
+                                      <div style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>{t(o.desc_es, o.desc_en)}</div>
+                                    </div>
                                   </div>
-                                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#55624c' }}>+${o.precio}</div>
+                                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--sage)' }}>+${o.precio}</div>
                                 </div>
                               </div>
-                              {o.id === 'foto' && filtros.includes('foto') && <div style={{ border: '1.5px solid #55624c', borderTop: 'none', borderRadius: '0 0 10px 10px', padding: '1rem', background: '#f8faf7' }}><div style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6f6a63', marginBottom: '10px' }}>{t('Elige el color', 'Choose the color')}</div><SelectorColores colores={coloresDisponibles} valorActivo={colorFoto} onChange={setColorFoto} lang={lang}/></div>}
-                              {o.id === 'pol' && filtros.includes('pol') && <div style={{ border: '1.5px solid #55624c', borderTop: 'none', borderRadius: '0 0 10px 10px', padding: '1rem', background: '#f8faf7' }}><div style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6f6a63', marginBottom: '10px' }}>{t('Elige el color', 'Choose the color')}</div><SelectorColores colores={COLORES_POLARIZADO} valorActivo={colorPolarizado} onChange={setColorPolarizado} lang={lang}/></div>}
-                              {o.id === 'tinte' && filtros.includes('tinte') && <div style={{ border: '1.5px solid #55624c', borderTop: 'none', borderRadius: '0 0 10px 10px', padding: '1rem', background: '#f8faf7' }}><div style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6f6a63', marginBottom: '10px' }}>{t('Elige el color', 'Choose the color')}</div><SelectorColores colores={COLORES_TINTE} valorActivo={colorTinte} onChange={setColorTinte} lang={lang}/></div>}
+                              {o.id === 'foto' && filtros.includes('foto') && <div style={{ border: '1.5px solid var(--sage)', borderTop: 'none', borderRadius: '0 0 8px 8px', padding: '1rem', background: 'rgba(74,89,64,0.04)' }}><div style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '10px' }}>{t('Elige el color', 'Choose the color')}</div><SelectorColores colores={coloresDisponibles} valorActivo={colorFoto} onChange={setColorFoto} lang={lang}/></div>}
+                              {o.id === 'pol' && filtros.includes('pol') && <div style={{ border: '1.5px solid var(--sage)', borderTop: 'none', borderRadius: '0 0 8px 8px', padding: '1rem', background: 'rgba(74,89,64,0.04)' }}><div style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '10px' }}>{t('Elige el color', 'Choose the color')}</div><SelectorColores colores={COLORES_POLARIZADO} valorActivo={colorPolarizado} onChange={setColorPolarizado} lang={lang}/></div>}
+                              {o.id === 'tinte' && filtros.includes('tinte') && <div style={{ border: '1.5px solid var(--sage)', borderTop: 'none', borderRadius: '0 0 8px 8px', padding: '1rem', background: 'rgba(74,89,64,0.04)' }}><div style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '10px' }}>{t('Elige el color', 'Choose the color')}</div><SelectorColores colores={COLORES_TINTE} valorActivo={colorTinte} onChange={setColorTinte} lang={lang}/></div>}
                             </div>
                           );
                         })}
@@ -967,25 +958,26 @@ export default function DetalleArmazon() {
                     </div>
                   )}
 
+                  {/* Paso 4: Resumen */}
                   {paso === 4 && (
                     <div>
-                      <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '1.25rem' }}>{t('Resumen de tu pedido', 'Order summary')}</h4>
-                      <div style={{ marginBottom: '1.25rem', background: '#faf9f7', borderRadius: '10px', padding: '1rem', border: '1px solid rgba(0,0,0,0.06)' }}>
-                        <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: '#1d1d1d', margin: '0 0 4px' }}>{t('¿Para quién son?', 'Who are these for?')}</h4>
-                        <p style={{ fontSize: '12px', color: '#9a9a9a', margin: '0 0 0.75rem' }}>{t('Opcional — útil si compras para varias personas.', 'Optional — helpful if buying for multiple people.')}</p>
+                      <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '1.25rem', color: 'var(--charcoal)' }}>{t('Resumen de tu pedido', 'Order summary')}</h4>
+                      <div style={{ marginBottom: '1.25rem', background: 'var(--cream)', borderRadius: '8px', padding: '1rem', border: '1px solid var(--border)' }}>
+                        <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: 'var(--charcoal)', margin: '0 0 4px' }}>{t('¿Para quién son?', 'Who are these for?')}</h4>
+                        <p style={{ fontSize: '12px', color: 'var(--warm-gray)', margin: '0 0 0.75rem' }}>{t('Opcional — útil si compras para varias personas.', 'Optional — helpful if buying for multiple people.')}</p>
                         {recetasSesion.length > 0 && (
                           <div style={{ marginBottom: '0.75rem' }}>
-                            <p style={{ fontSize: '11px', fontWeight: 600, color: '#6f6a63', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{t('Reutilizar receta de', 'Reuse prescription from')}</p>
+                            <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{t('Reutilizar receta de', 'Reuse prescription from')}</p>
                             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                               {recetasSesion.map((r, i) => (
-                                <button key={i} onClick={() => { setReutilizarReceta(r.paciente); setPaciente(r.paciente); }} style={{ padding: '5px 12px', borderRadius: '20px', border: `1.5px solid ${reutilizarReceta === r.paciente ? '#55624c' : '#e2ddd6'}`, background: reutilizarReceta === r.paciente ? '#f0f4ef' : 'white', color: reutilizarReceta === r.paciente ? '#55624c' : '#6f6a63', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)', transition: 'all 0.15s' }}>↩ {r.paciente}</button>
+                                <button key={i} onClick={() => { setReutilizarReceta(r.paciente); setPaciente(r.paciente); }} style={{ padding: '5px 12px', borderRadius: '20px', border: `1.5px solid ${reutilizarReceta === r.paciente ? 'var(--sage)' : 'var(--border)'}`, background: reutilizarReceta === r.paciente ? 'rgba(74,89,64,0.08)' : 'white', color: reutilizarReceta === r.paciente ? 'var(--sage)' : 'var(--warm-gray)', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)', transition: 'all 0.15s' }}>↩ {r.paciente}</button>
                               ))}
                             </div>
                           </div>
                         )}
-                        <input type="text" placeholder={t('Ej: Rob, Mom, Para mí...', 'e.g. Rob, Mom, For me...')} value={paciente} onChange={e => { setPaciente(e.target.value); setReutilizarReceta(null); }} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e2ddd6', fontSize: '13px', fontFamily: 'var(--font-sans)', color: '#1d1d1d', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }} onFocus={e => (e.currentTarget.style.borderColor = '#55624c')} onBlur={e => (e.currentTarget.style.borderColor = '#e2ddd6')}/>
+                        <input type="text" placeholder={t('Ej: Rob, Mom, Para mí...', 'e.g. Rob, Mom, For me...')} value={paciente} onChange={e => { setPaciente(e.target.value); setReutilizarReceta(null); }} style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '13px', fontFamily: 'var(--font-sans)', color: 'var(--charcoal)', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }} onFocus={e => (e.currentTarget.style.borderColor = 'var(--sage)')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}/>
                       </div>
-                      <div style={{ background: '#faf9f7', borderRadius: '10px', padding: '1.1rem', marginBottom: '1.25rem', border: '1px solid rgba(0,0,0,0.06)' }}>
+                      <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1.1rem', marginBottom: '1.25rem', border: '1px solid var(--border)' }}>
                         {[
                           { label: t('Armazón', 'Frame'), value: esRegalo ? `~~$${armazon?.precio || PRECIO_ARMAZON}~~ $0 🎁` : `$${precioArmazon}` },
                           { label: `${t('Visión', 'Vision')}: ${lang === 'es' ? (visionOpts.find(v => v.id === vision)?.nombre || '-') : (visionOpts.find(v => v.id === vision)?.nombre_en || '-')}`, value: `+$${precioVision}` },
@@ -999,8 +991,8 @@ export default function DetalleArmazon() {
                             return { label, value: `+$${f.precio}` };
                           })
                         ].map((item, i, arr) => (
-                          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(0,0,0,0.06)' : 'none', fontSize: '13px' }}>
-                            <span style={{ color: '#6f6a63' }}>{item.label}</span>
+                          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none', fontSize: '13px' }}>
+                            <span style={{ color: 'var(--warm-gray)' }}>{item.label}</span>
                             <span style={{ fontWeight: 500 }}>{item.value}</span>
                           </div>
                         ))}
@@ -1009,29 +1001,37 @@ export default function DetalleArmazon() {
                         </div>
                       </div>
                       {!tieneReceta && (
-                        <div style={{ background: '#fffbeb', borderRadius: '8px', padding: '0.9rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid rgba(245,197,24,0.3)' }}>
+                        <div style={{ background: '#fffbeb', borderRadius: '6px', padding: '0.9rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid rgba(245,197,24,0.3)' }}>
                           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#d97706', flexShrink: 0 }}/>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: '12px', fontWeight: 500, color: '#92400e' }}>{t('Graduación pendiente', 'Prescription pending')}</div>
                             <div style={{ fontSize: '11px', color: '#a16207' }}>{t('Se pedirá antes de finalizar el pago', 'Will be requested before payment')}</div>
                           </div>
-                          <button onClick={() => setDrawerEstado('inicio')} style={{ background: '#1d1d1d', border: 'none', borderRadius: '4px', padding: '5px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', color: 'white', fontFamily: 'var(--font-sans)' }}>{t('Agregar', 'Add')}</button>
+                          <button onClick={() => setDrawerEstado('inicio')} style={{ background: 'var(--charcoal)', border: 'none', borderRadius: '3px', padding: '5px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', color: 'white', fontFamily: 'var(--font-sans)' }}>{t('Agregar', 'Add')}</button>
                         </div>
                       )}
-                      <button onClick={handleAddToCart} style={{ width: '100%', background: '#55624c', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = '#3f4a37')} onMouseLeave={e => (e.currentTarget.style.background = '#55624c')}>
+                      {/* DRAWER ACTION → TURQUESA */}
+                      <button onClick={handleAddToCart} style={{ width: '100%', background: TURQUESA, color: 'white', border: 'none', borderRadius: '6px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = TURQUESA_DARK)} onMouseLeave={e => (e.currentTarget.style.background = TURQUESA)}>
                         {t('Agregar al carrito →', 'Add to cart →')}
                       </button>
                     </div>
                   )}
                 </div>
 
+                {/* Bottom nav drawer */}
                 {paso < 4 && (
-                  <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid rgba(0,0,0,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', bottom: 0, background: 'white' }}>
+                  <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', bottom: 0, background: 'white' }}>
                     {paso > 1
-                      ? <button onClick={() => setPaso(p => p - 1)} style={{ background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: '#6f6a63', fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
-                      : <button onClick={() => setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio')} style={{ background: 'none', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '8px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: '#6f6a63', fontFamily: 'var(--font-sans)' }}>← {t('Mi receta', 'My prescription')}</button>
+                      ? <button onClick={() => setPaso(p => p - 1)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '6px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: 'var(--warm-gray)', fontFamily: 'var(--font-sans)' }}>← {t('Atrás', 'Back')}</button>
+                      : <button onClick={() => setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio')} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '6px', padding: '10px 20px', fontSize: '12px', cursor: 'pointer', color: 'var(--warm-gray)', fontFamily: 'var(--font-sans)' }}>← {t('Mi receta', 'My prescription')}</button>
                     }
-                    <button onClick={() => { if (paso === 1 && !vision) return; if (paso === 2 && !material) return; setPaso(p => p + 1); }} style={{ background: (paso === 1 && !vision) || (paso === 2 && !material) ? '#e8e5e0' : '#55624c', color: (paso === 1 && !vision) || (paso === 2 && !material) ? '#9a9a9a' : 'white', border: 'none', borderRadius: '8px', padding: '10px 24px', fontSize: '12px', fontWeight: 600, cursor: (paso === 1 && !vision) || (paso === 2 && !material) ? 'not-allowed' : 'pointer', letterSpacing: '0.08em', fontFamily: 'var(--font-sans)' }}>
+                    {/* DRAWER ACTION → TURQUESA (when enabled) */}
+                    <button
+                      onClick={() => { if (paso === 1 && !vision) return; if (paso === 2 && !material) return; setPaso(p => p + 1); }}
+                      style={{ background: (paso === 1 && !vision) || (paso === 2 && !material) ? 'var(--border)' : TURQUESA, color: (paso === 1 && !vision) || (paso === 2 && !material) ? 'var(--warm-gray)' : 'white', border: 'none', borderRadius: '6px', padding: '10px 24px', fontSize: '12px', fontWeight: 600, cursor: (paso === 1 && !vision) || (paso === 2 && !material) ? 'not-allowed' : 'pointer', letterSpacing: '0.08em', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }}
+                      onMouseEnter={e => { if (!((paso === 1 && !vision) || (paso === 2 && !material))) (e.currentTarget.style.background = TURQUESA_DARK); }}
+                      onMouseLeave={e => { if (!((paso === 1 && !vision) || (paso === 2 && !material))) (e.currentTarget.style.background = TURQUESA); }}
+                    >
                       {paso === 3 ? t('Ver resumen →', 'See summary →') : t('Siguiente →', 'Next →')}
                     </button>
                   </div>
@@ -1042,27 +1042,25 @@ export default function DetalleArmazon() {
         )}
       </div>
 
-      {/* ══ BREADCRUMB ══ */}
-      <div style={{ padding: '1rem 2rem', fontSize: '0.72rem', color: '#9a9a9a', letterSpacing: '0.02em', marginTop: '64px', maxWidth: '1440px', margin: '64px auto 0' }}>
-        <a href="/" style={{ color: '#9a9a9a', textDecoration: 'none' }}>{t('Inicio', 'Home')}</a>
+      {/* ── BREADCRUMB ── */}
+      <div style={{ maxWidth: '1440px', margin: '72px auto 0', padding: '1rem 2rem', fontSize: '0.7rem', color: 'var(--warm-gray)', letterSpacing: '0.02em' }}>
+        <a href="/" style={{ color: 'var(--warm-gray)', textDecoration: 'none' }}>{t('Inicio', 'Home')}</a>
         <span style={{ margin: '0 8px', opacity: 0.5 }}>›</span>
-        <a href={esSolar ? '/sunglasses' : '/Tienda'} style={{ color: '#9a9a9a', textDecoration: 'none' }}>{esSolar ? 'Sunglasses' : t('Tienda', 'Store')}</a>
+        <a href={esSolar ? '/sunglasses' : '/Tienda'} style={{ color: 'var(--warm-gray)', textDecoration: 'none' }}>{esSolar ? 'Sunglasses' : t('Tienda', 'Store')}</a>
         <span style={{ margin: '0 8px', opacity: 0.5 }}>›</span>
-        <span style={{ color: '#1d1d1d' }}>{armazon.nombre}</span>
+        <span style={{ color: 'var(--charcoal)' }}>{armazon.nombre}</span>
       </div>
 
-      {/* ══ PRODUCTO PRINCIPAL ══ */}
+      {/* ── PRODUCTO PRINCIPAL ── */}
       <div style={{ maxWidth: '1440px', margin: '0 auto', padding: esMobil ? '0 0 5rem' : '2rem 3rem 4rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 440px', gap: esMobil ? '0' : '6rem', alignItems: 'start' }}>
 
-          {/* ── GALERÍA ── */}
+          {/* Galería */}
           <div style={{ display: 'flex', flexDirection: esMobil ? 'column' : 'row', gap: '16px' }}>
-
-            {/* Miniaturas desktop (columna izquierda) */}
             {fotos.length > 1 && !esMobil && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '68px', flexShrink: 0 }}>
                 {fotos.map((foto, i) => (
-                  <button key={i} onClick={() => irFoto(i)} style={{ width: '68px', height: '68px', borderRadius: '8px', overflow: 'hidden', border: fotoActiva === i ? '2px solid #1d1d1d' : '2px solid transparent', background: 'white', cursor: 'pointer', padding: 0, transition: 'all 0.2s', boxShadow: '0 1px 6px rgba(0,0,0,0.06)', opacity: fotoActiva === i ? 1 : 0.65 }}>
+                  <button key={i} onClick={() => irFoto(i)} style={{ width: '68px', height: '68px', borderRadius: '6px', overflow: 'hidden', border: fotoActiva === i ? '2px solid var(--charcoal)' : '2px solid transparent', background: 'white', cursor: 'pointer', padding: 0, transition: 'all 0.2s', boxShadow: '0 1px 6px rgba(28,28,26,0.06)', opacity: fotoActiva === i ? 1 : 0.65 }}>
                     <img src={foto} alt={`${armazon.nombre} ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '6px', boxSizing: 'border-box' }}/>
                   </button>
                 ))}
@@ -1070,167 +1068,113 @@ export default function DetalleArmazon() {
             )}
 
             <div style={{ flex: 1, position: 'relative' }}>
-              {/* Contenedor principal imagen */}
               <div
-                style={{
-                  background: 'white',
-                  borderRadius: esMobil ? '0' : '20px',
-                  overflow: 'hidden',
-                  position: 'relative',
-                  aspectRatio: '1/1',
-                  boxShadow: esMobil ? 'none' : '0 2px 40px rgba(0,0,0,0.05)',
-                  cursor: fotos.length > 0 ? (esMobil ? 'pointer' : 'crosshair') : 'default',
-                  userSelect: 'none',
-                  WebkitUserSelect: 'none',
-                }}
-                // Desktop: hover zoom
-                onMouseMove={e => {
-                  if (esMobil) return;
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  setPosZoom({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 });
-                  setZoomActivo(true);
-                }}
+                style={{ background: 'white', borderRadius: esMobil ? '0' : '16px', overflow: 'hidden', position: 'relative', aspectRatio: '1/1', boxShadow: esMobil ? 'none' : '0 2px 40px rgba(28,28,26,0.05)', cursor: fotos.length > 0 ? (esMobil ? 'pointer' : 'crosshair') : 'default', userSelect: 'none', WebkitUserSelect: 'none' }}
+                onMouseMove={e => { if (esMobil) return; const rect = e.currentTarget.getBoundingClientRect(); setPosZoom({ x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 }); setZoomActivo(true); }}
                 onMouseLeave={() => setZoomActivo(false)}
-                // Desktop: click abre lightbox
                 onClick={() => { if (!esMobil && fotos.length > 0) setLightboxOpen(true); }}
-                // Móvil: swipe
                 onTouchStart={onTouchStartCarrusel}
                 onTouchMove={onTouchMoveCarrusel}
                 onTouchEnd={onTouchEndCarrusel}
               >
-                {/* Track de imágenes con translate */}
-                <div style={{
-                  display: 'flex',
-                  width: `${fotos.length * 100}%`,
-                  height: '100%',
-                  transform: `translateX(calc(${-fotoActiva * (100 / fotos.length)}% + ${swipeOffset / fotos.length}px))`,
-                  transition: isSwiping ? 'none' : 'transform 0.32s cubic-bezier(0.4,0,0.2,1)',
-                  willChange: 'transform',
-                }}>
+                <div style={{ display: 'flex', width: `${fotos.length * 100}%`, height: '100%', transform: `translateX(calc(${-fotoActiva * (100 / fotos.length)}% + ${swipeOffset / fotos.length}px))`, transition: isSwiping ? 'none' : 'transform 0.32s cubic-bezier(0.4,0,0.2,1)', willChange: 'transform' }}>
                   {fotos.map((foto, i) => (
                     <div key={i} style={{ width: `${100 / fotos.length}%`, height: '100%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <img
-                        src={foto}
-                        alt={`${armazon.nombre} ${i + 1}`}
-                        style={{
-                          width: '100%', height: '100%',
-                          objectFit: 'contain',
-                          padding: esMobil ? '1.5rem' : '3rem',
-                          boxSizing: 'border-box',
-                          // Solo zoom desktop en imagen activa
-                          transformOrigin: `${posZoom.x}% ${posZoom.y}%`,
-                          transform: (!esMobil && i === fotoActiva && zoomActivo) ? 'scale(1.9)' : 'scale(1)',
-                          transition: zoomActivo ? 'none' : 'transform 0.4s ease',
-                          pointerEvents: 'none',
-                        }}
-                        draggable={false}
-                      />
+                      <img src={foto} alt={`${armazon.nombre} ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: esMobil ? '1.5rem' : '3rem', boxSizing: 'border-box', transformOrigin: `${posZoom.x}% ${posZoom.y}%`, transform: (!esMobil && i === fotoActiva && zoomActivo) ? 'scale(1.9)' : 'scale(1)', transition: zoomActivo ? 'none' : 'transform 0.4s ease', pointerEvents: 'none' }} draggable={false}/>
                     </div>
                   ))}
                 </div>
 
-                {/* Overlay tap-to-zoom en móvil */}
                 {esMobil && fotos.length > 0 && (
-                  <button
-                    onClick={() => setLightboxOpen(true)}
-                    style={{ position: 'absolute', bottom: '14px', right: '14px', background: 'rgba(255,255,255,0.9)', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '8px', padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: '#6f6a63', fontFamily: 'var(--font-sans)', fontWeight: 500, backdropFilter: 'blur(4px)', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+                  <button onClick={() => setLightboxOpen(true)} style={{ position: 'absolute', bottom: '14px', right: '14px', background: 'rgba(247,244,239,0.92)', border: '1px solid var(--border)', borderRadius: '6px', padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', color: 'var(--warm-gray)', fontFamily: 'var(--font-sans)', fontWeight: 500, backdropFilter: 'blur(4px)' }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
                     {t('Ampliar', 'Zoom')}
                   </button>
                 )}
 
-                {/* Badge solar */}
-                {esSolar && <div style={{ position: 'absolute', bottom: '16px', left: '16px', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#55624c', background: '#f0f4ef', padding: '4px 10px', borderRadius: '20px', border: '1px solid #c8dbc4' }}>{t('Graduable', 'Rx Ready')}</div>}
+                {esSolar && <div style={{ position: 'absolute', bottom: '16px', left: '16px', fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)', background: 'rgba(74,89,64,0.1)', padding: '4px 10px', borderRadius: '20px', border: '1px solid rgba(74,89,64,0.2)' }}>{t('Graduable', 'Rx Ready')}</div>}
 
-                {/* Favorito */}
-                <button style={{ position: 'absolute', top: '16px', right: '16px', width: '36px', height: '36px', borderRadius: '50%', background: 'white', border: '1px solid rgba(0,0,0,0.08)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.06)', zIndex: 2 }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6f6a63" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <button style={{ position: 'absolute', top: '16px', right: '16px', width: '36px', height: '36px', borderRadius: '50%', background: 'white', border: '1px solid var(--border)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(28,28,26,0.06)', zIndex: 2 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warm-gray)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
 
-                {/* Flechas desktop */}
                 {!esMobil && fotos.length > 1 && (
                   <>
-                    <button onClick={(e) => { e.stopPropagation(); fotoPrev(); }} disabled={fotoActiva === 0} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === 0 ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.92)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '50%', width: '36px', height: '36px', cursor: fotoActiva === 0 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: fotoActiva === 0 ? 'rgba(0,0,0,0.2)' : '#1d1d1d', fontSize: '18px', zIndex: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.2s' }}>‹</button>
-                    <button onClick={(e) => { e.stopPropagation(); fotoNext(); }} disabled={fotoActiva === fotos.length - 1} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === fotos.length - 1 ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.92)', border: '1px solid rgba(0,0,0,0.06)', borderRadius: '50%', width: '36px', height: '36px', cursor: fotoActiva === fotos.length - 1 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: fotoActiva === fotos.length - 1 ? 'rgba(0,0,0,0.2)' : '#1d1d1d', fontSize: '18px', zIndex: 2, boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.2s' }}>›</button>
+                    <button onClick={e => { e.stopPropagation(); fotoPrev(); }} disabled={fotoActiva === 0} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === 0 ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.92)', border: '1px solid var(--border)', borderRadius: '50%', width: '36px', height: '36px', cursor: fotoActiva === 0 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: fotoActiva === 0 ? 'var(--border)' : 'var(--charcoal)', fontSize: '18px', zIndex: 2, transition: 'all 0.2s' }}>‹</button>
+                    <button onClick={e => { e.stopPropagation(); fotoNext(); }} disabled={fotoActiva === fotos.length - 1} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: fotoActiva === fotos.length - 1 ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.92)', border: '1px solid var(--border)', borderRadius: '50%', width: '36px', height: '36px', cursor: fotoActiva === fotos.length - 1 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: fotoActiva === fotos.length - 1 ? 'var(--border)' : 'var(--charcoal)', fontSize: '18px', zIndex: 2, transition: 'all 0.2s' }}>›</button>
                   </>
                 )}
               </div>
 
-              {/* Miniaturas móvil (fila horizontal con scroll) */}
               {fotos.length > 1 && esMobil && (
-                <div style={{ display: 'flex', gap: '8px', padding: '12px 1.25rem 0', overflowX: 'auto', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+                <div style={{ display: 'flex', gap: '8px', padding: '12px 1.25rem 0', overflowX: 'auto', scrollbarWidth: 'none' }}>
                   {fotos.map((foto, i) => (
-                    <button key={i} onClick={() => irFoto(i)} style={{ flexShrink: 0, width: '56px', height: '56px', borderRadius: '8px', overflow: 'hidden', border: fotoActiva === i ? '2px solid #1d1d1d' : '2px solid transparent', background: 'white', cursor: 'pointer', padding: 0, transition: 'all 0.2s', boxShadow: fotoActiva === i ? '0 2px 8px rgba(0,0,0,0.12)' : '0 1px 4px rgba(0,0,0,0.06)', opacity: fotoActiva === i ? 1 : 0.6 }}>
+                    <button key={i} onClick={() => irFoto(i)} style={{ flexShrink: 0, width: '56px', height: '56px', borderRadius: '6px', overflow: 'hidden', border: fotoActiva === i ? '2px solid var(--charcoal)' : '2px solid transparent', background: 'white', cursor: 'pointer', padding: 0, transition: 'all 0.2s', opacity: fotoActiva === i ? 1 : 0.6 }}>
                       <img src={foto} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px', boxSizing: 'border-box' }}/>
                     </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Dots móvil (cuando NO hay miniaturas visibles, fallback) */}
-              {fotos.length > 1 && esMobil && fotos.length <= 2 && (
-                <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', marginTop: '10px' }}>
-                  {fotos.map((_, i) => (
-                    <button key={i} onClick={() => irFoto(i)} style={{ width: fotoActiva === i ? '20px' : '8px', height: '8px', borderRadius: '4px', background: fotoActiva === i ? '#1d1d1d' : 'rgba(0,0,0,0.18)', border: 'none', cursor: 'pointer', padding: 0, transition: 'all 0.3s ease' }}/>
                   ))}
                 </div>
               )}
             </div>
           </div>
 
-          {/* ── INFO PRODUCTO ── */}
+          {/* Info producto */}
           <div style={{ position: esMobil ? 'relative' : 'sticky', top: esMobil ? 'auto' : '84px', padding: esMobil ? '1.5rem 1.25rem 0' : '0' }}>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#55624c', padding: '5px 12px', border: '1px solid #55624c', borderRadius: '2px' }}>
+              <span style={{ fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--sage)', padding: '5px 12px', border: '1px solid var(--sage)', borderRadius: '2px' }}>
                 {armazon.genero === 'hombre' ? t('Hombre', 'Men') : armazon.genero === 'mujer' ? t('Mujer', 'Women') : 'Unisex'}
               </span>
-              {armazon.badge && <span style={{ fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#6f6a63', padding: '5px 12px', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '2px' }}>{armazon.badge}</span>}
+              {armazon.badge && <span style={{ fontSize: '0.58rem', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--warm-gray)', padding: '5px 12px', border: '1px solid var(--border)', borderRadius: '2px' }}>{armazon.badge}</span>}
             </div>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.8rem' : '4rem', fontWeight: 400, letterSpacing: '-0.03em', margin: '0 0 0.5rem', lineHeight: 1, color: '#1d1d1d' }}>{armazon.nombre}</h1>
-            <p style={{ fontSize: '1rem', color: '#6f6a63', marginBottom: '2rem', letterSpacing: '0.01em', fontWeight: 400 }}>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.8rem' : '4rem', fontWeight: 400, letterSpacing: '-0.03em', margin: '0 0 0.5rem', lineHeight: 1, color: 'var(--charcoal)' }}>{armazon.nombre}</h1>
+            <p style={{ fontSize: '1rem', color: 'var(--warm-gray)', marginBottom: '2rem', letterSpacing: '0.01em', fontWeight: 400 }}>
               {[armazon.material, armazon.forma && `${armazon.forma.charAt(0).toUpperCase() + armazon.forma.slice(1)}`].filter(Boolean).join(' · ')}
             </p>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '0.5rem' }}>
               <span style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', fontWeight: 400, letterSpacing: '-0.02em', lineHeight: 1 }}>${armazon.precio}</span>
-              <span style={{ fontSize: '0.85rem', color: '#9a9a9a', fontWeight: 400 }}>USD</span>
-              {armazon.descuento && armazon.descuento > 0 && <span style={{ background: '#c0392b', color: 'white', fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: '3px' }}>-{armazon.descuento}%</span>}
+              <span style={{ fontSize: '0.85rem', color: 'var(--warm-gray)', fontWeight: 400 }}>USD</span>
+              {armazon.descuento && armazon.descuento > 0 && <span style={{ background: 'var(--charcoal)', color: 'white', fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: '2px' }}>-{armazon.descuento}%</span>}
             </div>
             <div style={{ marginBottom: '1.75rem' }}>
-              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1d1d1d', margin: '0 0 3px' }}>{t('Graduadas desde $15', 'With lenses from $15')}</p>
-              <p style={{ fontSize: '0.78rem', color: '#9a9a9a', margin: 0 }}>Single Vision · Blue Light · {t('Fotocromático', 'Photochromic')} · {t('Progresivo', 'Progressive')}</p>
+              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--charcoal)', margin: '0 0 3px' }}>{t('Graduadas desde $15', 'With lenses from $15')}</p>
+              <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', margin: 0 }}>Single Vision · Blue Light · {t('Fotocromático', 'Photochromic')} · {t('Progresivo', 'Progressive')}</p>
             </div>
+            {/* PAGE CTA → SAGE */}
             {!esMobil && (
-              <button onClick={abrirDrawer} style={{ display: 'block', width: '100%', textAlign: 'center', background: '#55624c', color: 'white', padding: '20px 32px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', border: 'none', cursor: 'pointer', marginBottom: '2.5rem', transition: 'all 0.3s ease', fontFamily: 'var(--font-sans)' }}
-                onMouseEnter={e => { (e.currentTarget.style.background = '#3f4a37'); (e.currentTarget.style.transform = 'translateY(-1px)'); }}
-                onMouseLeave={e => { (e.currentTarget.style.background = '#55624c'); (e.currentTarget.style.transform = 'translateY(0)'); }}>
+              <button onClick={abrirDrawer} style={{ display: 'block', width: '100%', textAlign: 'center', background: 'var(--sage)', color: 'white', padding: '20px 32px', borderRadius: '6px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', border: 'none', cursor: 'pointer', marginBottom: '2.5rem', transition: 'all 0.3s ease', fontFamily: 'var(--font-sans)' }}
+                onMouseEnter={e => { (e.currentTarget.style.background = 'var(--charcoal)'); (e.currentTarget.style.transform = 'translateY(-1px)'); }}
+                onMouseLeave={e => { (e.currentTarget.style.background = 'var(--sage)'); (e.currentTarget.style.transform = 'translateY(0)'); }}>
                 {esSolar ? t('Configurar mis lentes →', 'Configure my lenses →') : t('Personaliza tus micas →', 'Customize my lenses →')}
               </button>
             )}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0', borderTop: '1px solid rgba(0,0,0,0.06)', borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '1.5rem 0', marginBottom: '2.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1.5rem 0', marginBottom: '2.5rem' }}>
               {[
-                { icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v6H16V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>), label: t('Envío rápido', 'Fast shipping'), sub: t('5–7 días', '5–7 days') },
-                { icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>), label: t('Pago seguro', 'Secure pay'), sub: 'Stripe' },
-                { icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>), label: t('Soporte', 'Support'), sub: t('Rápido', 'Fast') },
-                { icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>), label: t('Sin aseguranza', 'No insurance'), sub: t('Directo', 'Direct') },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v6H16V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>, label: t('Envío rápido', 'Fast shipping'), sub: t('5–7 días', '5–7 days') },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>, label: t('Pago seguro', 'Secure pay'), sub: 'Stripe' },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: t('Soporte', 'Support'), sub: t('Rápido', 'Fast') },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>, label: t('Sin aseguranza', 'No insurance'), sub: t('Directo', 'Direct') },
               ].map((b, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '0 8px', textAlign: 'center', borderRight: i < 3 ? '1px solid rgba(0,0,0,0.06)' : 'none' }}>
-                  <div style={{ color: '#6f6a63' }}>{b.icon}</div>
-                  <div><div style={{ fontSize: '10px', fontWeight: 600, color: '#1d1d1d', marginBottom: '2px' }}>{b.label}</div><div style={{ fontSize: '9px', color: '#9a9a9a' }}>{b.sub}</div></div>
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '0 8px', textAlign: 'center', borderRight: i < 3 ? '1px solid var(--border)' : 'none' }}>
+                  <div style={{ color: 'var(--warm-gray)' }}>{b.icon}</div>
+                  <div>
+                    <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--charcoal)', marginBottom: '2px' }}>{b.label}</div>
+                    <div style={{ fontSize: '9px', color: 'var(--warm-gray)' }}>{b.sub}</div>
+                  </div>
                 </div>
               ))}
             </div>
-            <div style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+            <div style={{ borderBottom: '1px solid var(--border)' }}>
               <Acordeon titulo={t('Detalles del armazón', 'Frame details')}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {armazon.material && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Material</span><span style={{ fontWeight: 500, color: '#1d1d1d' }}>{armazon.material}</span></div>}
-                  {armazon.forma && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Forma', 'Shape')}</span><span style={{ fontWeight: 500, color: '#1d1d1d', textTransform: 'capitalize' }}>{armazon.forma}</span></div>}
-                  {armazon.medidas && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Medidas', 'Measurements')}</span><span style={{ fontWeight: 500, color: '#1d1d1d' }}>{armazon.medidas}</span></div>}
-                  {armazon.talla && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Talla', 'Size')}</span><span style={{ fontWeight: 500, color: '#1d1d1d' }}>{armazon.talla}</span></div>}
-                  {armazon.genero && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Género', 'Gender')}</span><span style={{ fontWeight: 500, color: '#1d1d1d', textTransform: 'capitalize' }}>{armazon.genero}</span></div>}
+                  {armazon.material && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Material</span><span style={{ fontWeight: 500, color: 'var(--charcoal)' }}>{armazon.material}</span></div>}
+                  {armazon.forma && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Forma', 'Shape')}</span><span style={{ fontWeight: 500, color: 'var(--charcoal)', textTransform: 'capitalize' }}>{armazon.forma}</span></div>}
+                  {armazon.medidas && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Medidas', 'Measurements')}</span><span style={{ fontWeight: 500, color: 'var(--charcoal)' }}>{armazon.medidas}</span></div>}
+                  {armazon.talla && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Talla', 'Size')}</span><span style={{ fontWeight: 500, color: 'var(--charcoal)' }}>{armazon.talla}</span></div>}
+                  {armazon.genero && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Género', 'Gender')}</span><span style={{ fontWeight: 500, color: 'var(--charcoal)', textTransform: 'capitalize' }}>{armazon.genero}</span></div>}
                 </div>
               </Acordeon>
               <Acordeon titulo={t('¿Cómo medir mi cara?', 'How to measure my face?')}>
-                {t('Mide el ancho de tu cara de sien a sien. Menos de 13cm → S, 13–14cm → M, 14–15cm → L, más de 15cm → XL. La talla de este armazón es', 'Measure from temple to temple. Under 5.1" → S, 5.1–5.5" → M, 5.5–5.9" → L, over 5.9" → XL. This frame is size')} <strong style={{ color: '#1d1d1d' }}>{armazon.talla || 'M'}</strong>.
+                {t('Mide el ancho de tu cara de sien a sien. Menos de 13cm → S, 13–14cm → M, 14–15cm → L, más de 15cm → XL. La talla de este armazón es', 'Measure from temple to temple. Under 5.1" → S, 5.1–5.5" → M, 5.5–5.9" → L, over 5.9" → XL. This frame is size')} <strong style={{ color: 'var(--charcoal)' }}>{armazon.talla || 'M'}</strong>.
               </Acordeon>
               <Acordeon titulo={t('Envío y devoluciones', 'Shipping & returns')}>
                 {t('Enviamos a toda la Unión Americana en 5–7 días hábiles. Los lentes graduados tardan hasta 10 días adicionales.', 'We ship across the US in 5–7 business days. Prescription lenses take up to 10 additional days.')}
@@ -1243,29 +1187,29 @@ export default function DetalleArmazon() {
         </div>
       </div>
 
-      {/* ══ MEDIDAS ══ */}
+      {/* ── MEDIDAS ── */}
       {armazon.medidas && partesMedidas.length >= 2 && (
-        <div style={{ background: '#edeae3', padding: esMobil ? '2.5rem 1.25rem' : '3rem' }}>
+        <div style={{ background: 'var(--cream-dark)', padding: esMobil ? '2.5rem 1.25rem' : '3rem' }}>
           <div style={{ maxWidth: '1440px', margin: '0 auto', padding: esMobil ? '0' : '0 3rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '200px 1fr', gap: esMobil ? '1.5rem' : '3rem', alignItems: 'center' }}>
               <div>
-                <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#9a9a9a', margin: '0 0 6px' }}>{t('MEDIDAS', 'MEASUREMENTS')}</p>
-                <p style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.5rem' : '2rem', fontWeight: 400, color: '#1d1d1d', margin: '0 0 4px', lineHeight: 1 }}>{t('TALLA', 'SIZE')} {armazon.talla || 'M'}</p>
-                <p style={{ fontSize: '0.78rem', color: '#6f6a63', margin: '0 0 1.5rem' }}>{t('Para rostros medianos a grandes', 'For medium to large faces')}</p>
-                <button style={{ background: '#1d1d1d', color: 'white', border: 'none', borderRadius: '6px', padding: '10px 20px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>{t('Guía de medidas', 'Size guide')}</button>
+                <p style={{ fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 6px' }}>{t('MEDIDAS', 'MEASUREMENTS')}</p>
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.5rem' : '2rem', fontWeight: 400, color: 'var(--charcoal)', margin: '0 0 4px', lineHeight: 1 }}>{t('TALLA', 'SIZE')} {armazon.talla || 'M'}</p>
+                <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', margin: '0 0 1.5rem' }}>{t('Para rostros medianos a grandes', 'For medium to large faces')}</p>
+                <button style={{ background: 'var(--charcoal)', color: 'white', border: 'none', borderRadius: '3px', padding: '10px 20px', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>{t('Guía de medidas', 'Size guide')}</button>
               </div>
               <div style={{ display: 'flex', gap: '0', flexWrap: esMobil ? 'wrap' : 'nowrap' }}>
                 {[
-                  { icon: (<svg width="32" height="20" viewBox="0 0 48 30" fill="none"><rect x="2" y="4" width="20" height="22" rx="6" fill="none" stroke="#1d1d1d" strokeWidth="2"/><rect x="26" y="4" width="20" height="22" rx="6" fill="none" stroke="#1d1d1d" strokeWidth="2"/><path d="M22 13 C24 10, 24 10, 26 13" stroke="#1d1d1d" strokeWidth="1.5" fill="none"/></svg>), valor: `${partesMedidas[0]}mm`, label: t('Ancho de lente', 'Lens width') },
-                  { icon: (<svg width="32" height="20" viewBox="0 0 48 30" fill="none"><path d="M14 15 L34 15" stroke="#1d1d1d" strokeWidth="2" strokeLinecap="round"/><path d="M10 10 L10 20" stroke="#1d1d1d" strokeWidth="1.5" strokeLinecap="round"/><path d="M38 10 L38 20" stroke="#1d1d1d" strokeWidth="1.5" strokeLinecap="round"/></svg>), valor: `${partesMedidas[1]}mm`, label: t('Puente', 'Bridge') },
-                  { icon: (<svg width="32" height="20" viewBox="0 0 48 30" fill="none"><path d="M4 15 L44 15" stroke="#1d1d1d" strokeWidth="2" strokeLinecap="round"/><path d="M38 8 L44 15 L38 22" stroke="#1d1d1d" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>), valor: `${partesMedidas[2] || '—'}mm`, label: t('Varilla', 'Temple') },
-                  { icon: (<svg width="32" height="20" viewBox="0 0 48 30" fill="none"><rect x="14" y="2" width="20" height="26" rx="4" fill="none" stroke="#1d1d1d" strokeWidth="2"/></svg>), valor: '51mm', label: t('Alto de lente', 'Lens height') },
-                  { icon: (<svg width="32" height="20" viewBox="0 0 48 30" fill="none"><path d="M4 15 L44 15" stroke="#1d1d1d" strokeWidth="2" strokeLinecap="round"/><path d="M4 8 L4 22" stroke="#1d1d1d" strokeWidth="1.5" strokeLinecap="round"/><path d="M44 8 L44 22" stroke="#1d1d1d" strokeWidth="1.5" strokeLinecap="round"/></svg>), valor: '139mm', label: t('Ancho total', 'Total width') },
+                  { icon: <svg width="32" height="20" viewBox="0 0 48 30" fill="none"><rect x="2" y="4" width="20" height="22" rx="6" fill="none" stroke="var(--charcoal)" strokeWidth="2"/><rect x="26" y="4" width="20" height="22" rx="6" fill="none" stroke="var(--charcoal)" strokeWidth="2"/><path d="M22 13 C24 10, 24 10, 26 13" stroke="var(--charcoal)" strokeWidth="1.5" fill="none"/></svg>, valor: `${partesMedidas[0]}mm`, label: t('Ancho de lente', 'Lens width') },
+                  { icon: <svg width="32" height="20" viewBox="0 0 48 30" fill="none"><path d="M14 15 L34 15" stroke="var(--charcoal)" strokeWidth="2" strokeLinecap="round"/><path d="M10 10 L10 20" stroke="var(--charcoal)" strokeWidth="1.5" strokeLinecap="round"/><path d="M38 10 L38 20" stroke="var(--charcoal)" strokeWidth="1.5" strokeLinecap="round"/></svg>, valor: `${partesMedidas[1]}mm`, label: t('Puente', 'Bridge') },
+                  { icon: <svg width="32" height="20" viewBox="0 0 48 30" fill="none"><path d="M4 15 L44 15" stroke="var(--charcoal)" strokeWidth="2" strokeLinecap="round"/><path d="M38 8 L44 15 L38 22" stroke="var(--charcoal)" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>, valor: `${partesMedidas[2] || '—'}mm`, label: t('Varilla', 'Temple') },
+                  { icon: <svg width="32" height="20" viewBox="0 0 48 30" fill="none"><rect x="14" y="2" width="20" height="26" rx="4" fill="none" stroke="var(--charcoal)" strokeWidth="2"/></svg>, valor: '51mm', label: t('Alto de lente', 'Lens height') },
+                  { icon: <svg width="32" height="20" viewBox="0 0 48 30" fill="none"><path d="M4 15 L44 15" stroke="var(--charcoal)" strokeWidth="2" strokeLinecap="round"/><path d="M4 8 L4 22" stroke="var(--charcoal)" strokeWidth="1.5" strokeLinecap="round"/><path d="M44 8 L44 22" stroke="var(--charcoal)" strokeWidth="1.5" strokeLinecap="round"/></svg>, valor: '139mm', label: t('Ancho total', 'Total width') },
                 ].map((m, i) => (
-                  <div key={i} style={{ flex: esMobil ? '0 0 calc(33% - 8px)' : 1, minWidth: '80px', padding: esMobil ? '0 0 1rem' : '0 2rem 0 0', borderRight: !esMobil && i < 4 ? '1px solid rgba(0,0,0,0.1)' : 'none', marginRight: !esMobil && i < 4 ? '2rem' : 0 }}>
-                    <div style={{ marginBottom: '0.75rem', opacity: 0.7 }}>{m.icon}</div>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.2rem' : '1.5rem', fontWeight: 400, color: '#1d1d1d', marginBottom: '4px' }}>{m.valor}</div>
-                    <div style={{ fontSize: '0.72rem', color: '#6f6a63' }}>{m.label}</div>
+                  <div key={i} style={{ flex: esMobil ? '0 0 calc(33% - 8px)' : 1, minWidth: '80px', padding: esMobil ? '0 0 1rem' : '0 2rem 0 0', borderRight: !esMobil && i < 4 ? '1px solid var(--border)' : 'none', marginRight: !esMobil && i < 4 ? '2rem' : 0 }}>
+                    <div style={{ marginBottom: '0.75rem', opacity: 0.6 }}>{m.icon}</div>
+                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.2rem' : '1.5rem', fontWeight: 400, color: 'var(--charcoal)', marginBottom: '4px' }}>{m.valor}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--warm-gray)' }}>{m.label}</div>
                   </div>
                 ))}
               </div>
@@ -1274,49 +1218,49 @@ export default function DetalleArmazon() {
         </div>
       )}
 
-      {/* ══ LIFESTYLE ══ */}
+      {/* ── LIFESTYLE ── */}
       <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr 280px', minHeight: esMobil ? 'auto' : '420px' }}>
-        <div style={{ background: '#f5f1eb', padding: esMobil ? '2.5rem 1.25rem' : '4rem 3rem 4rem 4rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#9a9a9a', margin: '0 0 1.5rem' }}>Verly Optical</p>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 400, color: '#1d1d1d', margin: '0 0 1rem', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
+        <div style={{ background: 'var(--cream)', padding: esMobil ? '2.5rem 1.25rem' : '4rem 3rem 4rem 4rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <p style={{ fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 1.5rem' }}>Verly Optical</p>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 400, color: 'var(--charcoal)', margin: '0 0 1rem', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
             {t('Diseñado para', 'Designed for')}<br/><em style={{ fontStyle: 'italic' }}>{t('tu día a día', 'your daily life')}</em>
           </h2>
-          <p style={{ fontSize: '0.9rem', color: '#6f6a63', margin: '0 0 2rem', lineHeight: 1.7 }}>{t('Estilo, comodidad y calidad que se adaptan a ti.', 'Style, comfort and quality that adapt to you.')}</p>
+          <p style={{ fontSize: '0.9rem', color: 'var(--warm-gray)', margin: '0 0 2rem', lineHeight: 1.7 }}>{t('Estilo, comodidad y calidad que se adaptan a ti.', 'Style, comfort and quality that adapt to you.')}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '2rem' }}>
             {[t('Ligero y resistente', 'Light and resistant'), t('Comodidad prolongada', 'Extended comfort')].map((b, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.82rem', color: '#6f6a63' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#55624c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.82rem', color: 'var(--warm-gray)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 {b}
               </div>
             ))}
           </div>
-          <button onClick={abrirDrawer} style={{ alignSelf: 'flex-start', background: '#1d1d1d', color: 'white', border: 'none', borderRadius: '6px', padding: '12px 24px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+          <button onClick={abrirDrawer} style={{ alignSelf: 'flex-start', background: 'var(--charcoal)', color: 'white', border: 'none', borderRadius: '3px', padding: '12px 24px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
             {t('Ver en modelo', 'See on model')}
           </button>
         </div>
-        <div style={{ background: '#ddd8cf', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: esMobil ? '280px' : '420px', overflow: 'hidden' }}>
+        <div style={{ background: 'var(--cream-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: esMobil ? '280px' : '420px', overflow: 'hidden' }}>
           {fotoLifestyle ? (
             <img src={fotoLifestyle} alt={`${armazon.nombre} lifestyle`} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', opacity: 0.35, padding: '2rem' }}>
-              <LenteSVG color="#55624c" forma={armazon.forma} size="large"/>
-              <p style={{ fontSize: '0.72rem', color: '#6f6a63', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center' }}>{t('Sube una foto lifestyle desde el admin (Foto 5)', 'Upload a lifestyle photo from admin (Photo 5)')}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', opacity: 0.25, padding: '2rem' }}>
+              <LenteSVG color="var(--sage)" forma={armazon.forma} size="large"/>
+              <p style={{ fontSize: '0.68rem', color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center' }}>{t('Sube una foto lifestyle desde el admin', 'Upload a lifestyle photo from admin')}</p>
             </div>
           )}
         </div>
         {!esMobil && (
-          <div style={{ background: '#55624c', padding: '3rem 2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2rem' }}>
+          <div style={{ background: 'var(--sage)', padding: '3rem 2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '2rem' }}>
             {[
-              { icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>), titulo: t('Calidad accesible', 'Accessible quality'), sub: t('Gafas premium a precios justos.', 'Premium frames at fair prices.') },
-              { icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>), titulo: t('Listos para tu receta', 'Ready for your prescription'), sub: t('Micas graduadas para tu estilo de vida.', 'Prescription lenses for your lifestyle.') },
-              { icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>), titulo: t('Estilo atemporal', 'Timeless style'), sub: t('Diseños modernos que duran.', 'Modern designs that last.') },
-              { icon: (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v6H16V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>), titulo: t('Envío rápido', 'Fast shipping'), sub: t('Recibe tus lentes en 5–7 días.', 'Receive your glasses in 5–7 days.') },
+              { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>, titulo: t('Calidad accesible', 'Accessible quality'), sub: t('Gafas premium a precios justos.', 'Premium frames at fair prices.') },
+              { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>, titulo: t('Listos para tu receta', 'Ready for your prescription'), sub: t('Micas graduadas para tu estilo de vida.', 'Prescription lenses for your lifestyle.') },
+              { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, titulo: t('Estilo atemporal', 'Timeless style'), sub: t('Diseños modernos que duran.', 'Modern designs that last.') },
+              { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v6H16V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>, titulo: t('Envío rápido', 'Fast shipping'), sub: t('Recibe tus lentes en 5–7 días.', 'Receive your glasses in 5–7 days.') },
             ].map((h, i) => (
               <div key={i} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                 <div style={{ flexShrink: 0, marginTop: '2px' }}>{h.icon}</div>
                 <div>
                   <div style={{ fontSize: '13px', fontWeight: 600, color: 'white', marginBottom: '3px' }}>{h.titulo}</div>
-                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>{h.sub}</div>
+                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>{h.sub}</div>
                 </div>
               </div>
             ))}
@@ -1324,28 +1268,28 @@ export default function DetalleArmazon() {
         )}
       </div>
 
-      {/* ══ RELACIONADOS ══ */}
+      {/* ── RELACIONADOS ── */}
       {relacionados.length > 0 && (
-        <div style={{ background: '#f5f1eb', padding: esMobil ? '3rem 0' : '4rem 0' }}>
+        <div style={{ background: 'var(--cream)', padding: esMobil ? '3rem 0' : '4rem 0' }}>
           <div style={{ maxWidth: '1440px', margin: '0 auto', padding: esMobil ? '0 1.25rem' : '0 3rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.6rem' : '2rem', fontWeight: 400, color: '#1d1d1d', margin: 0 }}>{t('También te puede gustar', 'You might also like')}</h2>
-              <a href={esSolar ? '/sunglasses' : '/Tienda'} style={{ fontSize: '0.75rem', color: '#6f6a63', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase', borderBottom: '1px solid rgba(0,0,0,0.15)', paddingBottom: '2px' }}>{t('Ver todos →', 'See all →')}</a>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.6rem' : '2rem', fontWeight: 400, color: 'var(--charcoal)', margin: 0 }}>{t('También te puede gustar', 'You might also like')}</h2>
+              <a href={esSolar ? '/sunglasses' : '/Tienda'} style={{ fontSize: '0.72rem', color: 'var(--warm-gray)', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase', borderBottom: '1px solid var(--border)', paddingBottom: '2px' }}>{t('Ver todos →', 'See all →')}</a>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: esMobil ? '12px' : '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: esMobil ? '10px' : '14px' }}>
               {relacionados.slice(0, 4).map(r => (
                 <a key={r.id} href={`/armazon/${r.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', transition: 'all 0.3s ease', border: '1px solid rgba(0,0,0,0.04)' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 40px rgba(0,0,0,0.08)'; }}
+                  <div style={{ background: 'white', borderRadius: '3px', overflow: 'hidden', transition: 'all 0.3s ease', border: '1px solid var(--border)' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 40px rgba(28,28,26,0.07)'; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
-                    <div style={{ aspectRatio: '4/3', background: '#faf9f7', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
-                      {r.imagen_url ? <img src={r.imagen_url} alt={r.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1.25rem', boxSizing: 'border-box' }}/> : <div style={{ opacity: 0.3 }}><LenteSVG color={r.color || '#1d1d1d'} forma={r.forma} size="small"/></div>}
+                    <div style={{ aspectRatio: '4/3', background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                      {r.imagen_url ? <img src={r.imagen_url} alt={r.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '1.25rem', boxSizing: 'border-box' }}/> : <div style={{ opacity: 0.25 }}><LenteSVG color="var(--sage)" forma={r.forma} size="small"/></div>}
                     </div>
-                    <div style={{ padding: '0.9rem 1.1rem 1.1rem' }}>
-                      <div style={{ fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9a9a9a', marginBottom: '4px' }}>{r.nombre}</div>
+                    <div style={{ padding: '0.85rem 1rem 1rem' }}>
+                      <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: 'var(--charcoal)', marginBottom: '4px' }}>{r.nombre}</div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 400, color: '#1d1d1d' }}>${r.precio}</div>
-                        <div style={{ fontSize: '0.65rem', color: '#9a9a9a', textTransform: 'uppercase', letterSpacing: '0.06em' }}>USD</div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--charcoal)', fontWeight: 500 }}>${r.precio}</div>
+                        <div style={{ fontSize: '0.62rem', color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>USD</div>
                       </div>
                     </div>
                   </div>
@@ -1356,19 +1300,19 @@ export default function DetalleArmazon() {
         </div>
       )}
 
-      {/* ══ EDITORIAL FINAL ══ */}
-      <div style={{ background: '#edeae3', padding: esMobil ? '3rem 1.25rem' : '5rem 4rem', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: esMobil ? '2.5rem' : '4rem', alignItems: 'center' }}>
+      {/* ── EDITORIAL FINAL ── */}
+      <div style={{ background: 'var(--cream-dark)', padding: esMobil ? '3rem 1.25rem' : '5rem 4rem', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: esMobil ? '2.5rem' : '4rem', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3.5rem', fontWeight: 400, color: '#1d1d1d', margin: '0 0 1rem', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-            Verly Optical<br/><em style={{ fontStyle: 'italic', color: '#6f6a63' }}>I see the difference.</em>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3.5rem', fontWeight: 400, color: 'var(--charcoal)', margin: '0 0 1rem', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+            Verly Optical<br/><em style={{ fontStyle: 'italic', color: 'var(--warm-gray)' }}>I see the difference.</em>
           </h2>
-          <p style={{ fontSize: '0.85rem', color: '#9a9a9a', margin: 0 }}>{t('Unos lentes, miles de historias.', 'One pair of glasses, thousands of stories.')}</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--warm-gray)', margin: 0 }}>{t('Unos lentes, miles de historias.', 'One pair of glasses, thousands of stories.')}</p>
         </div>
-        <div style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+        <div style={{ borderBottom: '1px solid var(--border)' }}>
           <Acordeon titulo={t('Detalles del armazón', 'Frame details')}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {armazon.material && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Material</span><span style={{ fontWeight: 500, color: '#1d1d1d' }}>{armazon.material}</span></div>}
-              {armazon.medidas && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Medidas', 'Measurements')}</span><span style={{ fontWeight: 500, color: '#1d1d1d' }}>{armazon.medidas}</span></div>}
+              {armazon.material && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Material</span><span style={{ fontWeight: 500, color: 'var(--charcoal)' }}>{armazon.material}</span></div>}
+              {armazon.medidas && <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>{t('Medidas', 'Measurements')}</span><span style={{ fontWeight: 500, color: 'var(--charcoal)' }}>{armazon.medidas}</span></div>}
             </div>
           </Acordeon>
           <Acordeon titulo={t('¿Cómo medir mi cara?', 'How to measure my face?')}>
@@ -1383,10 +1327,10 @@ export default function DetalleArmazon() {
         </div>
       </div>
 
-      {/* ══ BOTÓN STICKY MÓVIL ══ */}
+      {/* ── BOTÓN STICKY MÓVIL (PAGE → SAGE) ── */}
       {esMobil && (
-        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem 1.25rem', background: 'white', borderTop: '1px solid rgba(0,0,0,0.08)', zIndex: 100, boxShadow: '0 -4px 20px rgba(0,0,0,0.06)' }}>
-          <button onClick={abrirDrawer} style={{ display: 'block', width: '100%', textAlign: 'center', background: '#55624c', color: 'white', padding: '18px 32px', borderRadius: '8px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+        <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem 1.25rem', background: 'white', borderTop: '1px solid var(--border)', zIndex: 100, boxShadow: '0 -4px 20px rgba(28,28,26,0.06)' }}>
+          <button onClick={abrirDrawer} style={{ display: 'block', width: '100%', textAlign: 'center', background: 'var(--sage)', color: 'white', padding: '18px 32px', borderRadius: '4px', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
             {esSolar ? t('Configurar mis lentes →', 'Configure my lenses →') : t('Personalizar mis micas →', 'Customize my lenses →')}
           </button>
         </div>
