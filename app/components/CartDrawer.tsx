@@ -211,7 +211,7 @@ export default function CartDrawer() {
                   <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: '0 0 1rem', lineHeight: 1.5 }}>
                     {t('Con tu compra de lentes graduados tienes derecho a un par de lentes de sol sin costo.', 'With your prescription glasses purchase you get a free pair of sunglasses.')}
                   </p>
-                  <Link href="/sunglasses?promo=regalo" onClick={() => setCartOpen(false)} ...>
+                  <Link href="/sunglasses?promo=regalo" onClick={() => setCartOpen(false)} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', color: '#1d1d1d', padding: '10px 18px', borderRadius: '6px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none', fontFamily: 'var(--font-sans)' }}>
                     {t('Elegir mi par gratis', 'Choose my free pair')}
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
                   </Link>
