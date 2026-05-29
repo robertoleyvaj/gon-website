@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     const items = cs.items_data;
     const email   = session.customer_details?.email || '';
     const nombre  = session.customer_details?.name  || '';
-    const ship    = session.shipping_details?.address;
+    const ship    = (session as any).shipping_details?.address || (session as any).shipping?.address;
     const direccion = ship
       ? `${ship.line1}${ship.line2 ? ', ' + ship.line2 : ''}, ${ship.city}, ${ship.state} ${ship.postal_code}, ${ship.country}`
       : '';
