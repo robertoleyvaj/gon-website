@@ -658,12 +658,15 @@ export default function Admin() {
   }
 
   const subirFotoDirecto = useCallback(async (file: File, campo: string, id: number): Promise<string | null> => {
-    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-    const nombre = `armazon-${id}-${campo}-${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from('armazones').upload(nombre, file, { upsert: true });
-    if (error) { console.error('Upload error:', error); return null; }
-    const { data } = supabase.storage.from('armazones').getPublicUrl(nombre);
-    return data.publicUrl;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('campo', campo);
+    formData.append('id', String(id));
+
+    const res = await fetch('/api/upload-foto', { method: 'POST', body: formData });
+    if (!res.ok) { console.error('Upload error:', await res.text()); return null; }
+    const { url } = await res.json();
+    return url;
   }, []);
 
   const handleEditArmazonChange = useCallback((field: string, value: any) => {
