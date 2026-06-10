@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
-import { supabase } from '../supabase';
+import { supabase } from '../lib/supabase';
 
 type Armazon = {
   id: number; nombre: string; forma: string; genero: string;

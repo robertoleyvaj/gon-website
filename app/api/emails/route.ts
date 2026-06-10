@@ -12,7 +12,16 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+function isAdmin(req: NextRequest): boolean {
+  const token = req.cookies.get('verly_admin')?.value;
+  return !!process.env.ADMIN_TOKEN_SECRET && token === process.env.ADMIN_TOKEN_SECRET;
+}
+
 export async function POST(req: NextRequest) {
+  if (!isAdmin(req)) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+  }
+
   const { tipo, order_id, tracking, paqueteria } = await req.json();
 
   // Obtener datos del pedido y cliente

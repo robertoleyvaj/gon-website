@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
-import { supabase } from '../supabase';
+import { supabase } from '../lib/supabase';
 import { useFavoritos } from '../context/FavoritosContext';
 
 type Armazon = {

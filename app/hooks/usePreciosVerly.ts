@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../supabase";
+import { supabase } from "../lib/supabase";
 
 let cache: any = null;
 let cacheTime = 0;

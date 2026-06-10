@@ -89,11 +89,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${dmSans.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${dmSans.variable}`}
+      style={{ height: "100%" }}
     >
       <body
-        className="min-h-full flex flex-col"
-        style={{ fontFamily: "var(--font-sans), sans-serif" }}
+        style={{ minHeight: "100%", display: "flex", flexDirection: "column", fontFamily: "var(--font-dm), sans-serif", WebkitFontSmoothing: "antialiased", MozOsxFontSmoothing: "grayscale" }}
       >
         {/* Google Analytics */}
         <Script
