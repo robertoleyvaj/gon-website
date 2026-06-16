@@ -24,13 +24,13 @@ function LangSwitcher() {
             cursor: "pointer",
             fontFamily: "var(--font-sans)",
             fontSize: "0.62rem",
-            fontWeight: lang === l ? 500 : 400,
+            fontWeight: lang === l ? 600 : 400,
             letterSpacing: "0.12em",
             textTransform: "uppercase",
-            color: lang === l ? "var(--charcoal)" : "var(--warm-gray)",
+            color: lang === l ? "var(--sage)" : "var(--warm-gray)",
             padding: "4px 5px",
             transition: "color 0.2s ease",
-            borderBottom: lang === l ? "1px solid var(--charcoal)" : "1px solid transparent",
+            borderBottom: lang === l ? "1px solid var(--sage)" : "1px solid transparent",
             borderRight: i === 0 ? "1px solid var(--border)" : "none",
           }}
         >
@@ -58,7 +58,7 @@ function FavoritosIcon() {
         color: "var(--charcoal)",
         transition: "color 0.2s ease",
       }}
-      aria-label="Favorites"
+      aria-label="Favoritos"
     >
       <svg
         width="18"
@@ -73,24 +73,13 @@ function FavoritosIcon() {
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
       </svg>
       {totalFavoritos > 0 && (
-        <span
-          style={{
-            position: "absolute",
-            top: "-1px",
-            right: "-1px",
-            background: "var(--sage)",
-            color: "white",
-            borderRadius: "50%",
-            width: "14px",
-            height: "14px",
-            fontSize: "8px",
-            fontWeight: 700,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontFamily: "var(--font-sans)",
-          }}
-        >
+        <span style={{
+          position: "absolute", top: "-1px", right: "-1px",
+          background: "var(--sage)", color: "white", borderRadius: "50%",
+          width: "14px", height: "14px", fontSize: "8px", fontWeight: 700,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontFamily: "var(--font-sans)",
+        }}>
           {totalFavoritos > 9 ? "9+" : totalFavoritos}
         </span>
       )}
@@ -115,7 +104,7 @@ function CartIcon() {
         color: "var(--charcoal)",
         transition: "color 0.2s ease",
       }}
-      aria-label="Cart"
+      aria-label="Carrito"
     >
       <svg
         width="18"
@@ -132,24 +121,13 @@ function CartIcon() {
         <path d="M16 10a4 4 0 0 1-8 0" />
       </svg>
       {totalItems > 0 && (
-        <span
-          style={{
-            position: "absolute",
-            top: "-1px",
-            right: "-1px",
-            background: "var(--sage)",
-            color: "white",
-            borderRadius: "50%",
-            width: "14px",
-            height: "14px",
-            fontSize: "8px",
-            fontWeight: 700,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontFamily: "var(--font-sans)",
-          }}
-        >
+        <span style={{
+          position: "absolute", top: "-1px", right: "-1px",
+          background: "var(--sage)", color: "white", borderRadius: "50%",
+          width: "14px", height: "14px", fontSize: "8px", fontWeight: 700,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontFamily: "var(--font-sans)",
+        }}>
           {totalItems > 9 ? "9+" : totalItems}
         </span>
       )}
@@ -158,31 +136,23 @@ function CartIcon() {
 }
 
 const navLinks = [
-  { href: "/Tienda", label: "Eyeglasses" },
-  { href: "/sunglasses", label: "Sunglasses" },
-  { href: "/lenses", label: "Lenses" },
+  { href: "/Tienda", label_es: "Armazones", label_en: "Frames" },
+  { href: "/lenses", label_es: "Lentes", label_en: "Lenses" },
+  { href: "/examen", label_es: "Examen de la Vista", label_en: "Eye Exam" },
+  { href: "/nosotros", label_es: "Sobre Nosotros", label_en: "About Us" },
+  { href: "/ubicaciones", label_es: "Ubicaciones", label_en: "Locations" },
 ];
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { lang } = useLang();
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
 
   const isActive = (href: string) =>
@@ -193,113 +163,78 @@ export default function Navbar() {
       <CartDrawer />
       <FavoritosDrawer />
 
-      {/* ── Main Header ── */}
-      <header
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 100,
-          transition: "background 0.4s ease, box-shadow 0.4s ease, height 0.4s ease",
-          background: scrolled ? "rgba(247, 244, 239, 0.95)" : "transparent",
-          backdropFilter: scrolled ? "blur(16px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
-          boxShadow: scrolled ? "0 1px 0 var(--border)" : "none",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1360px",
-            margin: "0 auto",
-            padding: "0 2.5rem",
-            height: scrolled ? "60px" : "72px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            transition: "height 0.4s ease",
-          }}
-        >
+      {/* ── Header ── */}
+      <header style={{
+        position: "fixed",
+        top: 0, left: 0, right: 0,
+        zIndex: 100,
+        background: "white",
+        borderBottom: "1px solid var(--border)",
+        boxShadow: "0 2px 16px rgba(27,58,107,0.06)",
+      }}>
+        <div style={{
+          maxWidth: "1360px",
+          margin: "0 auto",
+          padding: "0 2rem",
+          height: "64px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+
           {/* Logo */}
-          <Link
-            href="/"
-            style={{
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              flexShrink: 0,
-            }}
-          >
+          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", flexShrink: 0 }}>
             <img
-              src="/logo-trasparente.png"
-              alt="Verly Optical"
-              style={{
-                height: scrolled ? "30px" : "36px",
-                width: "auto",
-                transition: "height 0.4s ease",
-                objectFit: "contain",
-              }}
+              src="/logo-gon.png"
+              alt="GON — Grupo Óptico del Noroeste"
+              style={{ height: "40px", width: "auto", objectFit: "contain" }}
             />
           </Link>
 
           {/* Desktop Nav */}
-          <nav
-            className="desktop-nav"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "3rem",
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%)",
-            }}
-          >
-            {navLinks.map(({ href, label }) => (
+          <nav className="desktop-nav" style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "2rem",
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}>
+            {navLinks.map(({ href, label_es, label_en }) => (
               <Link
                 key={href}
                 href={href}
                 className="nav-link"
                 style={{
                   fontFamily: "var(--font-sans)",
-                  fontSize: "0.72rem",
-                  fontWeight: 400,
-                  letterSpacing: "0.12em",
+                  fontSize: "0.7rem",
+                  fontWeight: isActive(href) ? 600 : 400,
+                  letterSpacing: "0.1em",
                   textTransform: "uppercase",
                   color: isActive(href) ? "var(--sage)" : "var(--charcoal)",
                   textDecoration: "none",
                   position: "relative",
                   paddingBottom: "3px",
                   transition: "color 0.2s ease",
+                  whiteSpace: "nowrap",
                 }}
               >
-                {label}
-                <span
-                  className="nav-underline"
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "1px",
-                    background: "var(--sage)",
-                    transform: isActive(href) ? "scaleX(1)" : "scaleX(0)",
-                    transformOrigin: "left",
-                    transition: "transform 0.3s ease",
-                  }}
-                />
+                {lang === "en" ? label_en : label_es}
+                <span className="nav-underline" style={{
+                  position: "absolute",
+                  bottom: 0, left: 0, right: 0,
+                  height: "2px",
+                  background: "var(--accent)",
+                  transform: isActive(href) ? "scaleX(1)" : "scaleX(0)",
+                  transformOrigin: "left",
+                  transition: "transform 0.3s ease",
+                }}/>
               </Link>
             ))}
           </nav>
 
           {/* Right Actions */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-              flexShrink: 0,
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexShrink: 0 }}>
             <div className="desktop-nav">
               <LangSwitcher />
             </div>
@@ -309,148 +244,79 @@ export default function Navbar() {
             {/* Hamburger */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label="Toggle menu"
+              aria-label="Menú"
               aria-expanded={menuOpen}
               className="hamburger"
               style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: "6px 4px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "5px",
-                alignItems: "flex-end",
+                background: "none", border: "none", cursor: "pointer",
+                padding: "6px 4px", display: "flex", flexDirection: "column",
+                gap: "5px", alignItems: "flex-end",
               }}
             >
-              <span
-                style={{
-                  display: "block",
-                  width: "22px",
-                  height: "1px",
-                  background: "var(--charcoal)",
-                  transition: "transform 0.3s ease, opacity 0.3s ease",
-                  transform: menuOpen ? "translateY(6px) rotate(45deg)" : "none",
-                }}
-              />
-              <span
-                style={{
-                  display: "block",
-                  width: "15px",
-                  height: "1px",
-                  background: "var(--charcoal)",
-                  transition: "opacity 0.3s ease",
-                  opacity: menuOpen ? 0 : 1,
-                }}
-              />
-              <span
-                style={{
-                  display: "block",
-                  width: "22px",
-                  height: "1px",
-                  background: "var(--charcoal)",
-                  transition: "transform 0.3s ease, opacity 0.3s ease",
-                  transform: menuOpen ? "translateY(-6px) rotate(-45deg)" : "none",
-                }}
-              />
+              <span style={{ display: "block", width: "22px", height: "1.5px", background: "var(--charcoal)", transition: "transform 0.3s ease, opacity 0.3s ease", transform: menuOpen ? "translateY(6px) rotate(45deg)" : "none" }}/>
+              <span style={{ display: "block", width: "15px", height: "1.5px", background: "var(--charcoal)", transition: "opacity 0.3s ease", opacity: menuOpen ? 0 : 1 }}/>
+              <span style={{ display: "block", width: "22px", height: "1.5px", background: "var(--charcoal)", transition: "transform 0.3s ease, opacity 0.3s ease", transform: menuOpen ? "translateY(-6px) rotate(-45deg)" : "none" }}/>
             </button>
           </div>
         </div>
       </header>
 
-      {/* ── Mobile Menu Overlay ── */}
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 99,
-          background: "var(--cream)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: "3rem 2.5rem",
-          opacity: menuOpen ? 1 : 0,
-          pointerEvents: menuOpen ? "all" : "none",
-          transition: "opacity 0.35s ease",
-        }}
-      >
+      {/* ── Menú móvil ── */}
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 99,
+        background: "white",
+        display: "flex", flexDirection: "column", justifyContent: "center",
+        padding: "3rem 2.5rem",
+        opacity: menuOpen ? 1 : 0,
+        pointerEvents: menuOpen ? "all" : "none",
+        transition: "opacity 0.35s ease",
+      }}>
         <nav style={{ display: "flex", flexDirection: "column" }}>
-          {navLinks.map(({ href, label }, i) => (
+          {navLinks.map(({ href, label_es, label_en }, i) => (
             <Link
               key={href}
               href={href}
               style={{
                 fontFamily: "var(--font-serif)",
-                fontSize: "clamp(2.8rem, 11vw, 4.5rem)",
+                fontSize: "clamp(2.2rem, 9vw, 3.5rem)",
                 fontWeight: 300,
                 lineHeight: 1.1,
                 color: isActive(href) ? "var(--sage)" : "var(--charcoal)",
                 textDecoration: "none",
                 borderBottom: "1px solid var(--border)",
-                padding: "1.2rem 0",
+                padding: "1rem 0",
                 letterSpacing: "-0.02em",
                 opacity: menuOpen ? 1 : 0,
                 transform: menuOpen ? "translateY(0)" : "translateY(20px)",
-                transition: `opacity 0.45s ease ${i * 0.08 + 0.1}s, transform 0.45s ease ${i * 0.08 + 0.1}s`,
+                transition: `opacity 0.45s ease ${i * 0.07 + 0.1}s, transform 0.45s ease ${i * 0.07 + 0.1}s`,
               }}
             >
-              {label}
+              {lang === "en" ? label_en : label_es}
             </Link>
           ))}
         </nav>
-
-        {/* Bottom row */}
-        <div
-          style={{
-            marginTop: "2.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1.5rem",
-            opacity: menuOpen ? 1 : 0,
-            transition: "opacity 0.4s ease 0.35s",
-          }}
-        >
+        <div style={{ marginTop: "2rem", opacity: menuOpen ? 1 : 0, transition: "opacity 0.4s ease 0.4s" }}>
           <LangSwitcher />
         </div>
-
-        <p
-          style={{
-            position: "absolute",
-            bottom: "2.5rem",
-            left: "2.5rem",
-            fontFamily: "var(--font-sans)",
-            fontSize: "0.62rem",
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            color: "var(--warm-gray)",
-          }}
-        >
-          Verly Optical — Est. 2024
+        <p style={{
+          position: "absolute", bottom: "2.5rem", left: "2.5rem",
+          fontFamily: "var(--font-sans)", fontSize: "0.62rem",
+          letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--warm-gray)",
+        }}>
+          Grupo Óptico del Noroeste — Est. 2018
         </p>
       </div>
 
       <style jsx global>{`
-        .nav-link:hover .nav-underline {
-          transform: scaleX(1) !important;
+        .nav-link:hover .nav-underline { transform: scaleX(1) !important; }
+        .nav-link:hover { color: var(--sage) !important; }
+        @media (min-width: 900px) {
+          .hamburger { display: none !important; }
+          .desktop-nav { display: flex !important; }
         }
-        .nav-link:hover {
-          color: var(--sage) !important;
-        }
-        @media (min-width: 768px) {
-          .hamburger {
-            display: none !important;
-          }
-          .desktop-nav {
-            display: flex !important;
-          }
-        }
-        @media (max-width: 767px) {
-          .desktop-nav {
-            display: none !important;
-          }
-          .hamburger {
-            display: flex !important;
-          }
+        @media (max-width: 899px) {
+          .desktop-nav { display: none !important; }
+          .hamburger { display: flex !important; }
         }
       `}</style>
     </>

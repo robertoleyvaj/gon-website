@@ -16,18 +16,18 @@ const LangContext = createContext<LangContextType>({
 });
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>('en');
+  const [lang, setLang] = useState<Lang>('es');
 
   // Cargar idioma guardado al montar
   useEffect(() => {
-    const guardado = localStorage.getItem('verly_lang') as Lang | null;
+    const guardado = localStorage.getItem('gon_lang') as Lang | null;
     if (guardado === 'es' || guardado === 'en') setLang(guardado);
   }, []);
 
   // Guardar cuando cambia
   const cambiarLang = (l: Lang) => {
     setLang(l);
-    localStorage.setItem('verly_lang', l);
+    localStorage.setItem('gon_lang', l);
   };
 
   const t = (es: string, en: string) => lang === 'es' ? es : en;
