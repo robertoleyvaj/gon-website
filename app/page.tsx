@@ -70,7 +70,7 @@ export default function Home() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(244,247,250,0.97) 0%, rgba(244,247,250,0.88) 38%, rgba(244,247,250,0.0) 65%)' }}/>
         <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1180px', margin: '0 auto', padding: '0 2rem' }}>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
-            Grupo Óptico del Noroeste — Est. 2010
+            Grupo Óptico del Noroeste — Est. 2018
           </p>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(3.5rem, 5.5vw, 5rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1.25rem', maxWidth: '580px' }}>
             Tu visión.<br />Nuestra prioridad.<br />
@@ -87,23 +87,7 @@ export default function Home() {
               Ver lentes
             </Link>
           </div>
-          {/* Badges */}
-          <div style={{ display: 'flex', gap: '2rem', marginTop: '3rem', flexWrap: 'wrap' }}>
-            {[
-              { icon: '🏅', label: 'Calidad garantizada', sub: 'Marcas y materiales premium' },
-              { icon: '👁️', label: 'Examen profesional', sub: 'Cuidado experto de tu vista' },
-              { icon: '🏪', label: 'Recoge en óptica', sub: 'Compra en línea y recoge' },
-            ].map((b, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '20px' }}>{b.icon}</span>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-sans)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--charcoal)' }}>{b.label}</div>
-                  <div style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', color: 'var(--warm-gray)' }}>{b.sub}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      
 
         {/* Tarjeta flotante */}
         <div style={{ position: 'absolute', bottom: '3rem', right: '3rem', background: 'white', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 8px 40px rgba(27,58,107,0.12)', maxWidth: '260px', border: '1px solid var(--border)' }}>
