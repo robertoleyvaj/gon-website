@@ -1,19 +1,19 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Poppins } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { LangProvider } from "./components/LanguageContext";
 import { CartProvider } from "./context/CartContext";
 import { FavoritosProvider } from "./context/FavoritosContext";
 
-const cormorant = Cormorant_Garamond({
+const fraunces = Fraunces({
   variable: "--font-cormorant",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   style: ["normal", "italic"],
 });
 
-const poppins = Poppins({
+const inter = Inter({
   variable: "--font-dm",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -85,7 +85,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${cormorant.variable} $${poppins.variable}`}
+      className={`${fraunces.variable} ${inter.variable}`}
       style={{ height: "100%" }}
     >
       <body style={{
