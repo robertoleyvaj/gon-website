@@ -43,14 +43,6 @@ function Reveal({ children, delay = 0, direction = 'up' }: { children: React.Rea
 
 export default function Home() {
   const [armazones, setArmazones] = useState<Armazon[]>([]);
-  const [esMobil, setEsMobil] = useState(false);
-
-  useEffect(() => {
-    const check = () => setEsMobil(window.innerWidth <= 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
 
   useEffect(() => {
     async function cargar() {
@@ -68,6 +60,7 @@ export default function Home() {
       <section style={{ position: 'relative', width: '100%', minHeight: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
         <img src="/hero-man.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(244,247,250,0.97) 0%, rgba(244,247,250,0.88) 38%, rgba(244,247,250,0.0) 65%)' }}/>
+
         <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1180px', margin: '0 auto', padding: '0 2rem' }}>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
             Grupo Óptico del Noroeste — Est. 2018
@@ -87,12 +80,12 @@ export default function Home() {
               Ver lentes
             </Link>
           </div>
-      
+        </div>
 
         {/* Tarjeta flotante */}
-        <div style={{ position: 'absolute', bottom: '3rem', right: '3rem', background: 'white', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 8px 40px rgba(27,58,107,0.12)', maxWidth: '260px', border: '1px solid var(--border)' }}>
+        <div style={{ position: 'absolute', bottom: '3rem', right: '3rem', background: 'white', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 8px 40px rgba(27,58,107,0.12)', maxWidth: '260px', border: '1px solid var(--border)', zIndex: 2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             </div>
             <span style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)' }}>Recoge en óptica</span>
@@ -102,7 +95,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', opacity: 0.3 }}>
+        <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', opacity: 0.3, zIndex: 2 }}>
           <div style={{ width: '1px', height: '48px', background: 'var(--charcoal)' }}/>
           <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="var(--charcoal)" strokeWidth="1.2" strokeLinecap="round"/></svg>
         </div>
@@ -189,7 +182,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* BANNER INFERIOR AZUL */}
+      {/* BANNER AZUL */}
       <Reveal>
         <section style={{ background: 'var(--sage)', padding: '5rem 2rem' }}>
           <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
@@ -275,7 +268,7 @@ export default function Home() {
       <footer style={{ background: 'var(--sage)', color: 'rgba(255,255,255,0.35)', padding: '4rem 2rem 2rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '2.5rem', maxWidth: '1100px', margin: '0 auto 3rem' }}>
           <div>
-            <img src="/logo-gon.png" alt="GON" style={{ height: '40px', width: 'auto', marginBottom: '1rem', opacity: 0.9 }}/>
+            <img src="/logo-gon.png" alt="GON" style={{ height: '48px', width: 'auto', marginBottom: '1rem' }}/>
             <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', lineHeight: 1.8, maxWidth: '200px', color: 'rgba(255,255,255,0.45)' }}>Lentes accesibles para toda la familia. Rosarito, B.C.</p>
           </div>
           <div>
@@ -292,18 +285,16 @@ export default function Home() {
           <div>
             <h4 style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1.25rem' }}>Ayuda</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <a href="#faq" style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.35)', textDecoration: 'none', fontSize: '13px' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
-              >FAQ</a>
-              <a href="https://wa.me/526611040873" style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.35)', textDecoration: 'none', fontSize: '13px' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
-              >WhatsApp</a>
-              <a href="mailto:gonmx.empresas@gmail.com" style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.35)', textDecoration: 'none', fontSize: '13px' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
-              >Contacto</a>
+              {[
+                { href: '#faq', label: 'FAQ' },
+                { href: 'https://wa.me/526611040873', label: 'WhatsApp' },
+                { href: 'mailto:gonmx.empresas@gmail.com', label: 'Contacto' },
+              ].map((l, i) => (
+                <a key={i} href={l.href} style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.35)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
+                >{l.label}</a>
+              ))}
             </div>
           </div>
           <div>
@@ -318,7 +309,7 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* WHATSAPP */}
+      {/* WHATSAPP FLOTANTE */}
       <a href="https://wa.me/526611040873" target="_blank" rel="noopener noreferrer"
         style={{ position: 'fixed', bottom: '2rem', right: '2rem', width: '52px', height: '52px', borderRadius: '50%', background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(37,211,102,0.4)', zIndex: 100, transition: 'transform 0.2s' }}
         onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
