@@ -65,7 +65,7 @@ export default function Home() {
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
             Grupo Óptico del Noroeste — Est. 2018
           </p>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(3.5rem, 5.5vw, 5rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1.25rem', maxWidth: '580px' }}>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.8rem, 4.5vw, 4rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1.25rem', maxWidth: '580px' }}>
             Tu visión.<br />Nuestra prioridad.<br />
             <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Siempre cerca de ti.</em>
           </h1>
