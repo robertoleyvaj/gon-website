@@ -96,7 +96,7 @@ export default function RootLayout({
         WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
       }}>
-        <LangProvider defaultLang="es">
+        <LangProvider>
           <CartProvider>
             <FavoritosProvider>
               {children}
