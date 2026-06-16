@@ -1,6 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { Cormorant_Garamond, Poppins } from "next/font/google";
 import "./globals.css";
 import { LangProvider } from "./components/LanguageContext";
 import { CartProvider } from "./context/CartContext";
@@ -13,7 +13,7 @@ const cormorant = Cormorant_Garamond({
   style: ["normal", "italic"],
 });
 
-const dmSans = DM_Sans({
+const poppins = Poppins({
   variable: "--font-dm",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -85,7 +85,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${cormorant.variable} ${dmSans.variable}`}
+      className={`${cormorant.variable} $${poppins.variable}`}
       style={{ height: "100%" }}
     >
       <body style={{
