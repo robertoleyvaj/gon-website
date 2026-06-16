@@ -226,29 +226,30 @@ function TiendaContent() {
     <main style={{ fontFamily: 'var(--font-sans)', background: 'var(--cream)', minHeight: '100vh', color: 'var(--charcoal)' }}>
       <Navbar />
 
-      {/* HERO */}
-      <div style={{ marginTop: '64px', position: 'relative', width: '100%', height: esMobil ? '280px' : '440px', overflow: 'hidden' }}>
-        <img src="/hero-tienda.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 25%', display: 'block' }}/>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(27,58,107,0.82) 0%, rgba(27,58,107,0.4) 55%, transparent 85%)' }}/>
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: esMobil ? '2rem 1.75rem' : '0 5rem' }}>
-          <div style={{ maxWidth: '480px' }}>
-            <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', margin: '0 0 0.75rem' }}>
-              GON — ARMAZONES
-            </p>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.8rem' : '4.2rem', fontWeight: 300, letterSpacing: '-0.03em', color: 'white', margin: 0, lineHeight: 1.0 }}>
-              Encuentra<br/>tu par.
-            </h1>
-            <div style={{ width: '32px', height: '1px', background: 'var(--accent)', margin: '1.1rem 0' }}/>
-            <p style={{ fontSize: esMobil ? '0.82rem' : '0.88rem', color: 'rgba(255,255,255,0.7)', margin: '0 0 2rem', lineHeight: 1.8, maxWidth: '320px' }}>
-              Diseño atemporal. Comodidad diaria. Precios justos.
-            </p>
-            <button onClick={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', color: 'var(--sage)', padding: '12px 26px', borderRadius: '2px', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', border: 'none', cursor: 'pointer' }}>
-              Ver colección
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
+  {/* HERO */}
+<div style={{ marginTop: '64px', position: 'relative', width: '100%', height: esMobil ? '280px' : '440px', overflow: 'hidden' }}>
+  <img src="/hero-tienda.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 25%', display: 'block' }}/>
+  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(244,247,250,0.97) 0%, rgba(244,247,250,0.85) 40%, rgba(244,247,250,0.0) 70%)' }}/>
+  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: esMobil ? '2rem 1.75rem' : '0 5rem' }}>
+    <div style={{ maxWidth: '480px' }}>
+      <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--accent)', margin: '0 0 0.75rem' }}>
+        GON — ARMAZONES
+      </p>
+      <h1 style={{ fontFamily: 'var(--font-sans)', fontSize: esMobil ? '2.4rem' : '3.8rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--charcoal)', margin: 0, lineHeight: 1.1 }}>
+        Tu estilo,<br/>
+        tu <span style={{ color: 'var(--accent)' }}>visión.</span>
+      </h1>
+      <div style={{ width: '32px', height: '2px', background: 'var(--accent)', margin: '1.1rem 0' }}/>
+      <p style={{ fontSize: esMobil ? '0.82rem' : '0.88rem', color: 'var(--warm-gray)', margin: '0 0 2rem', lineHeight: 1.8, maxWidth: '320px' }}>
+        Armazones modernos, lentes de calidad y atención que se nota.
+      </p>
+      <button onClick={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--sage)', color: 'white', padding: '12px 26px', borderRadius: '2px', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', border: 'none', cursor: 'pointer' }}>
+        Conoce nuestra colección
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
 
       {/* TABS GÉNERO */}
       <div style={{ background: 'white', borderBottom: '1px solid var(--border)', position: 'sticky', top: '0', zIndex: 50 }}>
