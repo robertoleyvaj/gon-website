@@ -119,11 +119,11 @@ export default function Lenses() {
             </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <Link href="/Tienda" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--sage)', color: 'white', padding: '12px 24px', borderRadius: '2px', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
-                {lang === 'es' ? 'Ir a Eyeglasses' : 'Shop Eyeglasses'}
+                {lang === 'es' ? 'Ver Armazones' : 'Shop Eyeglasses'}
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
               </Link>
               <Link href="/sunglasses" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'transparent', color: 'var(--charcoal)', padding: '12px 24px', borderRadius: '2px', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', border: '1px solid var(--border)' }}>
-                {lang === 'es' ? 'Ver Sunglasses' : 'Browse Sunglasses'}
+                {lang === 'es' ? 'Ver Lentes de Sol' : 'Browse Sunglasses'}
               </Link>
             </div>
           </div>
@@ -132,9 +132,9 @@ export default function Lenses() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: 'var(--border)' }}>
               {[
                 { paso: '01', label: lang === 'es' ? 'Elige el armazón' : 'Choose the frame', sub: lang === 'es' ? 'Desde $13 USD' : 'From $13 USD' },
-                { paso: '02', label: lang === 'es' ? 'Tipo de visión' : 'Vision type', sub: lang === 'es' ? 'Mono / Bifocal / Progresivo' : 'Single / Bifocal / Progressive' },
+                { paso: '02', label: lang === 'es' ? 'Tipo de visión' : 'Vision type', sub: lang === 'es' ? 'Monofocal / Bifocal / Progresivo' : 'Single / Bifocal / Progressive' },
                 { paso: '03', label: lang === 'es' ? 'Material de la mica' : 'Lens material', sub: lang === 'es' ? '5 opciones de grosor' : '5 thickness options' },
-                { paso: '04', label: lang === 'es' ? 'Filtro y coating' : 'Filter & coating', sub: lang === 'es' ? 'Blue light, polarizado y más' : 'Blue light, polarized & more' },
+                { paso: '04', label: lang === 'es' ? 'Filtro y coating' : 'Filter & coating', sub: lang === 'es' ? 'Luz azul, polarizado y más' : 'Blue light, polarized & more' },
                 { paso: '05', label: lang === 'es' ? 'Tu receta' : 'Your prescription', sub: lang === 'es' ? 'Manual, foto o después' : 'Manual, photo or later' },
               ].map((s, i) => (
                 <div key={i} style={{ background: 'var(--cream)', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
@@ -334,7 +334,7 @@ export default function Lenses() {
                   {lang === 'es' ? 'Ir a Eyeglasses →' : 'Shop Eyeglasses →'}
                 </Link>
                 <Link href="/sunglasses" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: 'rgba(255,255,255,0.75)', padding: '12px 20px', borderRadius: '2px', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)' }}>
-                  {lang === 'es' ? 'Ver Sunglasses' : 'Browse Sunglasses'}
+                  {lang === 'es' ? 'Ver Lentes de Sol' : 'Browse Sunglasses'}
                 </Link>
               </div>
             </div>
