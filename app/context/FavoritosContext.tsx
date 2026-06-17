@@ -28,14 +28,14 @@ export function FavoritosProvider({ children }: { children: ReactNode }) {
   // Cargar desde localStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('verly_favoritos');
+      const saved = localStorage.getItem('gon_favoritos');
       if (saved) setFavoritos(JSON.parse(saved));
     } catch {}
   }, []);
 
   // Guardar en localStorage
   useEffect(() => {
-    localStorage.setItem('verly_favoritos', JSON.stringify(favoritos));
+    localStorage.setItem('gon_favoritos', JSON.stringify(favoritos));
   }, [favoritos]);
 
   const toggleFavorito = (item: Favorito) => {

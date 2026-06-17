@@ -54,7 +54,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Cargar desde localStorage al montar
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('verly_cart');
+      const saved = localStorage.getItem('gon_cart');
       if (saved) {
         const parsed = JSON.parse(saved);
         setItems(parsed.items || []);
@@ -66,7 +66,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Guardar en localStorage cuando cambia
   useEffect(() => {
     try {
-      localStorage.setItem('verly_cart', JSON.stringify({ items, promoSolarReclamada }));
+      localStorage.setItem('gon_cart', JSON.stringify({ items, promoSolarReclamada }));
     } catch {}
   }, [items, promoSolarReclamada]);
 
