@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
       line_items: [{
         price_data: {
           currency: 'usd',
-          product_data: { name: 'Verly Optical — Lentes personalizados', description: descripcion },
+          product_data: { name: 'GON — Grupo Óptico del Noroeste', description: descripcion },
           unit_amount: Math.round(total * 100),
         },
         quantity: 1,
