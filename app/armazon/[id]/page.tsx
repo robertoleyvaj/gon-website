@@ -17,7 +17,7 @@ type Armazon = {
   color1?: string; color2?: string; color3?: string; modelo?: string;
 };
 
-type PaqueteVerly = {
+type PaqueteGON = {
   vision: { id: string; nombre: string; nombre_en: string; precio: number };
   material: { id: string; nombre: string; nombre_en: string; precio: number };
   filtroBase: { id: string; nombre: string; nombre_en: string; precio: number };
@@ -279,7 +279,7 @@ function FormReceta({ receta, onChange, errores, t }: { receta: RecetaData; onCh
   );
 }
 
-function calcularPaquete(r: RecetaData, lang: 'es' | 'en'): PaqueteVerly {
+function calcularPaquete(r: RecetaData, lang: 'es' | 'en'): PaqueteGON {
   const sph_od = r.sph_od ?? 0, sph_os = r.sph_os ?? 0;
   const cyl_od = r.cyl_od ?? 0, cyl_os = r.cyl_os ?? 0;
   const add = r.add ?? 0;
@@ -327,9 +327,9 @@ function LenteSVG({ color, forma, size = 'large', solar = false }: { color: stri
   );
 }
 
-// ── VerlyModalPaquete ─────────────────────────────────────
-function VerlyModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }: {
-  paquete: PaqueteVerly; armazonNombre: string;
+// ── GONModalPaquete ─────────────────────────────────────
+function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }: {
+  paquete: PaqueteGON; armazonNombre: string;
   onAceptar: (extrasIds: string[]) => void; onManual: () => void; lang: 'es' | 'en';
 }) {
   const [paso, setPaso] = useState<'paquete' | 'upsell'>('paquete');
@@ -342,7 +342,7 @@ function VerlyModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }
         {paso === 'paquete' ? (
           <>
             <div style={{ background: 'var(--charcoal)', padding: '1.5rem', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginBottom: '0.5rem' }}>{lang === 'es' ? 'Verly recomienda' : 'Verly recommends'}</div>
+              <div style={{ fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginBottom: '0.5rem' }}>{lang === 'es' ? 'GON recomienda' : 'GON recommends'}</div>
               <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300, color: 'white', lineHeight: 1.2 }}>{lang === 'es' ? 'El paquete perfecto para ti' : 'The perfect package for you'}</div>
             </div>
             <div style={{ padding: '1.25rem 1.5rem' }}>
@@ -458,8 +458,8 @@ export default function DetalleArmazon() {
   const [relacionados, setRelacionados] = useState<Armazon[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [verlyModal, setVerlyModal] = useState(false);
-  const [paqueteVerly, setPaqueteVerly] = useState<PaqueteVerly | null>(null);
+  const [gonModal, setVerlyModal] = useState(false);
+  const [paqueteGON, setPaqueteGON] = useState<PaqueteGON | null>(null);
   const [errores, setErrores] = useState<string[]>([]);
   const [paciente, setPaciente] = useState('');
   const [reutilizarReceta, setReutilizarReceta] = useState<string | null>(null);
@@ -507,7 +507,7 @@ export default function DetalleArmazon() {
     if (lightboxOpen) {
       document.body.style.overflow = 'hidden';
     } else {
-      if (!drawerOpen && !verlyModal) document.body.style.overflow = '';
+      if (!drawerOpen && !gonModal) document.body.style.overflow = '';
       setLbScale(1);
       setLbPos({ x: 0, y: 0 });
     }
@@ -539,16 +539,16 @@ export default function DetalleArmazon() {
     if (errs.length > 0) { setErrores(errs); return; }
     setErrores([]);
     const paquete = calcularPaquete(receta, lang || 'en');
-    setPaqueteVerly(paquete);
+    setPaqueteGON(paquete);
     setRecetaEstado('guardada');
     setVerlyModal(true);
   };
 
   const aceptarPaquete = (extrasIds: string[]) => {
-    if (!paqueteVerly) return;
-    setVision(paqueteVerly.vision.id);
-    setMaterial(paqueteVerly.material.id);
-    setFiltros([paqueteVerly.filtroBase.id, ...extrasIds]);
+    if (!paqueteGON) return;
+    setVision(paqueteGON.vision.id);
+    setMaterial(paqueteGON.material.id);
+    setFiltros([paqueteGON.filtroBase.id, ...extrasIds]);
     setVerlyModal(false);
     setDrawerEstado('config');
     setPaso(4);
@@ -613,9 +613,9 @@ export default function DetalleArmazon() {
   }, [id]);
 
   useEffect(() => {
-    document.body.style.overflow = drawerOpen || verlyModal ? 'hidden' : '';
+    document.body.style.overflow = drawerOpen || gonModal ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [drawerOpen, verlyModal]);
+  }, [drawerOpen, gonModal]);
 
   const abrirDrawer = () => { setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
 
@@ -692,7 +692,7 @@ export default function DetalleArmazon() {
   return (
     <main style={{ fontFamily: 'var(--font-sans)', background: 'var(--cream)', minHeight: '100vh', color: 'var(--charcoal)' }}>
       <Navbar />
-      {verlyModal && paqueteVerly && <VerlyModalPaquete paquete={paqueteVerly} armazonNombre={armazon.nombre} onAceptar={aceptarPaquete} onManual={elegirManual} lang={lang || 'en'}/>}
+      {gonModal && paqueteGON && <GONModalPaquete paquete={paqueteGON} armazonNombre={armazon.nombre} onAceptar={aceptarPaquete} onManual={elegirManual} lang={lang || 'en'}/>}
       {drawerOpen && <div onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,26,0.35)', zIndex: 200, backdropFilter: 'blur(2px)' }}/>}
 
       {/* ── LIGHTBOX ── */}
@@ -1179,7 +1179,7 @@ export default function DetalleArmazon() {
               <Acordeon titulo={t('Envío y devoluciones', 'Shipping & returns')}>
                 {t('Enviamos a toda la Unión Americana en 5–7 días hábiles. Los lentes graduados tardan hasta 10 días adicionales.', 'We ship across the US in 5–7 business days. Prescription lenses take up to 10 additional days.')}
               </Acordeon>
-              <Acordeon titulo={t('¿Por qué Verly?', 'Why Verly?')}>
+              <Acordeon titulo={t('¿Por qué GON?', 'Why GON?')}>
                 {t('Armazones de calidad a una fracción del precio de una óptica tradicional. Sin aseguranza, sin citas.', 'Quality frames at a fraction of traditional optical prices. No insurance, no appointments.')}
               </Acordeon>
             </div>
@@ -1221,7 +1221,7 @@ export default function DetalleArmazon() {
       {/* ── LIFESTYLE ── */}
       <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr 280px', minHeight: esMobil ? 'auto' : '420px' }}>
         <div style={{ background: 'var(--cream)', padding: esMobil ? '2.5rem 1.25rem' : '4rem 3rem 4rem 4rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <p style={{ fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 1.5rem' }}>Verly Optical</p>
+          <p style={{ fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 1.5rem' }}>GON Óptica</p>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 400, color: 'var(--charcoal)', margin: '0 0 1rem', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
             {t('Diseñado para', 'Designed for')}<br/><em style={{ fontStyle: 'italic' }}>{t('tu día a día', 'your daily life')}</em>
           </h2>
@@ -1304,7 +1304,7 @@ export default function DetalleArmazon() {
       <div style={{ background: 'var(--cream-dark)', padding: esMobil ? '3rem 1.25rem' : '5rem 4rem', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: esMobil ? '2.5rem' : '4rem', alignItems: 'center' }}>
         <div>
           <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3.5rem', fontWeight: 400, color: 'var(--charcoal)', margin: '0 0 1rem', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-            Verly Optical<br/><em style={{ fontStyle: 'italic', color: 'var(--warm-gray)' }}>I see the difference.</em>
+            GON Óptica<br/><em style={{ fontStyle: 'italic', color: 'var(--warm-gray)' }}>I see the difference.</em>
           </h2>
           <p style={{ fontSize: '0.85rem', color: 'var(--warm-gray)', margin: 0 }}>{t('Unos lentes, miles de historias.', 'One pair of glasses, thousands of stories.')}</p>
         </div>
@@ -1321,7 +1321,7 @@ export default function DetalleArmazon() {
           <Acordeon titulo={t('Envío y devoluciones', 'Shipping & returns')}>
             {t('5–7 días hábiles. Graduados hasta 10 días adicionales. Satisfacción garantizada.', '5–7 business days. Prescription up to 10 additional days. Satisfaction guaranteed.')}
           </Acordeon>
-          <Acordeon titulo={t('¿Por qué Verly?', 'Why Verly?')}>
+          <Acordeon titulo={t('¿Por qué GON?', 'Why GON?')}>
             {t('Calidad premium sin el precio de óptica. Sin aseguranza, sin complicaciones.', 'Premium quality without the optical store price. No insurance, no complications.')}
           </Acordeon>
         </div>
