@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
+import { usePrecios, redondearMXN } from '../hooks/usePrecios';
 
 // ── BarraGrosor FUERA del componente ──────────────────────
 function BarraGrosor({ valor, max = 5 }: { valor: number; max?: number }) {
@@ -87,6 +88,8 @@ const filtroOpts = [
 // ── PAGE ─────────────────────────────────────────────────
 export default function Lenses() {
   const { t, lang } = useLang() as any;
+  const { tipoCambio } = usePrecios();
+  const px = (usd: number) => lang === 'es' ? `$${redondearMXN(usd, tipoCambio)} MXN` : `$${usd} USD`;
   const [esMobil, setEsMobil] = useState(false);
   const [materialActivo, setMaterialActivo] = useState(1);
 
@@ -131,7 +134,7 @@ export default function Lenses() {
           {!esMobil && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: 'var(--border)' }}>
               {[
-                { paso: '01', label: lang === 'es' ? 'Elige el armazón' : 'Choose the frame', sub: lang === 'es' ? 'Desde $13 USD' : 'From $13 USD' },
+                { paso: '01', label: lang === 'es' ? 'Elige el armazón' : 'Choose the frame', sub: lang === 'es' ? `Desde ${px(13)}` : 'From $13 USD' },
                 { paso: '02', label: lang === 'es' ? 'Tipo de visión' : 'Vision type', sub: lang === 'es' ? 'Monofocal / Bifocal / Progresivo' : 'Single / Bifocal / Progressive' },
                 { paso: '03', label: lang === 'es' ? 'Material de la mica' : 'Lens material', sub: lang === 'es' ? '5 opciones de grosor' : '5 thickness options' },
                 { paso: '04', label: lang === 'es' ? 'Filtro y coating' : 'Filter & coating', sub: lang === 'es' ? 'Luz azul, polarizado y más' : 'Blue light, polarized & more' },
@@ -175,7 +178,7 @@ export default function Lenses() {
               <div style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.4rem' : '1.8rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '0.25rem', letterSpacing: '-0.01em' }}>
                 {lang === 'es' ? v.nombre_es : v.nombre_en}
               </div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--sage)', marginBottom: '0.75rem' }}>+${v.precio} USD</div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--sage)', marginBottom: '0.75rem' }}>{v.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+${px(v.precio)}`}</div>
               <p style={{ fontSize: '0.82rem', color: 'var(--warm-gray)', lineHeight: 1.7, margin: '0 0 1rem' }}>
                 {lang === 'es' ? v.desc_es : v.desc_en}
               </p>
@@ -212,7 +215,7 @@ export default function Lenses() {
                       <div style={{ fontSize: '0.88rem', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? m.nombre_es : m.nombre_en}</div>
                       <div style={{ fontSize: '0.7rem', color: 'var(--warm-gray)', marginTop: '2px' }}>Índice {m.indice}</div>
                     </div>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--sage)' }}>{m.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+$${m.precio}`}</div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--sage)' }}>{m.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+${px(m.precio)}`}</div>
                   </div>
                   {materialActivo === i && (
                     <div>
@@ -249,7 +252,7 @@ export default function Lenses() {
                   <div style={{ display: 'flex', justifyContent: 'center' }}><BarraGrosor valor={m.grosor}/></div>
                   <div style={{ display: 'flex', justifyContent: 'center' }}><BarraGrosor valor={m.peso}/></div>
                   <div style={{ textAlign: 'right', fontSize: '0.9rem', fontWeight: 600, color: materialActivo === i ? 'var(--sage)' : 'var(--charcoal)' }}>
-                    {m.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+$${m.precio}`}
+                    {m.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+${px(m.precio)}`}
                   </div>
                 </div>
               ))}
@@ -293,7 +296,7 @@ export default function Lenses() {
                 </div>
                 <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', margin: 0, lineHeight: 1.6 }}>{lang === 'es' ? f.desc_es : f.desc_en}</p>
               </div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--sage)', flexShrink: 0 }}>+${f.precio}</div>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--sage)', flexShrink: 0 }}>+{px(f.precio)}</div>
             </div>
           ))}
         </div>
