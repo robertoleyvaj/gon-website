@@ -20,7 +20,7 @@ const ESTADO_COLORS: any = {
   'entregado':   { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
 };
 
-function orderCode(id: number): string { return `VRL-${2846 + id}`; }
+function orderCode(id: number): string { return `GON-${2846 + id}`; }
 
 function tallaDesdeMedias(medidas: string): string {
   const match = medidas.match(/(\d+)/);
@@ -33,7 +33,7 @@ function tallaDesdeMedias(medidas: string): string {
 }
 
 const ARMAZON_VACIO = {
-  nombre: '', modelo: '', marca: 'Verly', precio: '13', stock: '10',
+  nombre: '', modelo: '', marca: 'GON', precio: '13', stock: '10',
   badge: '', color1: '#1A1A2E', color2: '', color3: '',
   material: '', forma: 'cuadrada', genero: 'unisex', tipo: 'optico',
   descuento: '0', medidas: '', talla: 'M', activo: true,
@@ -149,8 +149,8 @@ function ArmazonForm({ data, onChange, onFotoUpload }: {
         <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Información básica</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', gap: '8px' }}>
           <div><label style={labelStyle}>Nombre</label><input value={data.nombre} onChange={e => onChange('nombre', e.target.value)} style={inputStyle} placeholder="Old Fashion"/></div>
-          <div><label style={labelStyle}>Modelo</label><input value={data.modelo || ''} onChange={e => onChange('modelo', e.target.value)} style={inputStyle} placeholder="VRL-001"/></div>
-          <div><label style={labelStyle}>Marca</label><input value={data.marca} onChange={e => onChange('marca', e.target.value)} style={inputStyle} placeholder="Verly"/></div>
+          <div><label style={labelStyle}>Modelo</label><input value={data.modelo || ''} onChange={e => onChange('modelo', e.target.value)} style={inputStyle} placeholder="GON-001"/></div>
+          <div><label style={labelStyle}>Marca</label><input value={data.marca} onChange={e => onChange('marca', e.target.value)} style={inputStyle} placeholder="GON"/></div>
           <div><label style={labelStyle}>Material</label>
             <select value={data.material || ''} onChange={e => onChange('material', e.target.value)} style={inputStyle}>
               <option value="">Seleccionar</option>
@@ -694,7 +694,7 @@ export default function Admin() {
       {/* SIDEBAR */}
       <div style={{ width: sidebarOpen ? '220px' : '56px', flexShrink: 0, background: 'var(--charcoal)', color: 'white', transition: 'width 0.25s ease', overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh' }}>
         <div style={{ padding: sidebarOpen ? '1.5rem 1.25rem 1rem' : '1.5rem 0 1rem', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: sidebarOpen ? 'flex-start' : 'center' }}>
-          {sidebarOpen ? <img src="/logo-trasparente.png" alt="Verly" style={{ height: '28px', opacity: 0.9 }}/> : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/></svg>}
+          {sidebarOpen ? <img src="/logo-gon.png" alt="GON" style={{ height: '28px', opacity: 0.9 }}/> : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/></svg>}
         </div>
         <nav style={{ flex: 1, padding: '0.75rem 0' }}>
           {MENU.map(m => (
