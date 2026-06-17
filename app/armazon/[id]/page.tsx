@@ -1,6 +1,6 @@
 // app/armazon/[id]/page.tsx
 'use client';
-import { usePreciosVerly } from '../../hooks/usePreciosVerly';
+import { usePrecios, redondearMXN } from '../../hooks/usePrecios';
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
@@ -463,7 +463,7 @@ export default function DetalleArmazon() {
   const [errores, setErrores] = useState<string[]>([]);
   const [paciente, setPaciente] = useState('');
   const [reutilizarReceta, setReutilizarReceta] = useState<string | null>(null);
-  const preciosDB = usePreciosVerly();
+  const { precios: preciosDB, tipoCambio } = usePrecios();
 
   const esSolar = armazon?.tipo === 'solar';
 
