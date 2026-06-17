@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import CollectionPage from "@/app/components/CollectionPage";
 
 export const metadata: Metadata = {
-  title: "Men's Prescription Glasses — Eyeglasses Online | Verly Optical",
+  title: "Men's Prescription Glasses — Eyeglasses Online | GON Óptica",
   description:
     "Shop men's prescription glasses online. Classic, modern, and minimalist frames available with single vision, progressive, or bifocal lenses. Complete pairs from $28.",
   keywords: ["men's glasses", "men's prescription glasses", "men's eyeglasses online", "prescription glasses for men", "men's frames"],
   openGraph: {
-    title: "Men's Glasses | Verly Optical",
+    title: "Men's Glasses | GON Óptica",
     description: "Men's prescription eyeglasses from $28. Classic and modern frames with your choice of lenses.",
-    url: "https://verlyoptical.com/mens-glasses",
-    siteName: "Verly Optical",
+    url: "https://gonmx.com/mens-glasses",
+    siteName: "GON Óptica",
     type: "website",
   },
-  alternates: { canonical: "https://verlyoptical.com/mens-glasses" },
+  alternates: { canonical: "https://gonmx.com/mens-glasses" },
 };
 
 export default function MensGlassesPage() {

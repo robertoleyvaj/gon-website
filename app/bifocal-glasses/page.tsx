@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import CollectionPage from "@/app/components/CollectionPage";
 
 export const metadata: Metadata = {
-  title: "Bifocal Glasses — Prescription Eyewear Online | Verly Optical",
+  title: "Bifocal Glasses — Prescription Eyewear Online | GON Óptica",
   description:
     "Affordable bifocal glasses with prescription lenses. Classic dual-focus design for near and distance vision. Complete pairs from $62 including frame and lenses.",
   keywords: ["bifocal glasses", "bifocal lenses online", "prescription bifocals", "affordable bifocal eyeglasses"],
   openGraph: {
-    title: "Bifocal Glasses | Verly Optical",
+    title: "Bifocal Glasses | GON Óptica",
     description: "Prescription bifocal glasses from $62 complete. Near and distance vision in one pair.",
-    url: "https://verlyoptical.com/bifocal-glasses",
-    siteName: "Verly Optical",
+    url: "https://gonmx.com/bifocal-glasses",
+    siteName: "GON Óptica",
     type: "website",
   },
-  alternates: { canonical: "https://verlyoptical.com/bifocal-glasses" },
+  alternates: { canonical: "https://gonmx.com/bifocal-glasses" },
 };
 
 export default function BifocalGlassesPage() {

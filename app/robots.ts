@@ -10,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/api/"],
       },
     ],
-    sitemap: "https://verlyoptical.com/sitemap.xml",
+    sitemap: "https://gonmx.com/sitemap.xml",
   };
 }
