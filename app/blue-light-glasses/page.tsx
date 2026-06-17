@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import CollectionPage from "@/app/components/CollectionPage";
 
 export const metadata: Metadata = {
-  title: "Blue Light Glasses — Prescription Eyewear | Verly Optical",
+  title: "Blue Light Glasses — Prescription Eyewear | GON Óptica",
   description:
     "Shop blue light blocking glasses with prescription lenses. Protect your eyes from screen fatigue. Complete pairs from $28 with Essential AR or Blue Light filter.",
   keywords: ["blue light glasses", "blue light blocking glasses", "prescription blue light glasses", "computer glasses"],
   openGraph: {
-    title: "Blue Light Glasses | Verly Optical",
+    title: "Blue Light Glasses | GON Óptica",
     description: "Prescription blue light glasses from $28. Reduce eye strain from screens.",
-    url: "https://verlyoptical.com/blue-light-glasses",
-    siteName: "Verly Optical",
+    url: "https://gonmx.com/blue-light-glasses",
+    siteName: "GON Óptica",
     type: "website",
   },
-  alternates: { canonical: "https://verlyoptical.com/blue-light-glasses" },
+  alternates: { canonical: "https://gonmx.com/blue-light-glasses" },
 };
 
 export default function BlueLightGlassesPage() {

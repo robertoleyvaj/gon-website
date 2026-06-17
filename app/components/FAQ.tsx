@@ -4,14 +4,14 @@ import { useState } from 'react';
 
 const faqs = [
   {
-    question: 'How does Verly Optical work?',
+    question: 'How does GON Óptica work?',
     answer:
       'Choose your frames, customize your lenses, upload your prescription, and place your order online. We prepare your glasses and ship them to your address.',
   },
   {
     question: 'Do I need health insurance?',
     answer:
-      'No. You can order directly from Verly Optical without health insurance.',
+      'No. You can order directly from GON Óptica without health insurance.',
   },
   {
     question: 'How do I upload my prescription?',

@@ -106,7 +106,7 @@ export default function Lenses() {
         <div style={{ maxWidth: '1360px', margin: '0 auto', padding: esMobil ? '0 1.5rem' : '0 5rem', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: esMobil ? '2rem' : '6rem', alignItems: 'end' }}>
           <div>
             <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 0.75rem' }}>
-              VERLY OPTICAL — LENSES
+              GON ÓPTICA — LENTES
             </p>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '3rem' : '5rem', fontWeight: 300, letterSpacing: '-0.03em', margin: '0 0 1rem', lineHeight: 1.0, color: 'var(--charcoal)' }}>
               {lang === 'es' ? 'Tus micas,\na tu medida.' : 'Your lenses,\nyour way.'}

@@ -73,7 +73,7 @@ function SunglassesContent() {
       {esPromoRegalo && (
         <div style={{ background: 'var(--charcoal)', padding: '1rem 2rem', textAlign: 'center', marginTop: '72px' }}>
           <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 300, color: 'white', margin: 0 }}>
-            🎁 {lang === 'es' ? 'Elige tu par de lentes de sol gratis — el armazón es cortesía de Verly.' : 'Choose your free sunglasses — the frame is on us.'}
+            🎁 {lang === 'es' ? 'Elige tu par de lentes de sol gratis — el armazón es cortesía de GON.' : 'Choose your free sunglasses — the frame is on us.'}
           </p>
         </div>
       )}
@@ -90,7 +90,7 @@ function SunglassesContent() {
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', padding: esMobil ? '2rem 1.75rem' : '0 5rem' }}>
           <div style={{ maxWidth: '480px' }}>
             <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', margin: '0 0 0.75rem' }}>
-              {esPromoRegalo ? '🎁 FREE SUNGLASSES' : 'VERLY OPTICAL — SUNGLASSES'}
+              {esPromoRegalo ? '🎁 FREE SUNGLASSES' : 'GON ÓPTICA — SUNGLASSES'}
             </p>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '3rem' : '4.8rem', fontWeight: 300, letterSpacing: '-0.03em', color: 'white', margin: 0, lineHeight: 1.0 }}>
               {esPromoRegalo
@@ -238,7 +238,7 @@ function SunglassesContent() {
       <div style={{ background: 'var(--sage)', padding: esMobil ? '3.5rem 1.5rem' : '5rem 3rem' }}>
         <div style={{ maxWidth: '1360px', margin: '0 auto', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: esMobil ? '2rem' : '4rem', alignItems: 'center' }}>
           <div>
-            <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.6rem' }}>Verly Optical</p>
+            <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.6rem' }}>GON Óptica</p>
             <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '2.8rem', fontWeight: 300, color: 'white', margin: '0 0 1rem', lineHeight: 1.15, letterSpacing: '-0.02em' }}>
               {lang === 'es' ? '¿Necesitas graduación?' : 'Need a prescription?'}
             </h2>
