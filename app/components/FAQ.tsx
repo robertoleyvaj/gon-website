@@ -71,7 +71,7 @@ const faqs = [
   {
     question: 'How do I know which lenses are best for me?',
     answer:
-      'VerlyBot can help recommend lens options based on your prescription, lifestyle, and daily needs.',
+      'Our team can help you via WhatsApp recommend the best lens options based on your prescription and daily needs.',
   },
   {
     question: 'What payment methods do you accept?',

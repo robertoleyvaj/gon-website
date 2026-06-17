@@ -320,14 +320,14 @@ export default function Lenses() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ background: 'var(--sage)', borderRadius: '4px', padding: '2.5rem' }}>
-              <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.6rem' }}>Verly Optical</p>
+              <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.6rem' }}>GON Óptica</p>
               <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.6rem' : '2rem', fontWeight: 300, color: 'white', margin: '0 0 1rem', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
                 {lang === 'es' ? '¿No sabes qué elegir?' : "Not sure what to pick?"}
               </h3>
               <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.75, margin: '0 0 1.75rem' }}>
                 {lang === 'es'
-                  ? 'Sube tu receta y VerlyBot la analiza para recomendarte el paquete perfecto. Sin costo adicional.'
-                  : 'Upload your prescription and VerlyBot recommends the perfect package. No extra cost.'}
+                  ? 'Nuestro equipo te ayuda por WhatsApp a encontrar el paquete perfecto. Sin costo adicional.'
+                  : 'Our team will help you via WhatsApp find the perfect package. No extra cost.'}
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <Link href="/Tienda" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'white', color: 'var(--charcoal)', padding: '12px 20px', borderRadius: '2px', fontFamily: 'var(--font-sans)', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
