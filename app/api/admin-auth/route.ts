@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   }
 
   const response = NextResponse.json({ ok: true });
-  response.cookies.set('verly_admin', process.env.ADMIN_TOKEN_SECRET!, {
+  response.cookies.set('gon_admin', process.env.ADMIN_TOKEN_SECRET!, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -24,6 +24,6 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE() {
   const response = NextResponse.json({ ok: true });
-  response.cookies.delete('verly_admin');
+  response.cookies.delete('gon_admin');
   return response;
 }

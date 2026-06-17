@@ -7,7 +7,7 @@ const supabaseAdmin = createClient(
 );
 
 function isAdmin(req: NextRequest): boolean {
-  const token = req.cookies.get('verly_admin')?.value;
+  const token = req.cookies.get('gon_admin')?.value;
   return !!process.env.ADMIN_TOKEN_SECRET && token === process.env.ADMIN_TOKEN_SECRET;
 }
 
