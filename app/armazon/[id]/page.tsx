@@ -458,7 +458,7 @@ export default function DetalleArmazon() {
   const [relacionados, setRelacionados] = useState<Armazon[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [gonModal, setVerlyModal] = useState(false);
+  const [gonModal, setGonModal] = useState(false);
   const [paqueteGON, setPaqueteGON] = useState<PaqueteGON | null>(null);
   const [errores, setErrores] = useState<string[]>([]);
   const [paciente, setPaciente] = useState('');
@@ -541,7 +541,7 @@ export default function DetalleArmazon() {
     const paquete = calcularPaquete(receta, lang || 'en');
     setPaqueteGON(paquete);
     setRecetaEstado('guardada');
-    setVerlyModal(true);
+    setGonModal(true);
   };
 
   const aceptarPaquete = (extrasIds: string[]) => {
@@ -549,12 +549,12 @@ export default function DetalleArmazon() {
     setVision(paqueteGON.vision.id);
     setMaterial(paqueteGON.material.id);
     setFiltros([paqueteGON.filtroBase.id, ...extrasIds]);
-    setVerlyModal(false);
+    setGonModal(false);
     setDrawerEstado('config');
     setPaso(4);
   };
 
-  const elegirManual = () => { setVerlyModal(false); setDrawerEstado('config'); setPaso(1); };
+  const elegirManual = () => { setGonModal(false); setDrawerEstado('config'); setPaso(1); };
 
   const handleAddToCart = () => {
     if (esRegalo && items.some(i => i.es_regalo)) {
