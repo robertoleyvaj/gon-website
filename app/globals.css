@@ -5,16 +5,16 @@
 }
 
 :root {
-  --cream: #F4F7FA;
-  --cream-dark: #E8EEF4;
-  --sage: #1B3A6B;
+  --cream: #FFFFFF;
+  --cream-dark: #F5F5F5;
+  --sage: #1B2F5E;
   --sage-light: #2B5399;
-  --charcoal: #1A2332;
+  --charcoal: #111827;
   --warm-gray: #4A5568;
   --warm-gray-light: #A0AEC0;
-  --border: #CBD5E0;
+  --border: #E5E7EB;
   --white: #FFFFFF;
-  --accent: #2BBFB3;
+  --accent: #2DBFB8;
 
   --font-serif: var(--font-cormorant), 'Georgia', serif;
   --font-sans: var(--font-dm), 'Inter', sans-serif;
