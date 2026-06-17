@@ -8,12 +8,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const FROM = 'Verly Optical <orders@send.verlyoptical.com>';
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://verlyoptical.com';
+const FROM = 'GON Óptica <orders@send.gonmx.com>';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://gonmx.com';
 
 // Convierte el ID interno al ID visible del pedido
 function orderCode(id: number): string {
-  return `VRL-${2846 + id}`;
+  return `GON-${2846 + id}`;
 }
 
 async function logEmail(order_id: number, email_type: string, resend_email_id: string | null, status: string, error?: string) {
@@ -52,14 +52,14 @@ const estilos = `
   .footer-text { font-size: 11px; color: #8C8680; line-height: 1.7; margin: 0; }
 `;
 
-const logo = `${BASE_URL}/logo-trasparente.png`;
+const logo = `${BASE_URL}/logo-gon.png`;
 
 function footer() {
   return `
     <div class="footer">
       <p class="footer-text">
-        Verly Optical<br/>
-        <a href="mailto:support@verlyoptical.com" style="color:#8C8680;">support@verlyoptical.com</a>
+        GON Óptica<br/>
+        <a href="mailto:hola@gonmx.com" style="color:#8C8680;">hola@gonmx.com</a>
       </p>
     </div>
   `;
@@ -75,7 +75,7 @@ export async function enviarEmailCompra(order_id: number, cliente_email: string,
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="Verly Optical"/></div>
+        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
         <div class="body">
           <p class="title">Thank you for<br/>your order, ${cliente_nombre.split(' ')[0]}!</p>
           <p class="text">We've received your order and our team will review it shortly. We'll notify you as soon as we start crafting your lenses.</p>
@@ -87,7 +87,7 @@ export async function enviarEmailCompra(order_id: number, cliente_email: string,
           <p class="label">Total</p>
           <p class="value">$${total} USD</p>
           <hr class="divider"/>
-          <p class="text" style="margin:0;">Questions? Reach us at <a href="mailto:support@verlyoptical.com" style="color:#4A5940;">support@verlyoptical.com</a></p>
+          <p class="text" style="margin:0;">Questions? Reach us at <a href="mailto:hola@gonmx.com" style="color:#4A5940;">hola@gonmx.com</a></p>
         </div>
         ${footer()}
       </div>
@@ -118,7 +118,7 @@ export async function enviarEmailFabricacion(order_id: number, cliente_email: st
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="Verly Optical"/></div>
+        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
         <div class="body">
           <p class="title">Your lenses are<br/>being crafted</p>
           <p class="text">Hi ${cliente_nombre.split(' ')[0]}, we've reviewed your prescription and started crafting your lenses. This process typically takes 2 to 4 business days.</p>
@@ -156,7 +156,7 @@ export async function enviarEmailEnviado(order_id: number, cliente_email: string
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="Verly Optical"/></div>
+        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
         <div class="body">
           <p class="title">Your order<br/>is on its way!</p>
           <p class="text">Hi ${cliente_nombre.split(' ')[0]}, your order has been shipped and is on its way to you. Estimated delivery: 3 to 7 business days.</p>
@@ -168,7 +168,7 @@ export async function enviarEmailEnviado(order_id: number, cliente_email: string
           <p class="label">Tracking number</p>
           <p class="value"><span class="code">${tracking}</span></p>
           <hr class="divider"/>
-          <p class="text" style="margin:0;">Need help? <a href="mailto:support@verlyoptical.com" style="color:#4A5940;">Contact us</a></p>
+          <p class="text" style="margin:0;">Need help? <a href="mailto:hola@gonmx.com" style="color:#4A5940;">Contact us</a></p>
         </div>
         ${footer()}
       </div>
@@ -199,7 +199,7 @@ export async function enviarEmailEntregado(order_id: number, cliente_email: stri
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="Verly Optical"/></div>
+        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
         <div class="body">
           <p class="title">Your order<br/>has been delivered!</p>
           <p class="text">Hi ${cliente_nombre.split(' ')[0]}, we hope you love your new glasses! Remember you have a 90-day warranty and 30-day hassle-free returns.</p>
@@ -207,7 +207,7 @@ export async function enviarEmailEntregado(order_id: number, cliente_email: stri
           <p class="label">Order number</p>
           <p class="value"><span class="code">${code}</span></p>
           <p class="text" style="margin-bottom:24px;">If anything isn't right with your order, don't hesitate to reach out.</p>
-          <a href="mailto:support@verlyoptical.com" class="btn btn-sage">Contact support</a>
+          <a href="mailto:hola@gonmx.com" class="btn btn-sage">Contact support</a>
         </div>
         ${footer()}
       </div>
@@ -246,7 +246,7 @@ export async function enviarEmailSeguimiento(order_id: number, cliente_email: st
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="Verly Optical"/></div>
+        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
         <div class="body">
           <p class="title">How are your<br/>new glasses?</p>
           <p class="text">Hi ${cliente_nombre.split(' ')[0]}, it's been 30 days since you received your order <span class="code" style="font-size:13px;">${code}</span>. We'd love to hear how everything's going.</p>
@@ -254,7 +254,7 @@ export async function enviarEmailSeguimiento(order_id: number, cliente_email: st
           <p class="text" style="margin-bottom:24px;">Your feedback means a lot to us and helps us improve. It only takes 2 minutes.</p>
           <a href="${encuesta_url}" class="btn">Leave a review</a>
           <hr class="divider"/>
-          <p class="text" style="margin:0; font-size:13px;">Something wrong with your lenses? <a href="mailto:support@verlyoptical.com" style="color:#4A5940;">Contact us</a> — we offer a 90-day warranty.</p>
+          <p class="text" style="margin:0; font-size:13px;">Something wrong with your lenses? <a href="mailto:hola@gonmx.com" style="color:#4A5940;">Contact us</a> — we offer a 90-day warranty.</p>
         </div>
         ${footer()}
       </div>
