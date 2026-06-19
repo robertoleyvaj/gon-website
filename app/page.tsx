@@ -44,7 +44,15 @@ function Reveal({ children, delay = 0, direction = 'up' }: { children: React.Rea
 
 export default function Home() {
   const [armazones, setArmazones] = useState<Armazon[]>([]);
+  const [esMobil, setEsMobil] = useState(false);
   const { tipoCambio } = usePrecios();
+
+  useEffect(() => {
+    const check = () => setEsMobil(window.innerWidth <= 768);
+    check();
+    window.addEventListener('resize', check, { passive: true });
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   useEffect(() => {
     async function cargar() {
@@ -63,7 +71,7 @@ export default function Home() {
         <img src="/hero-man.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(244,247,250,0.97) 0%, rgba(244,247,250,0.88) 38%, rgba(244,247,250,0.0) 65%)' }}/>
 
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1180px', margin: '0 auto', padding: '0 2rem' }}>
+        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1180px', margin: '0 auto', padding: esMobil ? '80px 1.5rem 2rem' : '0 2rem' }}>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
             Grupo Óptico del Noroeste — Est. 2012
           </p>
@@ -85,7 +93,7 @@ export default function Home() {
         </div>
 
         {/* Tarjeta flotante */}
-        <div style={{ position: 'absolute', bottom: '3rem', right: '3rem', background: 'white', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 8px 40px rgba(27,58,107,0.12)', maxWidth: '260px', border: '1px solid var(--border)', zIndex: 2 }}>
+        {!esMobil && <div style={{ position: 'absolute', bottom: '3rem', right: '3rem', background: 'white', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 8px 40px rgba(27,58,107,0.12)', maxWidth: '260px', border: '1px solid var(--border)', zIndex: 2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
             <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -95,7 +103,7 @@ export default function Home() {
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--warm-gray)', lineHeight: 1.6, margin: 0 }}>
             Compra en línea y recoge en cualquiera de nuestras ópticas en Rosarito.
           </p>
-        </div>
+        </div>}
 
         <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', opacity: 0.3, zIndex: 2 }}>
           <div style={{ width: '1px', height: '48px', background: 'var(--charcoal)' }}/>
@@ -113,7 +121,7 @@ export default function Home() {
                 Cuatro pasos simples.<br/>Mejor visión.
               </h2>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: esMobil ? '1rem' : '2rem' }}>
               {[
                 { num: '1', icon: (<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>), label: 'Elige tus lentes', desc: 'Explora nuestra colección de armazones.' },
                 { num: '2', icon: (<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>), label: 'Personaliza', desc: 'Selecciona el tipo de visión, material y filtros.' },
@@ -150,7 +158,7 @@ export default function Home() {
             </Link>
           </div>
         </Reveal>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: esMobil ? '10px' : '1.25rem' }}>
           {armazones.slice(0, 4).map((a, i) => (
             <Reveal key={a.id} delay={i * 80} direction="up">
               <Link href={`/armazon/${a.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
@@ -186,8 +194,8 @@ export default function Home() {
 
       {/* BANNER AZUL */}
       <Reveal>
-        <section style={{ background: 'var(--sage)', padding: '5rem 2rem' }}>
-          <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
+        <section style={{ background: 'var(--sage)', padding: esMobil ? '3rem 1.5rem' : '5rem 2rem' }}>
+          <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: esMobil ? '1.5rem' : '2rem' }}>
             {[
               { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>), label: 'Examen de la vista', desc: 'Agenda tu cita con nuestros optometristas certificados.', link: '/examen', cta: 'Agendar examen →' },
               { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>), label: 'Marcas que amas', desc: 'Trabajamos con las mejores marcas del mundo.', link: '/Tienda', cta: 'Ver marcas →' },
@@ -209,7 +217,7 @@ export default function Home() {
 
       {/* COLECCIONES */}
       <section style={{ padding: '6rem 2rem', maxWidth: '1180px', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: '1.25rem' }}>
           {[
             { img: '/hero-hombre.jpg', titulo: 'Para él', href: '/Tienda?tipo=optico&genero=hombre' },
             { img: '/hero-mujer.jpg', titulo: 'Para ella', href: '/Tienda?tipo=optico&genero=mujer' },

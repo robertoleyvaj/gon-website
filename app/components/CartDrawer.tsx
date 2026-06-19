@@ -187,7 +187,7 @@ export default function CartDrawer() {
               <p style={{ fontSize: '13px', color: '#9a9a9a', marginBottom: '1.5rem' }}>
                 {t('Agrega un par de lentes para comenzar.', 'Add a pair of glasses to get started.')}
               </p>
-              <Link href="/Tienda" onClick={() => setCartOpen(false)} style={{ display: 'inline-block', background: '#55624c', color: 'white', padding: '12px 24px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none', fontFamily: 'var(--font-sans)' }}>
+              <Link href="/Tienda" onClick={() => setCartOpen(false)} style={{ display: 'inline-block', background: 'var(--sage)', color: 'white', padding: '12px 24px', borderRadius: '3px', fontSize: '12px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none', fontFamily: 'var(--font-sans)' }}>
                 {t('Ver colección', 'Browse frames')}
               </Link>
             </div>
