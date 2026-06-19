@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
 import { supabase } from './lib/supabase';
+import { usePrecios, redondearMXN } from './hooks/usePrecios';
 
 type Armazon = {
   id: number;
@@ -43,6 +44,7 @@ function Reveal({ children, delay = 0, direction = 'up' }: { children: React.Rea
 
 export default function Home() {
   const [armazones, setArmazones] = useState<Armazon[]>([]);
+  const { tipoCambio } = usePrecios();
 
   useEffect(() => {
     async function cargar() {
@@ -63,7 +65,7 @@ export default function Home() {
 
         <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1180px', margin: '0 auto', padding: '0 2rem' }}>
           <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
-            Grupo Óptico del Noroeste — Est. 2018
+            Grupo Óptico del Noroeste — Est. 2012
           </p>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.8rem, 4.5vw, 4rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1.25rem', maxWidth: '580px' }}>
             Tu visión.<br />Nuestra prioridad.<br />
@@ -171,7 +173,7 @@ export default function Home() {
                   <div style={{ padding: '1rem 1.1rem 1.1rem' }}>
                     <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: 400, color: 'var(--charcoal)', marginBottom: '6px' }}>{a.nombre}</div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--charcoal)' }}>${a.precio} <span style={{ fontWeight: 400, color: 'var(--warm-gray)', fontSize: '0.75rem' }}>MXN</span></div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--charcoal)' }}>${redondearMXN(a.precio, tipoCambio)} <span style={{ fontWeight: 400, color: 'var(--warm-gray)', fontSize: '0.75rem' }}>MXN</span></div>
                       <div style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent)' }}>Ver</div>
                     </div>
                   </div>
@@ -187,10 +189,10 @@ export default function Home() {
         <section style={{ background: 'var(--sage)', padding: '5rem 2rem' }}>
           <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2rem' }}>
             {[
-              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>), label: 'Examen de la vista', desc: 'Agenda tu cita con nuestros optometristas certificados.', link: '/lenses', cta: 'Agendar examen →' },
+              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>), label: 'Examen de la vista', desc: 'Agenda tu cita con nuestros optometristas certificados.', link: '/examen', cta: 'Agendar examen →' },
               { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>), label: 'Marcas que amas', desc: 'Trabajamos con las mejores marcas del mundo.', link: '/Tienda', cta: 'Ver marcas →' },
               { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>), label: 'Promociones', desc: 'Descubre nuestras promociones y descuentos exclusivos.', link: '/Tienda', cta: 'Ver promociones →' },
-              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.07 6.07l.82-.82a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7a2 2 0 0 1 1.72 2.04z"/></svg>), label: '¿Necesitas ayuda?', desc: 'Estamos aquí para ayudarte por WhatsApp o en tienda.', link: 'https://wa.me/526611040873', cta: 'Contactar →' },
+              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.07 6.07l.82-.82a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7a2 2 0 0 1 1.72 2.04z"/></svg>), label: '¿Necesitas ayuda?', desc: 'Estamos aquí para ayudarte por WhatsApp o en tienda.', link: 'https://wa.me/526648343018', cta: 'Contactar →' },
             ].map((item, i) => (
               <Reveal key={i} delay={i * 100} direction="up">
                 <div style={{ color: 'white' }}>
@@ -287,7 +289,7 @@ export default function Home() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[
                 { href: '#faq', label: 'FAQ' },
-                { href: 'https://wa.me/526611040873', label: 'WhatsApp' },
+                { href: 'https://wa.me/526648343018', label: 'WhatsApp' },
                 { href: 'mailto:gonmx.empresas@gmail.com', label: 'Contacto' },
               ].map((l, i) => (
                 <a key={i} href={l.href} style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.35)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.15s' }}
@@ -300,7 +302,7 @@ export default function Home() {
           <div>
             <h4 style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1.25rem' }}>Ubicaciones</h4>
             <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.8 }}>
-              Playas de Rosarito<br/>Baja California, México<br/>Tel: 661-104-0873
+              Playas de Rosarito<br/>Baja California, México<br/>Tel: 664-834-3018
             </p>
           </div>
         </div>
@@ -310,7 +312,7 @@ export default function Home() {
       </footer>
 
       {/* WHATSAPP FLOTANTE */}
-      <a href="https://wa.me/526611040873" target="_blank" rel="noopener noreferrer"
+      <a href="https://wa.me/526648343018" target="_blank" rel="noopener noreferrer"
         style={{ position: 'fixed', bottom: '2rem', right: '2rem', width: '52px', height: '52px', borderRadius: '50%', background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(37,211,102,0.4)', zIndex: 100, transition: 'transform 0.2s' }}
         onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
