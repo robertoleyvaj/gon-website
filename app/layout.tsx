@@ -49,7 +49,7 @@ export const metadata: Metadata = {
       "Armazones modernos, lentes de calidad y examen de la vista profesional en Rosarito.",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "GON — Grupo Óptico del Noroeste",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "GON — Grupo Óptico del Noroeste",
     description: "Lentes de calidad en Rosarito, B.C. Compra en línea y recoge en óptica.",
-    images: ["/og-image.jpg"],
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,
