@@ -447,6 +447,132 @@ function Acordeon({ titulo, children }: { titulo: string; children: React.ReactN
   );
 }
 
+const SUCURSALES_WA = [
+  { id: 'bajavision', nombre: 'Óptica Baja Visión', nombre_en: 'Óptica Baja Visión', dir: 'Blvd. Benito Juárez 79B' },
+  { id: '5demayo',   nombre: 'Óptica Rosarito 5 de Mayo', nombre_en: 'Óptica Rosarito 5 de Mayo', dir: 'C. 5 de Mayo 200' },
+  { id: 'laureles',  nombre: 'Óptica Rosarito Plaza Laureles', nombre_en: 'Óptica Rosarito Plaza Laureles', dir: 'Plaza Laureles, Morelos 118' },
+];
+
+function InicioDrawer({ esSolar, t, lang, onManual, onFoto, onDespues, onVolverSolar }: {
+  esSolar: boolean; t: (es: string, en: string) => string; lang: string;
+  onManual: () => void; onFoto: () => void; onDespues: () => void; onVolverSolar: () => void;
+}) {
+  const [expandido, setExpandido] = useState<'graduacion' | 'examen' | null>(null);
+  const [sucursalSel, setSucursalSel] = useState<string | null>(null);
+
+  const toggleGraduacion = () => setExpandido(prev => prev === 'graduacion' ? null : 'graduacion');
+  const toggleExamen = () => { setExpandido(prev => prev === 'examen' ? null : 'examen'); setSucursalSel(null); };
+
+  const sucursal = SUCURSALES_WA.find(s => s.id === sucursalSel);
+  const msgWA = sucursal
+    ? encodeURIComponent(`Hola, me interesa agendar un examen de la vista en ${lang === 'es' ? sucursal.nombre : sucursal.nombre_en}. ¿Qué horarios tienen disponibles?`)
+    : '';
+
+  return (
+    <div style={{ padding: '2rem', flex: 1 }}>
+      <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '6px' }}>
+          {t('¿Cómo quieres continuar?', 'How would you like to continue?')}
+        </p>
+        <p style={{ fontSize: '0.8rem', color: 'var(--warm-gray)' }}>
+          {t('Elige la opción que mejor describe tu situación', 'Choose the option that best describes your situation')}
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+        {/* OPCIÓN 1: Ya tengo mi graduación */}
+        <div style={{ border: `1px solid ${expandido === 'graduacion' ? 'var(--sage)' : 'var(--border)'}`, borderRadius: '8px', overflow: 'hidden', transition: 'border-color 0.2s' }}>
+          <button onClick={toggleGraduacion} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '1.1rem 1.25rem', background: expandido === 'graduacion' ? 'rgba(27,47,94,0.04)' : 'var(--cream)', cursor: 'pointer', textAlign: 'left', width: '100%', border: 'none', fontFamily: 'var(--font-sans)' }}>
+            <div style={{ color: 'var(--sage)', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{t('Ya tengo mi graduación', 'I already have my prescription')}</div>
+              <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t('Ingrésala ahora para personalizar tus micas', 'Enter it now to customize your lenses')}</div>
+            </div>
+            <span style={{ color: 'var(--warm-gray)', fontSize: '18px', transform: expandido === 'graduacion' ? 'rotate(90deg)' : 'rotate(0)', transition: 'transform 0.2s', display: 'inline-block' }}>›</span>
+          </button>
+          {expandido === 'graduacion' && (
+            <div style={{ borderTop: '1px solid var(--border)', background: 'white', display: 'flex', flexDirection: 'column', gap: '6px', padding: '0.75rem' }}>
+              <button onClick={onManual} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.85rem 1rem', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--cream)', cursor: 'pointer', textAlign: 'left', width: '100%', fontFamily: 'var(--font-sans)' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--sage)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" strokeWidth="1.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--charcoal)' }}>{t('Escribir manualmente', 'Enter manually')}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>SPH, CYL, {t('EJE', 'AXIS')}, ADD, PD</div>
+                </div>
+              </button>
+              <button onClick={onFoto} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.85rem 1rem', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--cream)', cursor: 'pointer', textAlign: 'left', width: '100%', fontFamily: 'var(--font-sans)' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--sage)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--charcoal)' }}>{t('Subir foto de mi receta', 'Upload prescription photo')}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{t('Foto, PDF o captura de pantalla', 'Photo, PDF or screenshot')}</div>
+                </div>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* OPCIÓN 2: Quiero hacer mi examen */}
+        <div style={{ border: `1px solid ${expandido === 'examen' ? 'var(--accent)' : 'var(--border)'}`, borderRadius: '8px', overflow: 'hidden', transition: 'border-color 0.2s' }}>
+          <button onClick={toggleExamen} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '1.1rem 1.25rem', background: expandido === 'examen' ? 'rgba(45,191,184,0.05)' : 'var(--cream)', cursor: 'pointer', textAlign: 'left', width: '100%', border: 'none', fontFamily: 'var(--font-sans)' }}>
+            <div style={{ color: 'var(--accent)', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{t('Quiero hacer mi examen de la vista', "I'd like to get an eye exam")}</div>
+              <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t('Agenda en tu sucursal más cercana — sin costo', 'Schedule at your nearest location — free of charge')}</div>
+            </div>
+            <span style={{ color: 'var(--warm-gray)', fontSize: '18px', transform: expandido === 'examen' ? 'rotate(90deg)' : 'rotate(0)', transition: 'transform 0.2s', display: 'inline-block' }}>›</span>
+          </button>
+          {expandido === 'examen' && (
+            <div style={{ borderTop: '1px solid var(--border)', background: 'white', padding: '0.75rem' }}>
+              <p style={{ fontSize: '11px', color: 'var(--warm-gray)', margin: '0 0 0.6rem', letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 600 }}>{t('¿En qué sucursal?', 'Which location?')}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '0.75rem' }}>
+                {SUCURSALES_WA.map(s => (
+                  <button key={s.id} onClick={() => setSucursalSel(s.id)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0.75rem 1rem', borderRadius: '6px', border: `1px solid ${sucursalSel === s.id ? 'var(--accent)' : 'var(--border)'}`, background: sucursalSel === s.id ? 'rgba(45,191,184,0.06)' : 'var(--cream)', cursor: 'pointer', textAlign: 'left', width: '100%', fontFamily: 'var(--font-sans)', transition: 'all 0.15s' }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={sucursalSel === s.id ? 'var(--accent)' : 'var(--warm-gray-light)'} strokeWidth="1.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? s.nombre : s.nombre_en}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{s.dir}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              {sucursalSel && (
+                <a href={`https://wa.me/526648343018?text=${msgWA}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '12px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', textDecoration: 'none' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.502 3.935 1.385 5.608L0 24l6.572-1.364A11.942 11.942 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.795 9.795 0 0 1-5.032-1.388l-.361-.214-3.741.98.998-3.648-.235-.374A9.755 9.755 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
+                  {t('Agendar por WhatsApp', 'Schedule via WhatsApp')}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* OPCIÓN 3: La agregaré después */}
+        <button onClick={onDespues} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '1.1rem 1.25rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--cream)', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s', fontFamily: 'var(--font-sans)' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--sage)'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(74,89,64,0.04)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--cream)'; }}>
+          <div style={{ color: 'var(--warm-gray)', flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{t('Solo quiero explorar precios', 'Just exploring prices')}</div>
+            <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t('Agrega tu graduación antes de finalizar tu pedido', 'Add your prescription before placing your order')}</div>
+          </div>
+          <span style={{ color: 'var(--warm-gray)', fontSize: '18px' }}>›</span>
+        </button>
+
+      </div>
+      {esSolar && <button onClick={onVolverSolar} style={{ width: '100%', marginTop: '1rem', background: 'none', border: 'none', color: 'var(--warm-gray)', fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>← {t('Volver', 'Back')}</button>}
+    </div>
+  );
+}
+
 // ── PAGE ─────────────────────────────────────────────────
 export default function DetalleArmazon() {
   const { id } = useParams();
@@ -758,31 +884,15 @@ export default function DetalleArmazon() {
 
         {/* Estado: inicio */}
         {drawerEstado === 'inicio' && (
-          <div style={{ padding: '2rem', flex: 1 }}>
-            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '6px' }}>{t('¿Tienes tu graduación?', 'Do you have your prescription?')}</p>
-              <p style={{ fontSize: '0.8rem', color: 'var(--warm-gray)' }}>{t('Úsala para personalizar tus micas o agrégala después', 'Use it to customize your lenses or add it later')}</p>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {[
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, title: t('Escribir manualmente', 'Enter manually'), sub: t('SPH, CYL, EJE, ADD, PD', 'SPH, CYL, AXIS, ADD, PD'), onClick: () => setDrawerEstado('manual') },
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>, title: t('Subir foto de mi receta', 'Upload prescription photo'), sub: t('Foto, PDF o captura de pantalla', 'Photo, PDF or screenshot'), onClick: () => setDrawerEstado('foto') },
-                { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>, title: t('La agregaré después', "I'll add it later"), sub: t('Agrega tu receta antes de pagar', 'Add your prescription before paying'), onClick: () => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); } },
-              ].map((opt, i) => (
-                <button key={i} onClick={opt.onClick} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '1.1rem 1.25rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--cream)', cursor: 'pointer', textAlign: 'left', width: '100%', transition: 'all 0.15s', fontFamily: 'var(--font-sans)' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--sage)'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(74,89,64,0.06)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--cream)'; }}>
-                  <div style={{ color: 'var(--sage)', flexShrink: 0 }}>{opt.icon}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{opt.title}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{opt.sub}</div>
-                  </div>
-                  <span style={{ color: 'var(--warm-gray)', fontSize: '18px' }}>›</span>
-                </button>
-              ))}
-            </div>
-            {esSolar && <button onClick={() => setDrawerEstado('inicio_solar')} style={{ width: '100%', marginTop: '1rem', background: 'none', border: 'none', color: 'var(--warm-gray)', fontSize: '0.8rem', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>← {t('Volver', 'Back')}</button>}
-          </div>
+          <InicioDrawer
+            esSolar={esSolar}
+            t={t}
+            lang={lang || 'es'}
+            onManual={() => setDrawerEstado('manual')}
+            onFoto={() => setDrawerEstado('foto')}
+            onDespues={() => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); }}
+            onVolverSolar={() => setDrawerEstado('inicio_solar')}
+          />
         )}
 
         {/* Estado: manual */}
