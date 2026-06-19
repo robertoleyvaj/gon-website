@@ -12,9 +12,12 @@ const SUCURSALES = [
     direccion: 'Blvd. Benito Juárez 79B, Centro, Rosarito, B.C.',
     años: '9',
     maps: 'https://maps.google.com/?q=Optica+Baja+Vision+Blvd+Benito+Juarez+Rosarito',
-    embed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Optica+Baja+Vision,Blvd+Benito+Juarez+79B,Rosarito,Mexico',
-    horario_es: 'Lun – Sáb: 10:00 – 19:00 · Dom: 11:00 – 17:00',
-    horario_en: 'Mon – Sat: 10:00 AM – 7:00 PM · Sun: 11:00 AM – 5:00 PM',
+    // OpenStreetMap embed — lat/lon centrado en Blvd. Benito Juárez, Rosarito
+    osm: 'https://www.openstreetmap.org/export/embed.html?bbox=-117.068%2C32.358%2C32.378%2C-117.038&layer=mapnik&marker=32.368%2C-117.058',
+    horario_es: 'Lun – Dom: 10:00 – 18:00',
+    horario_en: 'Mon – Sun: 10:00 AM – 6:00 PM',
+    horario_extra_es: 'Atención fuera de horario con cita previa',
+    horario_extra_en: 'After-hours service by appointment',
     wa: 'https://wa.me/526648343018?text=' + encodeURIComponent('Hola, quiero información sobre Óptica Baja Visión (Blvd. Benito Juárez).'),
   },
   {
@@ -23,9 +26,11 @@ const SUCURSALES = [
     direccion: 'C. 5 de Mayo 200, Local 1, Rosarito, B.C.',
     años: '12+',
     maps: 'https://maps.google.com/?q=Optica+Rosarito+5+de+Mayo+200+Rosarito+BC',
-    embed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Optica+Rosarito,C+5+de+Mayo+200,Rosarito,Mexico',
-    horario_es: 'Lun – Sáb: 10:00 – 19:00 · Dom: 11:00 – 17:00',
-    horario_en: 'Mon – Sat: 10:00 AM – 7:00 PM · Sun: 11:00 AM – 5:00 PM',
+    osm: 'https://www.openstreetmap.org/export/embed.html?bbox=-117.062%2C32.358%2C32.378%2C-117.032&layer=mapnik&marker=32.365%2C-117.050',
+    horario_es: 'Lun – Sáb: 10:00 – 18:00 · Dom: Cerrado',
+    horario_en: 'Mon – Sat: 10:00 AM – 6:00 PM · Sun: Closed',
+    horario_extra_es: 'Atención fuera de horario con cita previa',
+    horario_extra_en: 'After-hours service by appointment',
     wa: 'https://wa.me/526648343018?text=' + encodeURIComponent('Hola, quiero información sobre Óptica Rosarito sucursal 5 de Mayo.'),
   },
   {
@@ -34,9 +39,11 @@ const SUCURSALES = [
     direccion: 'C. José María Morelos 118, Plaza Laureles, Rosarito, B.C.',
     años: '6',
     maps: 'https://maps.google.com/?q=Plaza+Laureles+Jose+Maria+Morelos+118+Rosarito+BC',
-    embed: 'https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Optica+Rosarito,Plaza+Laureles,Jose+Maria+Morelos+118,Rosarito,Mexico',
-    horario_es: 'Lun – Sáb: 10:00 – 19:00 · Dom: 11:00 – 17:00',
-    horario_en: 'Mon – Sat: 10:00 AM – 7:00 PM · Sun: 11:00 AM – 5:00 PM',
+    osm: 'https://www.openstreetmap.org/export/embed.html?bbox=-117.065%2C32.358%2C32.378%2C-117.035&layer=mapnik&marker=32.370%2C-117.052',
+    horario_es: 'Lun – Dom: 10:00 – 18:00',
+    horario_en: 'Mon – Sun: 10:00 AM – 6:00 PM',
+    horario_extra_es: 'Atención fuera de horario con cita previa',
+    horario_extra_en: 'After-hours service by appointment',
     wa: 'https://wa.me/526648343018?text=' + encodeURIComponent('Hola, quiero información sobre Óptica Rosarito sucursal Plaza Laureles.'),
   },
 ];
@@ -132,6 +139,7 @@ export default function UbicacionesPage() {
                 <div>
                   <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '2px' }}>{t('Horario', 'Hours')}</div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--charcoal)', lineHeight: 1.5 }}>{lang === 'es' ? sucursal.horario_es : sucursal.horario_en}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--accent)', marginTop: '4px', fontStyle: 'italic' }}>{lang === 'es' ? sucursal.horario_extra_es : sucursal.horario_extra_en}</div>
                 </div>
               </div>
 
@@ -175,17 +183,16 @@ export default function UbicacionesPage() {
             </div>
           </div>
 
-          {/* Mapa iframe — sin API key, usa embed directo */}
+          {/* Mapa OpenStreetMap — gratuito, sin API key */}
           <div style={{ borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border)', height: esMobil ? '300px' : '480px' }}>
             <iframe
               key={activa}
-              src={`https://maps.google.com/maps?q=${encodeURIComponent(sucursal.direccion)}&output=embed&z=16`}
+              src={sucursal.osm}
               width="100%"
               height="100%"
               style={{ border: 0, display: 'block' }}
               allowFullScreen
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
 
