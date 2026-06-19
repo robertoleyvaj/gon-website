@@ -68,12 +68,12 @@ export default function Home() {
 
       {/* HERO */}
       {esMobil ? (
-        /* ── Hero móvil: imagen arriba, texto abajo ── */
+        /* ── Hero móvil: imagen arriba, texto superpuesto ── */
         <section style={{ paddingTop: '64px' }}>
-          <div style={{ width: '100%', height: '58vw', minHeight: '220px', maxHeight: '340px', overflow: 'hidden' }}>
+          <div style={{ width: '100%', height: '72vw', minHeight: '260px', maxHeight: '400px', overflow: 'hidden' }}>
             <img src="/hero-man.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%' }}/>
           </div>
-          <div style={{ background: 'var(--cream)', padding: '2rem 1.5rem 2.5rem' }}>
+          <div style={{ background: 'var(--cream)', padding: '2rem 1.5rem 2.5rem', marginTop: '-2rem', borderRadius: '20px 20px 0 0', position: 'relative' }}>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.1rem', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '0.85rem' }}>
               Tu visión.<br />Nuestra prioridad.<br />
               <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Siempre cerca de ti.</em>
