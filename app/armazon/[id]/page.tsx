@@ -328,14 +328,16 @@ function LenteSVG({ color, forma, size = 'large', solar = false }: { color: stri
 }
 
 // ── GONModalPaquete ─────────────────────────────────────
-function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }: {
+function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang, tipoCambio }: {
   paquete: PaqueteGON; armazonNombre: string;
-  onAceptar: (extrasIds: string[]) => void; onManual: () => void; lang: 'es' | 'en';
+  onAceptar: (extrasIds: string[]) => void; onManual: () => void; lang: 'es' | 'en'; tipoCambio: number;
 }) {
   const [paso, setPaso] = useState<'paquete' | 'upsell'>('paquete');
   const [extras, setExtras] = useState<string[]>([]);
   const toggleExtra = (id: string) => setExtras(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]);
   const precioExtras = extras.reduce((sum, id) => sum + (paquete.upsells.find(u => u.id === id)?.precio || 0), 0);
+  const px = (usd: number) => lang === 'es' ? `$${redondearMXN(usd, tipoCambio)} MXN` : `$${usd} USD`;
+  const pxPlus = (usd: number) => lang === 'es' ? `+$${redondearMXN(usd, tipoCambio)} MXN` : `+$${usd} USD`;
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(28,28,26,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
       <div style={{ background: 'white', borderRadius: '12px', width: '100%', maxWidth: '440px', boxShadow: '0 24px 64px rgba(28,28,26,0.18)', overflow: 'hidden', animation: 'slideUp 0.3s ease-out', maxHeight: '90vh', overflowY: 'auto' }}>
@@ -354,10 +356,10 @@ function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }: 
                 </div>
                 <div style={{ padding: '0.75rem 1rem' }}>
                   {[
-                    { label: armazonNombre, valor: `$${PRECIO_ARMAZON}` },
-                    { label: lang === 'es' ? paquete.vision.nombre : paquete.vision.nombre_en, valor: `+$${paquete.vision.precio}` },
-                    { label: lang === 'es' ? paquete.material.nombre : paquete.material.nombre_en, valor: paquete.material.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+$${paquete.material.precio}` },
-                    { label: lang === 'es' ? paquete.filtroBase.nombre : paquete.filtroBase.nombre_en, valor: `+$${paquete.filtroBase.precio}` },
+                    { label: armazonNombre, valor: px(PRECIO_ARMAZON) },
+                    { label: lang === 'es' ? paquete.vision.nombre : paquete.vision.nombre_en, valor: pxPlus(paquete.vision.precio) },
+                    { label: lang === 'es' ? paquete.material.nombre : paquete.material.nombre_en, valor: paquete.material.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : pxPlus(paquete.material.precio) },
+                    { label: lang === 'es' ? paquete.filtroBase.nombre : paquete.filtroBase.nombre_en, valor: pxPlus(paquete.filtroBase.precio) },
                   ].map((item, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', padding: '6px 0', borderBottom: i < 3 ? '1px solid var(--cream)' : 'none' }}>
                       <span style={{ color: 'var(--warm-gray)' }}>{item.label}</span><span style={{ fontWeight: 500 }}>{item.valor}</span>
@@ -366,10 +368,10 @@ function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }: 
                 </div>
                 <div style={{ padding: '0.75rem 1rem', background: 'var(--cream)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>${paquete.precioOriginal} USD</div>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--sage)' }}>${paquete.precioFinal} USD</div>
+                    <div style={{ fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>{px(paquete.precioOriginal)}</div>
+                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--sage)' }}>{px(paquete.precioFinal)}</div>
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{lang === 'es' ? `Ahorras $${paquete.descuento}` : `You save $${paquete.descuento}`}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{lang === 'es' ? `Ahorras ${px(paquete.descuento)}` : `You save ${px(paquete.descuento)}`}</div>
                 </div>
               </div>
               {/* DRAWER ACTION → TURQUESA */}
@@ -397,12 +399,12 @@ function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang }: 
                       <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{u.razon}</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--sage)', flexShrink: 0 }}>+${u.precio}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--sage)', flexShrink: 0 }}>{pxPlus(u.precio)}</div>
                 </div>
               ))}
               <div style={{ background: 'var(--cream)', borderRadius: '6px', padding: '0.9rem 1rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--warm-gray)' }}>Total</span>
-                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--charcoal)' }}>${paquete.precioFinal + precioExtras} USD</span>
+                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--charcoal)' }}>{px(paquete.precioFinal + precioExtras)}</span>
               </div>
               {/* DRAWER ACTION → TURQUESA */}
               <button onClick={() => onAceptar(extras)} style={{ width: '100%', background: TURQUESA, color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = TURQUESA_DARK)} onMouseLeave={e => (e.currentTarget.style.background = TURQUESA)}>
@@ -640,6 +642,8 @@ export default function DetalleArmazon() {
   }, [lightboxOpen]);
 
   const precioArmazon = esRegalo ? 0 : (armazon?.precio || PRECIO_ARMAZON);
+  const px = (usd: number) => lang === 'es' ? `$${redondearMXN(usd, tipoCambio)} MXN` : `$${usd} USD`;
+  const pxPlus = (usd: number) => lang === 'es' ? `+$${redondearMXN(usd, tipoCambio)} MXN` : `+$${usd} USD`;
   const precioVision = (preciosDB.vision.find((v: any) => v.id === vision)?.precio || visionOpts.find(v => v.id === vision)?.precio || 0);
   const precioMaterial = (preciosDB.material.find((m: any) => m.id === material)?.precio || materialOpts.find(m => m.id === material)?.precio || 0);
   const precioFiltros = filtros.reduce((total, fid) => {
@@ -818,7 +822,7 @@ export default function DetalleArmazon() {
   return (
     <main style={{ fontFamily: 'var(--font-sans)', background: 'var(--cream)', minHeight: '100vh', color: 'var(--charcoal)' }}>
       <Navbar />
-      {gonModal && paqueteGON && <GONModalPaquete paquete={paqueteGON} armazonNombre={armazon.nombre} onAceptar={aceptarPaquete} onManual={elegirManual} lang={lang || 'en'}/>}
+      {gonModal && paqueteGON && <GONModalPaquete paquete={paqueteGON} armazonNombre={armazon.nombre} onAceptar={aceptarPaquete} onManual={elegirManual} lang={lang || 'en'} tipoCambio={tipoCambio}/>}
       {drawerOpen && <div onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(28,28,26,0.35)', zIndex: 200, backdropFilter: 'blur(2px)' }}/>}
 
       {/* ── LIGHTBOX ── */}
@@ -866,8 +870,8 @@ export default function DetalleArmazon() {
               <p style={{ fontSize: '0.8rem', color: 'var(--warm-gray)' }}>{t('Puedes llevarlos como vienen o personalizarlos.', 'Wear them as-is or customize them.')}</p>
             </div>
             {[
-              { title: t('Solo el armazón', 'Frame only'), precio: `$${precioArmazon} USD`, desc: t('Incluye lentes oscuros estándar. Sin graduación.', 'Includes standard dark lenses. No prescription.'), dark: false, onClick: () => { setSoloArmazon(true); setDrawerEstado('config'); setPaso(4); } },
-              { title: t('Personalizar mis micas', 'Customize my lenses'), precio: `${t('desde', 'from')} $${precioArmazon + 15}`, desc: t('Agregar graduación, polarizado, fotocromático y más.', 'Add prescription, polarized, photochromic and more.'), dark: true, onClick: () => { setSoloArmazon(false); setDrawerEstado('inicio'); } }
+              { title: t('Solo el armazón', 'Frame only'), precio: px(precioArmazon), desc: t('Incluye lentes oscuros estándar. Sin graduación.', 'Includes standard dark lenses. No prescription.'), dark: false, onClick: () => { setSoloArmazon(true); setDrawerEstado('config'); setPaso(4); } },
+              { title: t('Personalizar mis micas', 'Customize my lenses'), precio: `${t('desde', 'from')} ${px(precioArmazon + 15)}`, desc: t('Agregar graduación, polarizado, fotocromático y más.', 'Add prescription, polarized, photochromic and more.'), dark: true, onClick: () => { setSoloArmazon(false); setDrawerEstado('inicio'); } }
             ].map((opt, i) => (
               <div key={i} onClick={opt.onClick} style={{ border: opt.dark ? 'none' : '1px solid var(--border)', borderRadius: '8px', padding: '1.5rem', cursor: 'pointer', background: opt.dark ? 'var(--charcoal)' : 'var(--cream)', marginBottom: '0.75rem', transition: 'all 0.2s' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(28,28,26,0.08)'; }}
@@ -970,9 +974,9 @@ export default function DetalleArmazon() {
             {soloArmazon ? (
               <div style={{ padding: '2rem', flex: 1 }}>
                 <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1.25rem', marginBottom: '1.5rem', border: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px', borderBottom: '1px solid var(--border)' }}><span style={{ color: 'var(--warm-gray)' }}>{armazon.nombre}</span><span style={{ fontWeight: 500 }}>${precioArmazon}</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px', borderBottom: '1px solid var(--border)' }}><span style={{ color: 'var(--warm-gray)' }}>{armazon.nombre}</span><span style={{ fontWeight: 500 }}>{px(precioArmazon)}</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px' }}><span style={{ color: 'var(--warm-gray)' }}>{t('Lentes oscuros estándar', 'Standard dark lenses')}</span><span style={{ color: 'var(--sage)', fontWeight: 500 }}>{t('Incluido', 'Included')}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}><span>Total</span><span>${precioArmazon} USD</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}><span>Total</span><span>{px(precioArmazon)}</span></div>
                 </div>
                 <button onClick={() => { setSoloArmazon(false); setDrawerEstado('inicio_solar'); }} style={{ width: '100%', background: 'none', border: '1px solid var(--border)', borderRadius: '6px', padding: '11px', fontSize: '12px', color: 'var(--warm-gray)', cursor: 'pointer', fontFamily: 'var(--font-sans)', marginBottom: '10px' }}>
                   {t('← Personalizar mis micas', '← Customize my lenses')}
@@ -1010,7 +1014,7 @@ export default function DetalleArmazon() {
                           <div key={o.id} onClick={() => setVision(o.id)} style={{ border: vision === o.id ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: vision === o.id ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <div><div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>+${o.precio}</div>
+                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>{pxPlus(o.precio)}</div>
                             </div>
                           </div>
                         ))}
@@ -1028,7 +1032,7 @@ export default function DetalleArmazon() {
                           <div key={o.id} onClick={() => setMaterial(o.id)} style={{ border: material === o.id ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: material === o.id ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <div><div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>{o.precio === 0 ? t('Incluido', 'Included') : `+$${o.precio}`}</div>
+                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>{o.precio === 0 ? t('Incluido', 'Included') : pxPlus(o.precio)}</div>
                             </div>
                           </div>
                         ))}
@@ -1055,7 +1059,7 @@ export default function DetalleArmazon() {
                                       <div style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>{t(o.desc_es, o.desc_en)}</div>
                                     </div>
                                   </div>
-                                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--sage)' }}>+${o.precio}</div>
+                                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--sage)' }}>{pxPlus(o.precio)}</div>
                                 </div>
                               </div>
                               {o.id === 'foto' && filtros.includes('foto') && <div style={{ border: '1.5px solid var(--sage)', borderTop: 'none', borderRadius: '0 0 8px 8px', padding: '1rem', background: 'rgba(74,89,64,0.04)' }}><div style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '10px' }}>{t('Elige el color', 'Choose the color')}</div><SelectorColores colores={coloresDisponibles} valorActivo={colorFoto} onChange={setColorFoto} lang={lang}/></div>}
@@ -1089,16 +1093,16 @@ export default function DetalleArmazon() {
                       </div>
                       <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1.1rem', marginBottom: '1.25rem', border: '1px solid var(--border)' }}>
                         {[
-                          { label: t('Armazón', 'Frame'), value: esRegalo ? `~~$${armazon?.precio || PRECIO_ARMAZON}~~ $0 🎁` : `$${precioArmazon}` },
-                          { label: `${t('Visión', 'Vision')}: ${lang === 'es' ? (visionOpts.find(v => v.id === vision)?.nombre || '-') : (visionOpts.find(v => v.id === vision)?.nombre_en || '-')}`, value: `+$${precioVision}` },
-                          { label: `${t('Material', 'Material')}: ${lang === 'es' ? (materialOpts.find(m => m.id === material)?.nombre || '-') : (materialOpts.find(m => m.id === material)?.nombre_en || '-')}`, value: precioMaterial === 0 ? t('Incluido', 'Included') : `+$${precioMaterial}` },
+                          { label: t('Armazón', 'Frame'), value: esRegalo ? `~~${px(armazon?.precio || PRECIO_ARMAZON)}~~ $0 🎁` : px(precioArmazon) },
+                          { label: `${t('Visión', 'Vision')}: ${lang === 'es' ? (visionOpts.find(v => v.id === vision)?.nombre || '-') : (visionOpts.find(v => v.id === vision)?.nombre_en || '-')}`, value: pxPlus(precioVision) },
+                          { label: `${t('Material', 'Material')}: ${lang === 'es' ? (materialOpts.find(m => m.id === material)?.nombre || '-') : (materialOpts.find(m => m.id === material)?.nombre_en || '-')}`, value: precioMaterial === 0 ? t('Incluido', 'Included') : pxPlus(precioMaterial) },
                           ...filtroOpts.filter(f => filtros.includes(f.id)).map(f => {
                             const nombre = lang === 'es' ? f.nombre : f.nombre_en;
                             let label = nombre;
                             if (f.id === 'foto') label = `${nombre} — ${COLORES_FOTO.find(c => c.id === colorFoto)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorFoto}`;
                             if (f.id === 'pol') label = `${nombre} — ${COLORES_POLARIZADO.find(c => c.id === colorPolarizado)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorPolarizado}`;
                             if (f.id === 'tinte') label = `${nombre} — ${COLORES_TINTE.find(c => c.id === colorTinte)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorTinte}`;
-                            return { label, value: `+$${f.precio}` };
+                            return { label, value: pxPlus(f.precio) };
                           })
                         ].map((item, i, arr) => (
                           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none', fontSize: '13px' }}>
@@ -1107,7 +1111,7 @@ export default function DetalleArmazon() {
                           </div>
                         ))}
                         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}>
-                          <span>Total</span><span>${total} USD</span>
+                          <span>Total</span><span>{px(total)}</span>
                         </div>
                       </div>
                       {!tieneReceta && (
@@ -1241,12 +1245,12 @@ export default function DetalleArmazon() {
               {[armazon.material, armazon.forma && `${armazon.forma.charAt(0).toUpperCase() + armazon.forma.slice(1)}`].filter(Boolean).join(' · ')}
             </p>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '0.5rem' }}>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', fontWeight: 400, letterSpacing: '-0.02em', lineHeight: 1 }}>${armazon.precio}</span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--warm-gray)', fontWeight: 400 }}>USD</span>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', fontWeight: 400, letterSpacing: '-0.02em', lineHeight: 1 }}>{lang === 'es' ? `$${redondearMXN(armazon.precio, tipoCambio)}` : `$${armazon.precio}`}</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--warm-gray)', fontWeight: 400 }}>{lang === 'es' ? 'MXN' : 'USD'}</span>
               {armazon.descuento && armazon.descuento > 0 && <span style={{ background: 'var(--charcoal)', color: 'white', fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: '2px' }}>-{armazon.descuento}%</span>}
             </div>
             <div style={{ marginBottom: '1.75rem' }}>
-              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--charcoal)', margin: '0 0 3px' }}>{t('Graduadas desde $15', 'With lenses from $15')}</p>
+              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--charcoal)', margin: '0 0 3px' }}>{lang === 'es' ? `Graduadas desde $${redondearMXN(15, tipoCambio)} MXN` : 'With lenses from $15 USD'}</p>
               <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', margin: 0 }}>Single Vision · Blue Light · {t('Fotocromático', 'Photochromic')} · {t('Progresivo', 'Progressive')}</p>
             </div>
             {/* PAGE CTA → SAGE */}
@@ -1398,8 +1402,8 @@ export default function DetalleArmazon() {
                     <div style={{ padding: '0.85rem 1rem 1rem' }}>
                       <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: 'var(--charcoal)', marginBottom: '4px' }}>{r.nombre}</div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ fontSize: '0.85rem', color: 'var(--charcoal)', fontWeight: 500 }}>${r.precio}</div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>USD</div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--charcoal)', fontWeight: 500 }}>{lang === 'es' ? `$${redondearMXN(r.precio, tipoCambio)}` : `$${r.precio}`}</div>
+                        <div style={{ fontSize: '0.62rem', color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{lang === 'es' ? 'MXN' : 'USD'}</div>
                       </div>
                     </div>
                   </div>
