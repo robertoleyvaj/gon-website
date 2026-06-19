@@ -8,9 +8,9 @@ import { useLang } from '../components/LanguageContext';
 const WHATSAPP = 'https://wa.me/526648343018';
 
 const SUCURSALES = [
-  { id: 'centro',   nombre: 'GON Centro',        direccion: 'Blvd. Benito Juárez 123, Centro, Rosarito, B.C.' },
-  { id: 'pabellon', nombre: 'GON Plaza Pabellón', direccion: 'Plaza Pabellón, Local 15, Rosarito, B.C.' },
-  { id: 'norte',    nombre: 'GON Zona Norte',     direccion: 'Blvd. Popotla 300, Local 8, Rosarito, B.C.' },
+  { id: 'bajavision', nombre: 'Óptica Baja Visión',          direccion: 'Blvd. Benito Juárez 79B, Centro, Rosarito, B.C.', maps: 'https://maps.google.com/?q=Optica+Baja+Vision+Blvd+Benito+Juarez+Rosarito' },
+  { id: '5demayo',   nombre: 'Óptica Rosarito 5 de Mayo',   direccion: 'C. 5 de Mayo 200, Local 1, Rosarito, B.C.',        maps: 'https://maps.google.com/?q=Optica+Rosarito+5+de+Mayo+Rosarito+BC' },
+  { id: 'laureles',  nombre: 'Óptica Rosarito Plaza Laureles', direccion: 'C. José María Morelos 118, Plaza Laureles, Rosarito, B.C.', maps: 'https://maps.google.com/?q=Plaza+Laureles+Jose+Maria+Morelos+118+Rosarito+BC' },
 ];
 
 function msgWA(sucursal: string, tipo: 'solo_cita' | 'con_pedido', pedido?: string) {
@@ -194,7 +194,17 @@ export default function ExamenPage() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={sucursalSel === s.id ? 'white' : 'var(--accent)'} strokeWidth="1.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                   <span style={{ fontSize: '0.88rem', fontWeight: 600, color: sucursalSel === s.id ? 'white' : 'var(--charcoal)' }}>{s.nombre}</span>
                 </div>
-                <p style={{ fontSize: '0.78rem', color: sucursalSel === s.id ? 'rgba(255,255,255,0.75)' : 'var(--warm-gray)', margin: 0, lineHeight: 1.6 }}>{s.direccion}</p>
+                <p style={{ fontSize: '0.78rem', color: sucursalSel === s.id ? 'rgba(255,255,255,0.75)' : 'var(--warm-gray)', margin: '0 0 0.75rem', lineHeight: 1.6 }}>{s.direccion}</p>
+                <a
+                  href={s.maps}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={e => e.stopPropagation()}
+                  style={{ fontSize: '0.7rem', fontWeight: 600, color: sucursalSel === s.id ? 'rgba(255,255,255,0.85)' : 'var(--accent)', textDecoration: 'none', letterSpacing: '0.05em', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  {t('Ver en Maps', 'View on Maps')}
+                </a>
               </div>
             ))}
           </div>
