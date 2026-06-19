@@ -235,9 +235,7 @@ export default function Navbar() {
 
           {/* Right Actions */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexShrink: 0 }}>
-            <div className="desktop-nav">
-              <LangSwitcher />
-            </div>
+            <LangSwitcher />
             <FavoritosIcon />
             <CartIcon />
 
@@ -278,7 +276,7 @@ export default function Navbar() {
               href={href}
               style={{
                 fontFamily: "var(--font-serif)",
-                fontSize: "clamp(2.2rem, 9vw, 3.5rem)",
+                fontSize: "clamp(1.5rem, 7vw, 2.5rem)",
                 fontWeight: 300,
                 lineHeight: 1.1,
                 color: isActive(href) ? "var(--sage)" : "var(--charcoal)",
@@ -303,7 +301,7 @@ export default function Navbar() {
           fontFamily: "var(--font-sans)", fontSize: "0.62rem",
           letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--warm-gray)",
         }}>
-          Grupo Óptico del Noroeste — Est. 2018
+          Grupo Óptico del Noroeste — Est. 2012
         </p>
       </div>
 

@@ -72,14 +72,14 @@ export default function Home() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(244,247,250,0.97) 0%, rgba(244,247,250,0.88) 38%, rgba(244,247,250,0.0) 65%)' }}/>
 
         <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1180px', margin: '0 auto', padding: esMobil ? '80px 1.5rem 2rem' : '0 2rem' }}>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
+          {!esMobil && <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
             Grupo Óptico del Noroeste — Est. 2012
-          </p>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.8rem, 4.5vw, 4rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1.25rem', maxWidth: '580px' }}>
+          </p>}
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.2rem' : 'clamp(2.8rem, 4.5vw, 4rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1rem', maxWidth: '580px' }}>
             Tu visión.<br />Nuestra prioridad.<br />
             <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Siempre cerca de ti.</em>
           </h1>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '15px', color: 'var(--warm-gray)', lineHeight: 1.8, marginBottom: '2.5rem', maxWidth: '400px', fontWeight: 400 }}>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: esMobil ? '13px' : '15px', color: 'var(--warm-gray)', lineHeight: 1.8, marginBottom: esMobil ? '1.5rem' : '2.5rem', maxWidth: '400px', fontWeight: 400 }}>
             Armazones modernos, lentes de calidad y examen de la vista profesional en Rosarito.
           </p>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
