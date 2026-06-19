@@ -67,49 +67,72 @@ export default function Home() {
       <Navbar />
 
       {/* HERO */}
-      <section style={{ position: 'relative', width: '100%', minHeight: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-        <img src="/hero-man.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(244,247,250,0.97) 0%, rgba(244,247,250,0.88) 38%, rgba(244,247,250,0.0) 65%)' }}/>
-
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1180px', margin: '0 auto', padding: esMobil ? '80px 1.5rem 2rem' : '0 2rem' }}>
-          {!esMobil && <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
-            Grupo Óptico del Noroeste — Est. 2012
-          </p>}
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.2rem' : 'clamp(2.8rem, 4.5vw, 4rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1rem', maxWidth: '580px' }}>
-            Tu visión.<br />Nuestra prioridad.<br />
-            <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Siempre cerca de ti.</em>
-          </h1>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: esMobil ? '13px' : '15px', color: 'var(--warm-gray)', lineHeight: 1.8, marginBottom: esMobil ? '1.5rem' : '2.5rem', maxWidth: '400px', fontWeight: 400 }}>
-            Armazones modernos, lentes de calidad y examen de la vista profesional en Rosarito.
-          </p>
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Link href="/Tienda" style={{ background: 'var(--sage)', color: 'white', padding: '15px 36px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', border: 'none', cursor: 'pointer', textDecoration: 'none', display: 'inline-block' }}>
-              Ver armazones
-            </Link>
-            <Link href="/lenses" style={{ background: 'rgba(255,255,255,0.85)', color: 'var(--charcoal)', padding: '14px 28px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase', border: '1px solid var(--border)', display: 'inline-block', backdropFilter: 'blur(8px)' }}>
-              Ver lentes
-            </Link>
+      {esMobil ? (
+        /* ── Hero móvil: imagen arriba, texto abajo ── */
+        <section style={{ paddingTop: '64px' }}>
+          <div style={{ width: '100%', height: '58vw', minHeight: '220px', maxHeight: '340px', overflow: 'hidden' }}>
+            <img src="/hero-man.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%' }}/>
           </div>
-        </div>
-
-        {/* Tarjeta flotante */}
-        {!esMobil && <div style={{ position: 'absolute', bottom: '3rem', right: '3rem', background: 'white', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 8px 40px rgba(27,58,107,0.12)', maxWidth: '260px', border: '1px solid var(--border)', zIndex: 2 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div style={{ background: 'var(--cream)', padding: '2rem 1.5rem 2.5rem' }}>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.1rem', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '0.85rem' }}>
+              Tu visión.<br />Nuestra prioridad.<br />
+              <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Siempre cerca de ti.</em>
+            </h1>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--warm-gray)', lineHeight: 1.8, marginBottom: '1.5rem', fontWeight: 400 }}>
+              Armazones modernos, lentes de calidad y examen de la vista profesional en Rosarito.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              <Link href="/Tienda" style={{ background: 'var(--sage)', color: 'white', padding: '15px 28px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', textDecoration: 'none', display: 'block', textAlign: 'center' }}>
+                Ver armazones
+              </Link>
+              <Link href="/examen" style={{ background: 'transparent', color: 'var(--charcoal)', padding: '14px 28px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase', border: '1px solid var(--border)', display: 'block', textAlign: 'center' }}>
+                Agendar examen
+              </Link>
             </div>
-            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)' }}>Recoge en óptica</span>
           </div>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--warm-gray)', lineHeight: 1.6, margin: 0 }}>
-            Compra en línea y recoge en cualquiera de nuestras ópticas en Rosarito.
-          </p>
-        </div>}
-
-        <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', opacity: 0.3, zIndex: 2 }}>
-          <div style={{ width: '1px', height: '48px', background: 'var(--charcoal)' }}/>
-          <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="var(--charcoal)" strokeWidth="1.2" strokeLinecap="round"/></svg>
-        </div>
-      </section>
+        </section>
+      ) : (
+        /* ── Hero escritorio: imagen de fondo con gradiente ── */
+        <section style={{ position: 'relative', width: '100%', minHeight: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+          <img src="/hero-man.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(244,247,250,0.97) 0%, rgba(244,247,250,0.88) 38%, rgba(244,247,250,0.0) 65%)' }}/>
+          <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1180px', margin: '0 auto', padding: '0 2rem' }}>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
+              Grupo Óptico del Noroeste — Est. 2012
+            </p>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.8rem, 4.5vw, 4rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1.25rem', maxWidth: '580px' }}>
+              Tu visión.<br />Nuestra prioridad.<br />
+              <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Siempre cerca de ti.</em>
+            </h1>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '15px', color: 'var(--warm-gray)', lineHeight: 1.8, marginBottom: '2.5rem', maxWidth: '400px', fontWeight: 400 }}>
+              Armazones modernos, lentes de calidad y examen de la vista profesional en Rosarito.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Link href="/Tienda" style={{ background: 'var(--sage)', color: 'white', padding: '15px 36px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', border: 'none', cursor: 'pointer', textDecoration: 'none', display: 'inline-block' }}>
+                Ver armazones
+              </Link>
+              <Link href="/lentes" style={{ background: 'rgba(255,255,255,0.85)', color: 'var(--charcoal)', padding: '14px 28px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase', border: '1px solid var(--border)', display: 'inline-block', backdropFilter: 'blur(8px)' }}>
+                Ver lentes
+              </Link>
+            </div>
+          </div>
+          <div style={{ position: 'absolute', bottom: '3rem', right: '3rem', background: 'white', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 8px 40px rgba(27,58,107,0.12)', maxWidth: '260px', border: '1px solid var(--border)', zIndex: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)' }}>Recoge en óptica</span>
+            </div>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--warm-gray)', lineHeight: 1.6, margin: 0 }}>
+              Compra en línea y recoge en cualquiera de nuestras ópticas en Rosarito.
+            </p>
+          </div>
+          <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', opacity: 0.3, zIndex: 2 }}>
+            <div style={{ width: '1px', height: '48px', background: 'var(--charcoal)' }}/>
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="var(--charcoal)" strokeWidth="1.2" strokeLinecap="round"/></svg>
+          </div>
+        </section>
+      )}
 
       {/* CÓMO FUNCIONA */}
       <Reveal>
