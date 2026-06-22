@@ -638,6 +638,7 @@ export default function Admin() {
   const [finanzas, setFinanzas] = useState<any[]>([]);
   const [configLentes, setConfigLentes] = useState<any[]>([]);
   const [guardandoMica, setGuardandoMica] = useState<string | null>(null);
+  const [filtroPlatform, setFiltroPlatform] = useState<'todos' | 'gon' | 'verly'>('todos');
 
   const [editArmazon, setEditArmazon] = useState<any>(null);
   const [editPedido, setEditPedido] = useState<any>(null);
@@ -794,7 +795,18 @@ export default function Admin() {
           {modulo === 'pedidos' && (
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <p style={{ margin: 0, fontSize: '13px', color: 'var(--warm-gray)' }}>{pedidos.length} pedidos · {pedidosPendientes} pendientes</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <p style={{ margin: 0, fontSize: '13px', color: 'var(--warm-gray)' }}>
+                    {pedidos.filter(p => filtroPlatform === 'todos' ? true : (p.plataforma || 'verly') === filtroPlatform).length} pedidos · {pedidosPendientes} pendientes
+                  </p>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    {(['todos', 'gon', 'verly'] as const).map(f => (
+                      <button key={f} onClick={() => setFiltroPlatform(f)} style={{ padding: '4px 12px', borderRadius: '20px', border: '1.5px solid', borderColor: filtroPlatform === f ? (f === 'gon' ? '#1B2F5E' : f === 'verly' ? '#7C3AED' : 'var(--border)') : 'var(--border)', background: filtroPlatform === f ? (f === 'gon' ? '#1B2F5E' : f === 'verly' ? '#7C3AED' : 'var(--charcoal)') : 'white', color: filtroPlatform === f ? 'white' : 'var(--warm-gray)', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        {f === 'todos' ? 'Todos' : f === 'gon' ? '🔵 GON' : '💜 Verly'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <button onClick={() => setShowNewPedido(true)} style={btnPrimary}>+ Nuevo pedido</button>
               </div>
 
@@ -837,12 +849,12 @@ export default function Admin() {
               <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead><tr style={{ background: 'var(--cream)' }}>
-                    {['#','Paciente','Armazón','Configuración','Total','Estado','Receta','Fecha',''].map(h => (
+                    {['#','Plataforma','Paciente','Armazón','Configuración','Total','Estado','Receta','Fecha',''].map(h => (
                       <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr></thead>
                   <tbody>
-                    {pedidos.map(p => {
+                    {pedidos.filter(p => filtroPlatform === 'todos' ? true : (p.plataforma || 'verly') === filtroPlatform).map(p => {
                       const cfg = p.configuracion;
                       const receta = p.recetas?.[0];
                       const recetaLabel = !receta ? '—'
@@ -856,6 +868,12 @@ export default function Admin() {
                       return (
                         <tr key={p.id} style={{ borderTop: '1px solid var(--border)' }}>
                           <td style={{ padding: '12px 16px', fontSize: '12px', color: 'var(--warm-gray)', fontWeight: 500 }}>{orderCode(p.id)}</td>
+                          <td style={{ padding: '12px 16px' }}>
+                            {(p.plataforma || 'verly') === 'gon'
+                              ? <span style={{ background: '#EFF6FF', color: '#1B2F5E', border: '1px solid #BFDBFE', padding: '2px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 700 }}>🔵 GON</span>
+                              : <span style={{ background: '#F5F3FF', color: '#5B21B6', border: '1px solid #DDD6FE', padding: '2px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: 700 }}>💜 Verly</span>
+                            }
+                          </td>
                           <td style={{ padding: '12px 16px' }}>
                             <div style={{ fontSize: '13px', fontWeight: 500 }}>{p.clientes?.nombre || p.cliente_email?.split('@')[0] || '—'}</div>
                             {p.paciente && p.paciente !== p.clientes?.nombre && <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>Para: {p.paciente}</div>}
@@ -884,7 +902,7 @@ export default function Admin() {
                         </tr>
                       );
                     })}
-                    {pedidos.length === 0 && <tr><td colSpan={9} style={{ padding: '3rem', textAlign: 'center', color: 'var(--warm-gray)', fontSize: '13px' }}>Sin pedidos aún</td></tr>}
+                    {pedidos.filter(p => filtroPlatform === 'todos' ? true : (p.plataforma || 'verly') === filtroPlatform).length === 0 && <tr><td colSpan={10} style={{ padding: '3rem', textAlign: 'center', color: 'var(--warm-gray)', fontSize: '13px' }}>Sin pedidos aún</td></tr>}
                   </tbody>
                 </table>
               </div>

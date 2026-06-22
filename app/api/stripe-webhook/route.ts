@@ -96,6 +96,7 @@ export async function POST(req: NextRequest) {
         paciente:          item.paciente || null,
         configuracion,
         stripe_session_id: session.id,
+        plataforma:        'gon',
       }).select().single();
 
       if (!pedido) continue;
