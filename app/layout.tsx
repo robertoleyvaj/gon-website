@@ -5,6 +5,7 @@ import "./globals.css";
 import { LangProvider } from "./components/LanguageContext";
 import { CartProvider } from "./context/CartContext";
 import { FavoritosProvider } from "./context/FavoritosContext";
+import StructuredData from "./components/StructuredData";
 
 const fraunces = Fraunces({
   variable: "--font-cormorant",
@@ -96,6 +97,7 @@ export default function RootLayout({
         WebkitFontSmoothing: "antialiased",
         MozOsxFontSmoothing: "grayscale",
       }}>
+        <StructuredData />
         <LangProvider>
           <CartProvider>
             <FavoritosProvider>
