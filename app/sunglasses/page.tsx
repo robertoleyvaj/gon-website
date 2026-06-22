@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
 import { supabase } from '../lib/supabase';
+import { usePrecios, redondearMXN } from '../hooks/usePrecios';
 
 type Armazon = {
   id: number; nombre: string; forma: string; genero: string;
@@ -35,6 +36,7 @@ const CATEGORIAS = [
 
 function SunglassesContent() {
   const { t, lang } = useLang() as any;
+  const { tipoCambio } = usePrecios();
   const searchParams = useSearchParams();
   const esPromoRegalo = searchParams.get('promo') === 'regalo';
 
@@ -81,8 +83,8 @@ function SunglassesContent() {
       {/* HERO */}
       <div style={{ position: 'relative', width: '100%', height: esMobil ? '340px' : '520px', overflow: 'hidden', marginTop: esPromoRegalo ? '0' : '72px' }}>
         <img
-          src="/hero-solar.jpg"
-          alt="Sunglasses"
+          src="/hero-mujer-solar.jpg"
+          alt="Lentes de sol GON Óptica Rosarito"
           onError={e => { (e.target as HTMLImageElement).src = '/hero-tienda.jpg'; }}
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%', display: 'block' }}
         />
@@ -197,8 +199,12 @@ function SunglassesContent() {
                         </div>
                       ) : (
                         <div>
-                          <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.95rem', fontWeight: 500, color: 'var(--charcoal)' }}>${a.precio}</span>
-                          <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.68rem', color: 'var(--warm-gray)', marginLeft: '4px', letterSpacing: '0.06em' }}>USD</span>
+                          <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.95rem', fontWeight: 500, color: 'var(--charcoal)' }}>
+                            {lang === 'es' ? redondearMXN(a.precio, tipoCambio) : `$${a.precio}`}
+                          </span>
+                          <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.68rem', color: 'var(--warm-gray)', marginLeft: '4px', letterSpacing: '0.06em' }}>
+                            {lang === 'es' ? 'MXN' : 'USD'}
+                          </span>
                         </div>
                       )}
                       <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.65rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', color: hoveredId === a.id ? 'var(--charcoal)' : 'var(--warm-gray)', display: 'flex', alignItems: 'center', gap: '5px', transition: 'color 0.2s' }}>
