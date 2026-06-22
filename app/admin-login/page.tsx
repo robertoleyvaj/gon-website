@@ -33,7 +33,7 @@ function LoginForm() {
     setLoading(false);
 
     if (res.ok) {
-      router.push(searchParams.get('from') || '/admin');
+      window.location.href = searchParams.get('from') || '/admin';
     } else {
       setError('Credenciales incorrectas');
     }
