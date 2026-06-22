@@ -7,6 +7,7 @@ const MENU = [
   { id: 'pedidos', label: 'Pedidos', icon: (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>) },
   { id: 'clientes', label: 'Clientes', icon: (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>) },
   { id: 'catalogo', label: 'Catálogo', icon: (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20.188 10.934c.2.4.312.846.312 1.311V12a8.5 8.5 0 1 1-8.5-8.5h.244"/></svg>) },
+  { id: 'micas', label: 'Micas & Filtros', icon: (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>) },
   { id: 'finanzas', label: 'Finanzas', icon: (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>) },
   { id: 'promociones', label: 'Promociones', icon: (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>) },
   { id: 'marketing', label: 'Marketing', icon: (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>) },
@@ -33,7 +34,7 @@ function tallaDesdeMedias(medidas: string): string {
 }
 
 const ARMAZON_VACIO = {
-  nombre: '', modelo: '', marca: 'GON', precio: '13', stock: '10',
+  nombre: '', modelo: '', marca: 'GON', precio: '13', precio_gon: '0', stock: '10',
   badge: '', color1: '#1A1A2E', color2: '', color3: '',
   material: '', forma: 'cuadrada', genero: 'unisex', tipo: 'optico',
   descuento: '0', medidas: '', talla: 'M', activo: true,
@@ -166,8 +167,15 @@ function ArmazonForm({ data, onChange, onFotoUpload }: {
       </div>
       <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
         <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Precio e inventario</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-          <div><label style={labelStyle}>Precio ($)</label><input type="number" value={data.precio} onChange={e => onChange('precio', e.target.value)} style={inputStyle}/></div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
+          <div>
+            <label style={labelStyle}>💜 Verly (USD)</label>
+            <input type="number" value={data.precio} onChange={e => onChange('precio', e.target.value)} style={inputStyle}/>
+          </div>
+          <div>
+            <label style={labelStyle}>🔵 GON (MXN)</label>
+            <input type="number" value={data.precio_gon ?? ''} onChange={e => onChange('precio_gon', e.target.value)} style={inputStyle} placeholder="0"/>
+          </div>
           <div><label style={labelStyle}>Descuento (%)</label><input type="number" value={data.descuento || '0'} onChange={e => onChange('descuento', e.target.value)} style={inputStyle}/></div>
           <div><label style={labelStyle}>Stock</label><input type="number" value={data.stock} onChange={e => onChange('stock', e.target.value)} style={inputStyle}/></div>
         </div>
@@ -226,7 +234,9 @@ function ModalNuevoArmazon({ onClose, onSaved, subirFotoDirecto }: {
     setGuardando(true);
     const payload = {
       nombre: data.nombre, modelo: data.modelo, marca: data.marca,
-      precio: parseInt(data.precio) || 13, stock: parseInt(data.stock) || 10,
+      precio: parseInt(data.precio) || 13,
+      precio_gon: data.precio_gon ? parseInt(data.precio_gon) : null,
+      stock: parseInt(data.stock) || 10,
       badge: data.badge, color1: data.color1, color2: data.color2, color3: data.color3,
       color: data.color1, material: data.material, forma: data.forma,
       genero: data.genero, tipo: data.tipo, descuento: parseFloat(data.descuento) || 0,
@@ -285,8 +295,9 @@ function ModalNuevoArmazon({ onClose, onSaved, subirFotoDirecto }: {
               </div>
               <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1rem' }}>
                 <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Precio e inventario</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                  <div><label style={labelStyle}>Precio ($)</label><input type="number" value={data.precio} onChange={e => onChange('precio', e.target.value)} style={inputStyle}/></div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '10px' }}>
+                  <div><label style={labelStyle}>💜 Verly (USD)</label><input type="number" value={data.precio} onChange={e => onChange('precio', e.target.value)} style={inputStyle}/></div>
+                  <div><label style={labelStyle}>🔵 GON (MXN)</label><input type="number" value={data.precio_gon ?? ''} onChange={e => onChange('precio_gon', e.target.value)} style={inputStyle} placeholder="0"/></div>
                   <div><label style={labelStyle}>Descuento (%)</label><input type="number" value={data.descuento || '0'} onChange={e => onChange('descuento', e.target.value)} style={inputStyle}/></div>
                   <div><label style={labelStyle}>Stock</label><input type="number" value={data.stock} onChange={e => onChange('stock', e.target.value)} style={inputStyle}/></div>
                 </div>
@@ -625,6 +636,8 @@ export default function Admin() {
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [clientes, setClientes] = useState<any[]>([]);
   const [finanzas, setFinanzas] = useState<any[]>([]);
+  const [configLentes, setConfigLentes] = useState<any[]>([]);
+  const [guardandoMica, setGuardandoMica] = useState<string | null>(null);
 
   const [editArmazon, setEditArmazon] = useState<any>(null);
   const [editPedido, setEditPedido] = useState<any>(null);
@@ -645,16 +658,18 @@ export default function Admin() {
   useEffect(() => { cargarTodo(); }, []);
 
   async function cargarTodo() {
-    const [{ data: a }, { data: p }, { data: c }, { data: f }] = await Promise.all([
+    const [{ data: a }, { data: p }, { data: c }, { data: f }, { data: cl }] = await Promise.all([
       supabase.from('armazones').select('*').order('id'),
       supabase.from('pedidos').select('*, clientes(*), armazones(*), recetas(*), pedido_items(*), finanzas(*)').order('created_at', { ascending: false }),
       supabase.from('clientes').select('*').order('created_at', { ascending: false }),
       supabase.from('finanzas').select('*'),
+      supabase.from('config_lentes').select('*').order('tipo').order('orden'),
     ]);
     setArmazones(a || []);
     setPedidos(p || []);
     setClientes(c || []);
     setFinanzas(f || []);
+    setConfigLentes(cl || []);
   }
 
   const subirFotoDirecto = useCallback(async (file: File, campo: string, id: number): Promise<string | null> => {
@@ -979,7 +994,9 @@ export default function Admin() {
                       <div style={{ fontWeight: 500, fontSize: '14px', marginBottom: '2px' }}>{a.nombre}</div>
                       <div style={{ fontSize: '11px', color: 'var(--warm-gray)', marginBottom: '8px', textTransform: 'capitalize' }}>{a.material && `${a.material} · `}{a.forma} · {a.genero}</div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontWeight: 600, fontSize: '16px' }}>${a.precio}</span>
+                        <div>
+                          <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>💜 ${a.precio} USD &nbsp;·&nbsp; 🔵 {a.precio_gon ? `$${a.precio_gon} MXN` : <span style={{ color: '#f59e0b' }}>sin precio GON</span>}</div>
+                        </div>
                         <div style={{ display: 'flex', gap: '6px' }}>
                           <button onClick={() => setEditArmazon({...a, color1: a.color1||a.color||'#1A1A2E'})} style={{ ...btnGhost, padding: '4px 12px', fontSize: '11px' }}>Editar</button>
                           <button onClick={async () => { if (confirm('¿Eliminar?')) { await supabase.from('armazones').delete().eq('id', a.id); cargarTodo(); } }} style={{ ...btnDanger, padding: '4px 12px', fontSize: '11px' }}>Eliminar</button>
@@ -1000,13 +1017,92 @@ export default function Admin() {
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
                       <button onClick={() => setEditArmazon(null)} style={btnGhost}>Cancelar</button>
                       <button onClick={async () => {
-                        await supabase.from('armazones').update({ ...editArmazon, precio: parseInt(editArmazon.precio), stock: parseInt(editArmazon.stock), descuento: parseFloat(editArmazon.descuento)||0, color: editArmazon.color1||editArmazon.color }).eq('id', editArmazon.id);
+                        await supabase.from('armazones').update({ ...editArmazon, precio: parseInt(editArmazon.precio), precio_gon: editArmazon.precio_gon ? parseInt(editArmazon.precio_gon) : null, stock: parseInt(editArmazon.stock), descuento: parseFloat(editArmazon.descuento)||0, color: editArmazon.color1||editArmazon.color }).eq('id', editArmazon.id);
                         setEditArmazon(null); cargarTodo();
                       }} style={btnSage}>Guardar cambios</button>
                     </div>
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* MICAS & FILTROS */}
+          {modulo === 'micas' && (
+            <div>
+              <p style={{ margin: '0 0 1.5rem', fontSize: '13px', color: 'var(--warm-gray)' }}>
+                Precios independientes por plataforma. Los cambios se reflejan en el sitio inmediatamente.
+              </p>
+              {['vision', 'material', 'filtro'].map(tipo => {
+                const tipoLabel: any = { vision: '👁 Tipo de visión', material: '🔬 Material de mica', filtro: '✨ Filtros y tratamientos' };
+                const items = configLentes.filter(c => c.tipo === tipo);
+                return (
+                  <div key={tipo} style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', marginBottom: '1.5rem', overflow: 'hidden' }}>
+                    <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border)', fontSize: '13px', fontWeight: 600 }}>{tipoLabel[tipo]}</div>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr style={{ background: 'var(--cream)' }}>
+                          {['Nombre', '💜 Verly (USD)', '🔵 GON (MXN)', ''].map(h => (
+                            <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.map(item => (
+                          <tr key={item.id} style={{ borderTop: '1px solid var(--border)' }}>
+                            <td style={{ padding: '10px 16px' }}>
+                              <div style={{ fontSize: '13px', fontWeight: 500 }}>{item.nombre_es}</div>
+                              <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{item.nombre_en}</div>
+                            </td>
+                            <td style={{ padding: '10px 16px', width: '160px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>$</span>
+                                <input
+                                  type="number"
+                                  defaultValue={item.precio_verly}
+                                  key={`v-${item.id}`}
+                                  id={`verly-${item.id}`}
+                                  style={{ ...inputStyle, width: '90px', padding: '6px 8px' }}
+                                />
+                                <span style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>USD</span>
+                              </div>
+                            </td>
+                            <td style={{ padding: '10px 16px', width: '160px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>$</span>
+                                <input
+                                  type="number"
+                                  defaultValue={item.precio_gon}
+                                  key={`g-${item.id}`}
+                                  id={`gon-${item.id}`}
+                                  style={{ ...inputStyle, width: '90px', padding: '6px 8px' }}
+                                />
+                                <span style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>MXN</span>
+                              </div>
+                            </td>
+                            <td style={{ padding: '10px 16px', width: '100px' }}>
+                              <button
+                                disabled={guardandoMica === item.key}
+                                onClick={async () => {
+                                  setGuardandoMica(item.key);
+                                  const pv = parseFloat((document.getElementById(`verly-${item.id}`) as HTMLInputElement)?.value) || 0;
+                                  const pg = parseFloat((document.getElementById(`gon-${item.id}`) as HTMLInputElement)?.value) || 0;
+                                  await supabase.from('config_lentes').update({ precio_verly: pv, precio_gon: pg }).eq('id', item.id);
+                                  setConfigLentes(prev => prev.map(c => c.id === item.id ? { ...c, precio_verly: pv, precio_gon: pg } : c));
+                                  setGuardandoMica(null);
+                                }}
+                                style={{ ...btnSage, padding: '5px 14px', fontSize: '11px', opacity: guardandoMica === item.key ? 0.6 : 1 }}
+                              >
+                                {guardandoMica === item.key ? '...' : 'Guardar'}
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              })}
             </div>
           )}
 

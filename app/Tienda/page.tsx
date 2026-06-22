@@ -10,7 +10,7 @@ import { usePrecios, redondearMXN } from '../hooks/usePrecios';
 
 type Armazon = {
   id: number; nombre: string; forma: string; genero: string;
-  precio: number; color: string; imagen_url?: string;
+  precio: number; precio_gon?: number; color: string; imagen_url?: string;
   badge?: string; material?: string; talla?: string; tipo?: string;
   color1?: string; descuento?: number;
 };
@@ -20,7 +20,7 @@ const MATERIALES = ['Acetato', 'Metálico', 'TR-90', 'Titanio', 'Mixto'];
 const TALLAS = ['S', 'M', 'L', 'XL'];
 
 // ── CARD ────────────────────────────────────────────────
-function ArmazonCard({ a, esMobil, tipoCambio }: { a: Armazon; esMobil: boolean; tipoCambio: number }) {
+function ArmazonCard({ a, esMobil }: { a: Armazon; esMobil: boolean }) {
   const { toggleFavorito, esFavorito } = useFavoritos();
   const liked = esFavorito(a.id);
   const [hovered, setHovered] = useState(false);
@@ -84,7 +84,7 @@ function ArmazonCard({ a, esMobil, tipoCambio }: { a: Armazon; esMobil: boolean;
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ fontSize: '0.85rem', color: 'var(--charcoal)' }}>
-              Desde <span style={{ fontWeight: 600 }}>${redondearMXN(a.precio, tipoCambio)} <span style={{ fontWeight: 400, color: 'var(--warm-gray)', fontSize: '0.75rem' }}>MXN</span></span>
+              Desde <span style={{ fontWeight: 600 }}>${a.precio_gon ?? '—'} <span style={{ fontWeight: 400, color: 'var(--warm-gray)', fontSize: '0.75rem' }}>MXN</span></span>
             </div>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '4px',
@@ -112,7 +112,7 @@ function TiendaContent() {
   const [armazones, setArmazones] = useState<Armazon[]>([]);
   const [loading, setLoading] = useState(true);
   const [esMobil, setEsMobil] = useState(false);
-  const { tipoCambio } = usePrecios();
+  // precio_gon is now fetched directly from DB — no conversion needed
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [generoTab, setGeneroTab] = useState('all');
   const [filtroForma, setFiltroForma] = useState<string[]>([]);
@@ -355,7 +355,7 @@ function TiendaContent() {
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: esMobil ? '10px' : '18px' }}>
-              {filtered.map(a => <ArmazonCard key={a.id} a={a} esMobil={esMobil} tipoCambio={tipoCambio}/>)}
+              {filtered.map(a => <ArmazonCard key={a.id} a={a} esMobil={esMobil}/>)}
             </div>
           )}
         </div>

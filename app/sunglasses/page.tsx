@@ -6,12 +6,11 @@ import { useSearchParams } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
 import { supabase } from '../lib/supabase';
-import { usePrecios, redondearMXN } from '../hooks/usePrecios';
 
 type Armazon = {
   id: number; nombre: string; forma: string; genero: string;
   stock: number; badge: string | null; activo: boolean;
-  precio: number; color: string; imagen_url?: string; material?: string;
+  precio: number; precio_gon?: number; color: string; imagen_url?: string; material?: string;
 };
 
 function LenteSVG({ color, forma }: { color: string; forma: string }) {
@@ -36,7 +35,6 @@ const CATEGORIAS = [
 
 function SunglassesContent() {
   const { t, lang } = useLang() as any;
-  const { tipoCambio } = usePrecios();
   const searchParams = useSearchParams();
   const esPromoRegalo = searchParams.get('promo') === 'regalo';
 
@@ -200,7 +198,7 @@ function SunglassesContent() {
                       ) : (
                         <div>
                           <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.95rem', fontWeight: 500, color: 'var(--charcoal)' }}>
-                            {lang === 'es' ? redondearMXN(a.precio, tipoCambio) : `$${a.precio}`}
+                            {lang === 'es' ? (a.precio_gon ?? '—') : `$${a.precio}`}
                           </span>
                           <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.68rem', color: 'var(--warm-gray)', marginLeft: '4px', letterSpacing: '0.06em' }}>
                             {lang === 'es' ? 'MXN' : 'USD'}
