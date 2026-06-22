@@ -664,7 +664,7 @@ export default function Admin() {
       supabase.from('pedidos').select('*, clientes(*), armazones(*), recetas(*), pedido_items(*), finanzas(*)').order('created_at', { ascending: false }),
       supabase.from('clientes').select('*').order('created_at', { ascending: false }),
       supabase.from('finanzas').select('*'),
-      supabase.from('config_lentes').select('*').order('tipo').order('orden'),
+      supabase.from('config_lentes').select('*').order('tipo'),
     ]);
     setArmazones(a || []);
     setPedidos(p || []);
@@ -1048,76 +1048,89 @@ export default function Admin() {
           {/* MICAS & FILTROS */}
           {modulo === 'micas' && (
             <div>
-              <p style={{ margin: '0 0 1.5rem', fontSize: '13px', color: 'var(--warm-gray)' }}>
-                Precios independientes por plataforma. Los cambios se reflejan en el sitio inmediatamente.
-              </p>
-              {['vision', 'material', 'filtro'].map(tipo => {
-                const tipoLabel: any = { vision: '👁 Tipo de visión', material: '🔬 Material de mica', filtro: '✨ Filtros y tratamientos' };
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
+                <p style={{ margin: 0, fontSize: '13px', color: 'var(--warm-gray)' }}>
+                  Precios independientes por plataforma. Los cambios se reflejan en el sitio inmediatamente.
+                </p>
+              </div>
+              {[
+                { tipo: 'vision',   icon: '👁',  label: 'Tipo de visión' },
+                { tipo: 'material', icon: '🔬', label: 'Material de mica' },
+                { tipo: 'filtro',   icon: '✨', label: 'Filtros y tratamientos' },
+              ].map(({ tipo, icon, label }) => {
                 const items = configLentes.filter(c => c.tipo === tipo);
+                if (items.length === 0) return null;
                 return (
-                  <div key={tipo} style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', marginBottom: '1.5rem', overflow: 'hidden' }}>
-                    <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--border)', fontSize: '13px', fontWeight: 600 }}>{tipoLabel[tipo]}</div>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr style={{ background: 'var(--cream)' }}>
-                          {['Nombre', '💜 Verly (USD)', '🔵 GON (MXN)', ''].map(h => (
-                            <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', fontWeight: 600, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{h}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {items.map(item => (
-                          <tr key={item.id} style={{ borderTop: '1px solid var(--border)' }}>
-                            <td style={{ padding: '10px 16px' }}>
-                              <div style={{ fontSize: '13px', fontWeight: 500 }}>{item.nombre_es}</div>
-                              <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{item.nombre_en}</div>
-                            </td>
-                            <td style={{ padding: '10px 16px', width: '160px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>$</span>
-                                <input
-                                  type="number"
-                                  defaultValue={item.precio_verly}
-                                  key={`v-${item.id}`}
-                                  id={`verly-${item.id}`}
-                                  style={{ ...inputStyle, width: '90px', padding: '6px 8px' }}
-                                />
-                                <span style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>USD</span>
-                              </div>
-                            </td>
-                            <td style={{ padding: '10px 16px', width: '160px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                <span style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>$</span>
-                                <input
-                                  type="number"
-                                  defaultValue={item.precio_gon}
-                                  key={`g-${item.id}`}
-                                  id={`gon-${item.id}`}
-                                  style={{ ...inputStyle, width: '90px', padding: '6px 8px' }}
-                                />
-                                <span style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>MXN</span>
-                              </div>
-                            </td>
-                            <td style={{ padding: '10px 16px', width: '100px' }}>
-                              <button
-                                disabled={guardandoMica === item.key}
-                                onClick={async () => {
-                                  setGuardandoMica(item.key);
-                                  const pv = parseFloat((document.getElementById(`verly-${item.id}`) as HTMLInputElement)?.value) || 0;
-                                  const pg = parseFloat((document.getElementById(`gon-${item.id}`) as HTMLInputElement)?.value) || 0;
-                                  await supabase.from('config_lentes').update({ precio_verly: pv, precio_gon: pg }).eq('id', item.id);
-                                  setConfigLentes(prev => prev.map(c => c.id === item.id ? { ...c, precio_verly: pv, precio_gon: pg } : c));
-                                  setGuardandoMica(null);
-                                }}
-                                style={{ ...btnSage, padding: '5px 14px', fontSize: '11px', opacity: guardandoMica === item.key ? 0.6 : 1 }}
-                              >
-                                {guardandoMica === item.key ? '...' : 'Guardar'}
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div key={tipo} style={{ background: 'white', borderRadius: '10px', border: '1px solid var(--border)', marginBottom: '1.5rem', overflow: 'hidden' }}>
+                    {/* Header */}
+                    <div style={{ padding: '0.85rem 1.25rem', background: 'var(--cream)', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '14px' }}>{icon}</span>
+                      <span style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--charcoal)' }}>{label}</span>
+                      <span style={{ marginLeft: 'auto', fontSize: '11px', color: 'var(--warm-gray)' }}>{items.length} opciones</span>
+                    </div>
+                    {/* Column headers */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 180px 180px 80px', padding: '6px 1.25rem', borderBottom: '1px solid var(--border)', background: '#fafafa' }}>
+                      {['Nombre', '💜 Verly', '🔵 GON', ''].map(h => (
+                        <div key={h} style={{ fontSize: '9px', fontWeight: 700, color: 'var(--warm-gray)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{h}</div>
+                      ))}
+                    </div>
+                    {/* Rows */}
+                    {items.map((item, idx) => (
+                      <div key={item.id} style={{
+                        display: 'grid', gridTemplateColumns: '1fr 180px 180px 80px',
+                        alignItems: 'center', padding: '10px 1.25rem',
+                        borderBottom: idx < items.length - 1 ? '1px solid var(--border)' : 'none',
+                        background: idx % 2 === 0 ? 'white' : '#fefefe',
+                        transition: 'background 0.15s',
+                      }}>
+                        {/* Nombre */}
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--charcoal)' }}>{item.nombre_es}</div>
+                          <div style={{ fontSize: '11px', color: 'var(--warm-gray)', marginTop: '1px' }}>{item.nombre_en}</div>
+                        </div>
+                        {/* Verly USD */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <span style={{ fontSize: '12px', color: '#9B59B6', fontWeight: 600 }}>$</span>
+                          <input
+                            type="number"
+                            defaultValue={item.precio_verly}
+                            key={`v-${item.id}`}
+                            id={`verly-${item.id}`}
+                            style={{ width: '80px', padding: '5px 8px', borderRadius: '5px', border: '1px solid var(--border)', fontSize: '13px', fontFamily: 'var(--font-sans), sans-serif', background: 'var(--cream)', outline: 'none', color: 'var(--charcoal)' }}
+                          />
+                          <span style={{ fontSize: '10px', color: 'var(--warm-gray)' }}>USD</span>
+                        </div>
+                        {/* GON MXN */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <span style={{ fontSize: '12px', color: '#2980B9', fontWeight: 600 }}>$</span>
+                          <input
+                            type="number"
+                            defaultValue={item.precio_gon}
+                            key={`g-${item.id}`}
+                            id={`gon-${item.id}`}
+                            style={{ width: '80px', padding: '5px 8px', borderRadius: '5px', border: '1px solid var(--border)', fontSize: '13px', fontFamily: 'var(--font-sans), sans-serif', background: 'var(--cream)', outline: 'none', color: 'var(--charcoal)' }}
+                          />
+                          <span style={{ fontSize: '10px', color: 'var(--warm-gray)' }}>MXN</span>
+                        </div>
+                        {/* Guardar */}
+                        <div>
+                          <button
+                            disabled={guardandoMica === item.key}
+                            onClick={async () => {
+                              setGuardandoMica(item.key);
+                              const pv = parseFloat((document.getElementById(`verly-${item.id}`) as HTMLInputElement)?.value) || 0;
+                              const pg = parseFloat((document.getElementById(`gon-${item.id}`) as HTMLInputElement)?.value) || 0;
+                              await supabase.from('config_lentes').update({ precio_verly: pv, precio_gon: pg }).eq('id', item.id);
+                              setConfigLentes(prev => prev.map(c => c.id === item.id ? { ...c, precio_verly: pv, precio_gon: pg } : c));
+                              setGuardandoMica(null);
+                            }}
+                            style={{ background: guardandoMica === item.key ? 'var(--border)' : 'var(--sage)', color: 'white', border: 'none', borderRadius: '5px', padding: '5px 12px', fontSize: '11px', fontWeight: 500, cursor: guardandoMica === item.key ? 'default' : 'pointer', fontFamily: 'var(--font-sans), sans-serif', transition: 'background 0.2s' }}
+                          >
+                            {guardandoMica === item.key ? '✓' : 'Guardar'}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 );
               })}
