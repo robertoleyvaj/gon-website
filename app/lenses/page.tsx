@@ -146,7 +146,7 @@ export default function Lenses() {
           {!esMobil && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: 'var(--border)' }}>
               {[
-                { paso: '01', label: lang === 'es' ? 'Elige el armazón' : 'Choose the frame', sub: lang === 'es' ? `Desde ${px(13)}` : 'From $13 USD' },
+                { paso: '01', label: lang === 'es' ? 'Elige el armazón' : 'Choose the frame', sub: lang === 'es' ? 'Desde $230 MXN' : 'From $13 USD' },
                 { paso: '02', label: lang === 'es' ? 'Tipo de visión' : 'Vision type', sub: lang === 'es' ? 'Monofocal / Bifocal / Progresivo' : 'Single / Bifocal / Progressive' },
                 { paso: '03', label: lang === 'es' ? 'Material de la mica' : 'Lens material', sub: lang === 'es' ? '5 opciones de grosor' : '5 thickness options' },
                 { paso: '04', label: lang === 'es' ? 'Filtro y coating' : 'Filter & coating', sub: lang === 'es' ? 'Luz azul, polarizado y más' : 'Blue light, polarized & more' },
