@@ -6,6 +6,26 @@ import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
 import { useConfigLentes } from '../hooks/useConfigLentes';
 
+// ── InfoBtn ───────────────────────────────────────────────
+function InfoBtn({ tip, grad }: { tip: string; grad: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+      <button
+        onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
+        style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '50%', width: '15px', height: '15px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '8px', fontWeight: 700, color: 'var(--warm-gray)', marginLeft: '6px', flexShrink: 0, padding: 0, lineHeight: 1, fontFamily: 'serif' }}
+      >i</button>
+      {open && (
+        <div style={{ position: 'absolute', left: '22px', top: '-6px', zIndex: 200, background: 'white', border: '1px solid var(--border)', borderRadius: '8px', padding: '10px 14px', width: '210px', boxShadow: '0 4px 20px rgba(0,0,0,0.10)' }}>
+          <button onClick={e => { e.stopPropagation(); setOpen(false); }} style={{ position: 'absolute', top: '6px', right: '8px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: 'var(--warm-gray)', lineHeight: 1 }}>×</button>
+          <div style={{ fontSize: '11px', color: 'var(--charcoal)', lineHeight: 1.6, marginBottom: '6px' }}>{tip}</div>
+          <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--sage)', letterSpacing: '0.04em' }}>✓ {grad}</div>
+        </div>
+      )}
+    </span>
+  );
+}
+
 // ── BarraGrosor FUERA del componente ──────────────────────
 function BarraGrosor({ valor, max = 5 }: { valor: number; max?: number }) {
   return (
@@ -68,21 +88,30 @@ const visionOpts = [
 ];
 
 const materialOpts = [
-  { nombre_es: 'Standard', nombre_en: 'Standard', precio: 0, grosor: 1, peso: 1, desc_es: 'Para graduaciones leves. Opción base.', desc_en: 'For mild prescriptions. Base option.', indice: '1.50' },
-  { nombre_es: 'Thin & Durable', nombre_en: 'Thin & Durable', precio: 29, grosor: 2, peso: 2, desc_es: 'Más resistente e impacto. Recomendada diario.', desc_en: 'More impact-resistant. Daily recommended.', indice: '1.59' },
-  { nombre_es: 'ClearView Plus', nombre_en: 'ClearView Plus', precio: 39, grosor: 3, peso: 3, desc_es: 'Mejor claridad visual. Apariencia más ligera.', desc_en: 'Better visual clarity. Lighter appearance.', indice: '1.60' },
-  { nombre_es: 'Ultra Thin', nombre_en: 'Ultra Thin', precio: 59, grosor: 4, peso: 4, desc_es: 'Ideal para graduaciones medias-altas.', desc_en: 'Ideal for medium-high prescriptions.', indice: '1.67' },
-  { nombre_es: 'Ultra Thin Pro', nombre_en: 'Ultra Thin Pro', precio: 89, grosor: 5, peso: 5, desc_es: 'Nuestra opción más delgada. Graduaciones altas.', desc_en: 'Our thinnest option. High prescriptions.', indice: '1.74' },
+  { key: 'std',      nombre_es: 'Essential',      nombre_en: 'Essential',       precio: 0,  grosor: 1, peso: 1, indice: '1.50',
+    desc_es: 'Para graduaciones leves. Opción base incluida.',  desc_en: 'For mild prescriptions. Included base option.',
+    tip_es: 'Material CR-39. El más común, ligero y económico. Ideal para graduaciones bajas.', tip_en: 'CR-39 material. Most common, light and economical. Ideal for low prescriptions.',
+    grad_es: 'Hasta ±2.00 dioptrías', grad_en: 'Up to ±2.00 diopters' },
+  { key: 'thin',     nombre_es: 'Poly Plus',      nombre_en: 'Poly Plus',       precio: 29, grosor: 2, peso: 2, indice: '1.59',
+    desc_es: 'Resistente a impactos. Recomendado para uso diario.', desc_en: 'Impact-resistant. Recommended for daily use.',
+    tip_es: 'Policarbonato. Resistente a impactos. Ideal para niños o personas activas. Más delgado que Essential.', tip_en: 'Polycarbonate. Impact resistant. Great for kids or active people. Thinner than Essential.',
+    grad_es: '±2.00 a ±4.00 dioptrías', grad_en: '±2.00 to ±4.00 diopters' },
+  { key: 'ultra',    nombre_es: 'Ultra Slim',     nombre_en: 'Ultra Slim',      precio: 59, grosor: 4, peso: 4, indice: '1.67',
+    desc_es: 'Significativamente más delgado y ligero.',         desc_en: 'Significantly thinner and lighter.',
+    tip_es: 'Hi-Index 1.67. Muy delgado y ligero. Para graduaciones medias-altas. Mejor estética.', tip_en: 'Hi-Index 1.67. Very thin and light. For medium-high prescriptions. Better aesthetics.',
+    grad_es: '±4.00 a ±6.00 dioptrías', grad_en: '±4.00 to ±6.00 diopters' },
+  { key: 'ultrapro', nombre_es: 'Ultra Slim Pro', nombre_en: 'Ultra Slim Pro',  precio: 89, grosor: 5, peso: 5, indice: '1.74',
+    desc_es: 'Nuestra opción más delgada. Para graduaciones altas.', desc_en: 'Our thinnest option. For high prescriptions.',
+    tip_es: 'Hi-Index 1.74. El material más delgado disponible. Máxima estética para graduaciones muy altas.', tip_en: 'Hi-Index 1.74. The thinnest material available. Maximum aesthetics for very high prescriptions.',
+    grad_es: '±6.00 dioptrías o más', grad_en: '±6.00 diopters or more' },
 ];
 
 const filtroOpts = [
-  { id: 'ar',     nombre_es: 'Essential AR',       nombre_en: 'Essential AR',       precio: 11, desc_es: 'Reduce reflejos básicos.',                      desc_en: 'Reduces basic reflections.',             icono: '◈',  color: 'var(--sage)',     tag_es: null,           tag_en: null },
-  { id: 'arprem', nombre_es: 'Premium Clarity AR', nombre_en: 'Premium Clarity AR', precio: 24, desc_es: 'Mejor antirreflejante. Ideal para de noche.',   desc_en: 'Better AR. Ideal for night driving.',    icono: '◈◈', color: 'var(--sage)',     tag_es: 'Recomendado',  tag_en: 'Recommended' },
-  { id: 'blue',   nombre_es: 'Blue Light',          nombre_en: 'Blue Light',          precio: 18, desc_es: 'Filtra la luz azul de pantallas.',             desc_en: 'Filters blue light from screens.',       icono: '◉',  color: '#3B82F6',         tag_es: null,           tag_en: null },
-  { id: 'foto',   nombre_es: 'Fotocromático',       nombre_en: 'Photochromic',        precio: 49, desc_es: 'Se oscurece al sol, aclara en interior.',     desc_en: 'Darkens in sun, clears indoors.',        icono: '◑',  color: 'var(--warm-gray)', tag_es: null,           tag_en: null },
-  { id: 'anti',   nombre_es: 'Anti-Fog',            nombre_en: 'Anti-Fog',            precio: 15, desc_es: 'Reduce el empañamiento.',                      desc_en: 'Reduces fogging.',                       icono: '〜', color: 'var(--accent)',   tag_es: null,           tag_en: null },
-  { id: 'pol',    nombre_es: 'Polarizado',           nombre_en: 'Polarized',           precio: 70, desc_es: 'Elimina reflejos fuertes del exterior.',       desc_en: 'Eliminates strong outdoor glare.',       icono: '▤',  color: 'var(--charcoal)', tag_es: null,           tag_en: null },
-  { id: 'tinte',  nombre_es: 'Fashion Tint',         nombre_en: 'Fashion Tint',         precio: 28, desc_es: 'Agrega color a tus lentes.',                  desc_en: 'Adds color to your lenses.',             icono: '◐',  color: '#EC4899',         tag_es: null,           tag_en: null },
+  { id: 'ar',    nombre_es: 'Antirreflejo',   nombre_en: 'Anti-Reflective', precio: 11, desc_es: 'Reduce reflejos. Mejor visión de noche y en pantallas.',   desc_en: 'Reduces glare. Better vision at night and on screens.',  icono: '◈', color: 'var(--sage)',      tag_es: 'Recomendado', tag_en: 'Recommended' },
+  { id: 'blue',  nombre_es: 'Blue Light',     nombre_en: 'Blue Light',      precio: 18, desc_es: 'Filtra la luz azul de pantallas. Ideal si usas mucho el cel o compu.', desc_en: 'Filters blue light from screens. Ideal for heavy screen users.', icono: '◉', color: '#3B82F6', tag_es: null,          tag_en: null },
+  { id: 'foto',  nombre_es: 'Fotocromático',  nombre_en: 'Photochromic',    precio: 49, desc_es: 'Se oscurece automáticamente al sol y aclara en interior.',  desc_en: 'Automatically darkens in sunlight and clears indoors.',  icono: '◑', color: 'var(--warm-gray)', tag_es: null,          tag_en: null },
+  { id: 'pol',   nombre_es: 'Polarizado',     nombre_en: 'Polarized',       precio: 70, desc_es: 'Elimina reflejos intensos. Ideal para manejar o playa.',    desc_en: 'Eliminates intense glare. Ideal for driving or beach.',  icono: '▤', color: 'var(--charcoal)', tag_es: null,          tag_en: null },
+  { id: 'tinte', nombre_es: 'Tinte',          nombre_en: 'Fashion Tint',    precio: 28, desc_es: 'Agrega color a tus lentes. Disponible en varios tonos.',    desc_en: 'Adds color to your lenses. Available in various shades.', icono: '◐', color: '#EC4899',        tag_es: null,          tag_en: null },
 ];
 
 // ── PAGE ─────────────────────────────────────────────────
@@ -224,10 +253,13 @@ export default function Lenses() {
                 <div key={i} onClick={() => setMaterialActivo(i)} style={{ background: materialActivo === i ? 'white' : 'var(--cream)', padding: '1.1rem 1.25rem', cursor: 'pointer', transition: 'background 0.15s', borderLeft: materialActivo === i ? '3px solid var(--sage)' : '3px solid transparent' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: materialActivo === i ? '0.75rem' : '0' }}>
                     <div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? m.nombre_es : m.nombre_en}</div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 500, color: 'var(--charcoal)', display: 'flex', alignItems: 'center' }}>
+                        {lang === 'es' ? m.nombre_es : m.nombre_en}
+                        <InfoBtn tip={lang === 'es' ? m.tip_es : m.tip_en} grad={lang === 'es' ? m.grad_es : m.grad_en}/>
+                      </div>
                       <div style={{ fontSize: '0.7rem', color: 'var(--warm-gray)', marginTop: '2px' }}>Índice {m.indice}</div>
                     </div>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--sage)' }}>{px(m.nombre_es === 'Standard' ? 'std' : m.nombre_es === 'Thin & Durable' ? 'thin' : m.nombre_es === 'ClearView Plus' ? 'clear' : m.nombre_es === 'Ultra Thin Pro' ? 'ultrapro' : 'ultra', m.precio)}</div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--sage)' }}>{px(m.key, m.precio)}</div>
                   </div>
                   {materialActivo === i && (
                     <div>
@@ -257,21 +289,24 @@ export default function Lenses() {
               {materialOpts.map((m, i) => (
                 <div key={i} onClick={() => setMaterialActivo(i)} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px 100px 100px', gap: '0', padding: '1.1rem 0', borderBottom: '1px solid var(--border)', cursor: 'pointer', background: materialActivo === i ? 'rgba(74,89,64,0.04)' : 'transparent', transition: 'background 0.15s', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontSize: '0.9rem', fontWeight: materialActivo === i ? 500 : 400, color: 'var(--charcoal)', marginBottom: '3px' }}>{lang === 'es' ? m.nombre_es : m.nombre_en}</div>
+                    <div style={{ fontSize: '0.9rem', fontWeight: materialActivo === i ? 500 : 400, color: 'var(--charcoal)', marginBottom: '3px', display: 'flex', alignItems: 'center' }}>
+                      {lang === 'es' ? m.nombre_es : m.nombre_en}
+                      <InfoBtn tip={lang === 'es' ? m.tip_es : m.tip_en} grad={lang === 'es' ? m.grad_es : m.grad_en}/>
+                    </div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--warm-gray)', lineHeight: 1.5 }}>{lang === 'es' ? m.desc_es : m.desc_en}</div>
                   </div>
                   <div style={{ textAlign: 'center', fontSize: '0.78rem', color: 'var(--warm-gray)', fontWeight: 500 }}>{m.indice}</div>
                   <div style={{ display: 'flex', justifyContent: 'center' }}><BarraGrosor valor={m.grosor}/></div>
                   <div style={{ display: 'flex', justifyContent: 'center' }}><BarraGrosor valor={m.peso}/></div>
                   <div style={{ textAlign: 'right', fontSize: '0.9rem', fontWeight: 600, color: materialActivo === i ? 'var(--sage)' : 'var(--charcoal)' }}>
-                    {px(m.nombre_es === 'Standard' ? 'std' : m.nombre_es === 'Thin & Durable' ? 'thin' : m.nombre_es === 'ClearView Plus' ? 'clear' : m.nombre_es === 'Ultra Thin Pro' ? 'ultrapro' : 'ultra', m.precio)}
+                    {px(m.key, m.precio)}
                   </div>
                 </div>
               ))}
               <p style={{ fontSize: '0.72rem', color: 'var(--warm-gray)', marginTop: '0.75rem', lineHeight: 1.6 }}>
                 {lang === 'es'
-                  ? '💡 Graduación baja (SPH ±0 a ±2) → Standard. Media (±2 a ±4) → Ultra Thin. Alta (±4+) → Ultra Thin Pro.'
-                  : '💡 Low prescription (SPH ±0 to ±2) → Standard. Medium (±2 to ±4) → Ultra Thin. High (±4+) → Ultra Thin Pro.'}
+                  ? '💡 Hasta ±2.00 D → CR-39. De ±2.00 a ±4.00 D → Policarbonato. De ±4.00 a ±6.00 D → Ultra Thin. Más de ±6.00 D → Ultra Thin Pro.'
+                  : '💡 Up to ±2.00 D → CR-39. ±2.00 to ±4.00 D → Polycarbonate. ±4.00 to ±6.00 D → Ultra Thin. Over ±6.00 D → Ultra Thin Pro.'}
               </p>
             </div>
           )}
