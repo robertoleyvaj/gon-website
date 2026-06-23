@@ -94,7 +94,7 @@ function ItemCard({ item, onRemove }: { item: CartItem; onRemove: () => void }) 
               <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 400, color: '#55624c' }}>{t('Gratis', 'Free')}</div>
             </div>
           ) : (
-            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 400, color: '#1d1d1d' }}>${item.precio_total}</div>
+            <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 400, color: '#1d1d1d' }}>${item.precio_total.toLocaleString('es-MX')} MXN</div>
           )}
           <button onClick={onRemove} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a9a9a', fontSize: '11px', fontFamily: 'var(--font-sans)', textDecoration: 'underline', padding: 0 }}>
             {t('Eliminar', 'Remove')}
@@ -258,7 +258,7 @@ export default function CartDrawer() {
     ? item.precio_total > 0
       ? <span>{t('Armazón gratis', 'Frame free')} + ${item.precio_total} {t('micas', 'lenses')}</span>
       : t('Gratis', 'Free')
-    : `$${item.precio_total}`}
+    : `$${item.precio_total.toLocaleString('es-MX')} MXN`}
 </span>
                 </div>
               ))}
@@ -267,7 +267,7 @@ export default function CartDrawer() {
             {/* Total */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1.25rem', paddingTop: '0.75rem', borderTop: '1px solid #f0ede8' }}>
               <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 600, color: '#1d1d1d', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Total</span>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 400, color: '#1d1d1d' }}>${totalPrecio} <span style={{ fontSize: '0.75rem', color: '#9a9a9a', fontFamily: 'var(--font-sans)' }}>USD</span></span>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 400, color: '#1d1d1d' }}>${totalPrecio.toLocaleString('es-MX')} <span style={{ fontSize: '0.75rem', color: '#9a9a9a', fontFamily: 'var(--font-sans)' }}>MXN</span></span>
             </div>
 
             {/* Botón checkout */}

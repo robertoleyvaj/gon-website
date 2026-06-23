@@ -34,40 +34,37 @@ type RecetaData = {
 
 type RecetaEstado = 'sin_receta' | 'manual' | 'foto' | 'despues' | 'sin_graduacion' | 'guardada';
 
-const PRECIO_ARMAZON = 13;
+const PRECIO_ARMAZON = 13; // USD fallback (solo cuando armazon.precio no está disponible)
 const TURQUESA = '#2BBFB3';
 const TURQUESA_DARK = '#1fa89f';
 
+// Precios en MXN directamente (no USD)
 const visionOpts = [
-  { id: 'mono', nombre: 'Monofocal básico', nombre_en: 'Single Vision', desc_es: 'Para ver de lejos o cerca. Ideal para uso diario.', desc_en: 'For distance or near vision. Great for everyday use.', precio: 15 },
-  { id: 'bi', nombre: 'Bifocal', nombre_en: 'Bifocal', desc_es: 'Para ver de lejos y cerca con línea visible.', desc_en: 'For distance and near vision with a visible line.', precio: 49 },
-  { id: 'prog', nombre: 'Progresivo', nombre_en: 'Progressive', desc_es: 'Visión para todas las distancias sin línea visible.', desc_en: 'All-distance vision without a visible line.', precio: 89 },
+  { id: 'mono', nombre: 'Monofocal básico', nombre_en: 'Single Vision', desc_es: 'Para ver de lejos o cerca. Ideal para uso diario.', desc_en: 'For distance or near vision. Great for everyday use.', precio: 749 },
+  { id: 'bi', nombre: 'Bifocal', nombre_en: 'Bifocal', desc_es: 'Para ver de lejos y cerca con línea visible.', desc_en: 'For distance and near vision with a visible line.', precio: 1149 },
+  { id: 'prog', nombre: 'Progresivo', nombre_en: 'Progressive', desc_es: 'Visión para todas las distancias sin línea visible.', desc_en: 'All-distance vision without a visible line.', precio: 1899 },
 ];
 
 const materialOpts = [
-  { id: 'cr39', nombre: 'Standard Vision', nombre_en: 'Standard Vision', desc_es: 'Mica básica para graduaciones bajas y uso diario.', desc_en: 'Basic lens for low prescriptions and everyday use.', precio: 0 },
-  { id: 'poly', nombre: 'Thin & Durable', nombre_en: 'Thin & Durable', desc_es: 'Más resistente, ligera y recomendada para uso diario.', desc_en: 'Stronger, lighter, and recommended for everyday wear.', precio: 29 },
-  { id: 'hd', nombre: 'ClearView Plus', nombre_en: 'ClearView Plus', desc_es: 'Mejor claridad visual y apariencia más ligera.', desc_en: 'Better visual clarity with a lighter look.', precio: 39 },
-  { id: 'hi', nombre: 'Ultra Thin', nombre_en: 'Ultra Thin', desc_es: 'Ideal para graduaciones medias-altas. Más delgada y estética.', desc_en: 'Ideal for medium-high prescriptions. Thinner and cleaner look.', precio: 59 },
-  { id: 'shi', nombre: 'Ultra Thin Pro', nombre_en: 'Ultra Thin Pro', desc_es: 'Nuestra opción más delgada para graduaciones altas.', desc_en: 'Our thinnest option for high prescriptions.', precio: 89 },
+  { id: 'cr39', nombre: 'Essential', nombre_en: 'Essential', desc_es: 'Mica base incluida. Para graduaciones hasta ±2.00.', desc_en: 'Included base lens. For prescriptions up to ±2.00.', precio: 0 },
+  { id: 'poly', nombre: 'Poly Plus', nombre_en: 'Poly Plus', desc_es: 'Policarbonato resistente a impactos. Recomendado para uso diario.', desc_en: 'Impact-resistant polycarbonate. Recommended for daily use.', precio: 997 },
+  { id: 'hi', nombre: 'Ultra Slim', nombre_en: 'Ultra Slim', desc_es: 'Hi-Index 1.67. Significativamente más delgado y ligero.', desc_en: 'Hi-Index 1.67. Significantly thinner and lighter.', precio: 3197 },
+  { id: 'shi', nombre: 'Ultra Slim Pro', nombre_en: 'Ultra Slim Pro', desc_es: 'Hi-Index 1.74. Nuestra opción más delgada para graduaciones altas.', desc_en: 'Hi-Index 1.74. Our thinnest option for high prescriptions.', precio: 4697 },
 ];
 
 const filtroOpts = [
-  { id: 'ar', nombre: 'Essential AR', nombre_en: 'Essential AR', desc_es: 'Reduce reflejos básicos para una visión más cómoda.', desc_en: 'Reduces basic reflections for more comfortable vision.', precio: 11 },
-  { id: 'blue', nombre: 'Blue Light Comfort', nombre_en: 'Blue Light Comfort', desc_es: 'Ayuda si usas computadora, celular o pantallas por muchas horas.', desc_en: 'Helpful if you use computers, phones, or screens for long hours.', precio: 18 },
-  { id: 'foto', nombre: 'Fotocromático', nombre_en: 'Photochromic', desc_es: 'Se oscurece en exterior y vuelve claro en interior.', desc_en: 'Darkens outdoors and returns clear indoors.', precio: 49 },
-  { id: 'anti', nombre: 'Anti-Fog', nombre_en: 'Anti-Fog', desc_es: 'Ayuda a reducir el empañamiento.', desc_en: 'Helps reduce fogging.', precio: 15 },
-  { id: 'arprem', nombre: 'Premium Clarity AR', nombre_en: 'Premium Clarity AR', desc_es: 'Mejor antirreflejante. Ideal para manejar de noche.', desc_en: 'Better anti-reflective coating. Ideal for night driving.', precio: 24 },
-  { id: 'pol', nombre: 'Polarizado', nombre_en: 'Polarized', desc_es: 'Reduce reflejos fuertes en exterior. Ideal para lentes de sol.', desc_en: 'Reduces strong outdoor glare. Ideal for sunglasses.', precio: 70 },
-  { id: 'tinte', nombre: 'Tinte estético', nombre_en: 'Fashion Tint', desc_es: 'Agrega color a tus lentes para un look personalizado.', desc_en: 'Adds color to your lenses for a personalized look.', precio: 28 },
+  { id: 'ar', nombre: 'Antirreflejo', nombre_en: 'Anti-Reflective', desc_es: 'Reduce reflejos. Mejor visión de noche y en pantallas.', desc_en: 'Reduces glare. Better vision at night and on screens.', precio: 279 },
+  { id: 'blue', nombre: 'Blue Light', nombre_en: 'Blue Light', desc_es: 'Filtra la luz azul de pantallas. Ideal para uso intenso de celular o compu.', desc_en: 'Filters blue light from screens. Ideal for heavy screen users.', precio: 549 },
+  { id: 'foto', nombre: 'Fotocromático', nombre_en: 'Photochromic', desc_es: 'Se oscurece en exterior y vuelve claro en interior.', desc_en: 'Darkens outdoors and returns clear indoors.', precio: 949 },
+  { id: 'pol', nombre: 'Polarizado', nombre_en: 'Polarized', desc_es: 'Elimina reflejos intensos. Ideal para manejar o playa.', desc_en: 'Eliminates intense glare. Ideal for driving or beach.', precio: 1699 },
+  { id: 'tinte', nombre: 'Tinte', nombre_en: 'Fashion Tint', desc_es: 'Agrega color a tus lentes. Disponible en varios tonos.', desc_en: 'Adds color to your lenses. Available in various shades.', precio: 549 },
 ];
 
 const filtroOptsSolar = [
-  { id: 'pol', nombre: 'Polarizado', nombre_en: 'Polarized', desc_es: 'Elimina reflejos intensos. El estándar para lentes de sol de calidad.', desc_en: 'Eliminates intense glare. The standard for quality sunglasses.', precio: 70 },
-  { id: 'foto', nombre: 'Fotocromático', nombre_en: 'Photochromic', desc_es: 'Se oscurece en exterior y aclara en interior automáticamente.', desc_en: 'Darkens outdoors and clears indoors automatically.', precio: 49 },
-  { id: 'tinte', nombre: 'Tinte estético', nombre_en: 'Fashion Tint', desc_es: 'Elige el color de tus lentes para un look único.', desc_en: 'Choose your lens color for a unique look.', precio: 28 },
-  { id: 'arprem', nombre: 'Premium Clarity AR', nombre_en: 'Premium Clarity AR', desc_es: 'Reduce reflejos internos para mayor claridad.', desc_en: 'Reduces internal reflections for better clarity.', precio: 24 },
-  { id: 'anti', nombre: 'Anti-Fog', nombre_en: 'Anti-Fog', desc_es: 'Ayuda a reducir el empañamiento.', desc_en: 'Helps reduce fogging.', precio: 15 },
+  { id: 'pol', nombre: 'Polarizado', nombre_en: 'Polarized', desc_es: 'Elimina reflejos intensos. El estándar para lentes de sol de calidad.', desc_en: 'Eliminates intense glare. The standard for quality sunglasses.', precio: 1699 },
+  { id: 'foto', nombre: 'Fotocromático', nombre_en: 'Photochromic', desc_es: 'Se oscurece en exterior y aclara en interior automáticamente.', desc_en: 'Darkens outdoors and clears indoors automatically.', precio: 949 },
+  { id: 'tinte', nombre: 'Tinte', nombre_en: 'Fashion Tint', desc_es: 'Elige el color de tus lentes para un look único.', desc_en: 'Choose your lens color for a unique look.', precio: 549 },
+  { id: 'ar', nombre: 'Antirreflejo', nombre_en: 'Anti-Reflective', desc_es: 'Reduce reflejos internos para mayor claridad.', desc_en: 'Reduces internal reflections for better clarity.', precio: 279 },
 ];
 
 const COLORES_FOTO = [
@@ -103,7 +100,7 @@ function getColoresDisponibles(visionId: string, materialId: string) {
     return soloGris;
   }
   if (visionId === 'prog') {
-    if (materialId === 'cr39' || materialId === 'hi' || materialId === 'hd')
+    if (materialId === 'cr39' || materialId === 'hi')
       return COLORES_FOTO.filter(c => c.id === 'gris' || c.id === 'cafe');
     return soloGris;
   }
@@ -288,28 +285,23 @@ function calcularPaquete(r: RecetaData, lang: 'es' | 'en'): PaqueteGON {
   const astigmatismo = cyl >= 0.75;
   let vision = visionOpts[0];
   if (add > 0) vision = visionOpts[2];
-  let material = materialOpts[1];
-  if (eq > 4.0) material = materialOpts[4];
-  else if (eq > 2.0) material = materialOpts[3];
-  const filtroBase = astigmatismo || add > 0 ? filtroOpts[4] : filtroOpts[2];
+  let material = materialOpts[1]; // Poly Plus por defecto
+  if (eq > 4.0) material = materialOpts[3]; // Ultra Slim Pro
+  else if (eq > 2.0) material = materialOpts[2]; // Ultra Slim
+  const filtroBase = filtroOpts[0]; // Antirreflejo base
   let condicion = '', explicacion = '';
   if (add > 0) { condicion = lang === 'es' ? 'Presbicia' : 'Presbyopia'; explicacion = lang === 'es' ? `Tienes adición (ADD +${add.toFixed(2)}), indicando presbicia.` : `You have presbyopia. Progressive lenses correct all distances.`; }
-  else if (cyl >= 1.50) { condicion = lang === 'es' ? 'Astigmatismo alto' : 'High astigmatism'; explicacion = lang === 'es' ? 'Astigmatismo alto detectado. Premium Clarity AR ayuda a reducir reflejos.' : 'High astigmatism detected. Premium Clarity AR helps reduce reflections.'; }
-  else if (astigmatismo) { condicion = lang === 'es' ? 'Astigmatismo' : 'Astigmatism'; explicacion = lang === 'es' ? 'Tienes astigmatismo. Premium Clarity AR mejora la comodidad visual.' : 'You have astigmatism. Premium Clarity AR improves visual comfort.'; }
-  else if (eq > 4.0) { condicion = lang === 'es' ? 'Graduación muy alta' : 'Very high prescription'; explicacion = lang === 'es' ? 'El Ultra Thin Pro hará tus lentes delgados y elegantes.' : 'Ultra Thin Pro makes your lenses thin and elegant.'; }
-  else if (eq > 2.0) { condicion = lang === 'es' ? 'Graduación alta' : 'High prescription'; explicacion = lang === 'es' ? 'El Ultra Thin reducirá el grosor hasta un 30%.' : 'Ultra Thin will reduce lens thickness by up to 30%.'; }
-  else { condicion = lang === 'es' ? 'Graduación moderada' : 'Moderate prescription'; explicacion = lang === 'es' ? 'Thin & Durable es resistente y el Fotocromático te da comodidad.' : 'Thin & Durable is strong and Photochromic gives indoor/outdoor comfort.'; }
+  else if (cyl >= 1.50) { condicion = lang === 'es' ? 'Astigmatismo alto' : 'High astigmatism'; explicacion = lang === 'es' ? 'Astigmatismo alto detectado. El Antirreflejo ayuda a reducir reflejos.' : 'High astigmatism detected. Anti-Reflective helps reduce glare.'; }
+  else if (astigmatismo) { condicion = lang === 'es' ? 'Astigmatismo' : 'Astigmatism'; explicacion = lang === 'es' ? 'Tienes astigmatismo. El Antirreflejo mejora la comodidad visual.' : 'You have astigmatism. Anti-Reflective improves visual comfort.'; }
+  else if (eq > 4.0) { condicion = lang === 'es' ? 'Graduación muy alta' : 'Very high prescription'; explicacion = lang === 'es' ? 'El Ultra Slim Pro hará tus lentes delgados y elegantes.' : 'Ultra Slim Pro makes your lenses thin and elegant.'; }
+  else if (eq > 2.0) { condicion = lang === 'es' ? 'Graduación alta' : 'High prescription'; explicacion = lang === 'es' ? 'El Ultra Slim reducirá el grosor hasta un 30%.' : 'Ultra Slim will reduce lens thickness by up to 30%.'; }
+  else { condicion = lang === 'es' ? 'Graduación moderada' : 'Moderate prescription'; explicacion = lang === 'es' ? 'Poly Plus es resistente y el Fotocromático te da comodidad en exteriores.' : 'Poly Plus is strong and Photochromic gives indoor/outdoor comfort.'; }
   const precioOriginal = PRECIO_ARMAZON + vision.precio + material.precio + filtroBase.precio;
   const descuento = Math.round(precioOriginal * 0.10);
   const precioFinal = precioOriginal - descuento;
   const upsells: { id: string; nombre: string; precio: number; razon: string }[] = [];
-  if (filtroBase.id === 'arprem') {
-    upsells.push({ id: 'blue', nombre: 'Blue Light Comfort', precio: 18, razon: lang === 'es' ? 'Para uso diario de pantallas' : 'For daily screen use' });
-    upsells.push({ id: 'anti', nombre: 'Anti-Fog', precio: 15, razon: lang === 'es' ? 'Evita empañamiento' : 'Prevents fogging' });
-  } else {
-    upsells.push({ id: 'arprem', nombre: 'Premium Clarity AR', precio: 24, razon: lang === 'es' ? 'Reduce reflejos al manejar de noche' : 'Reduces reflections when driving at night' });
-    upsells.push({ id: 'anti', nombre: 'Anti-Fog', precio: 15, razon: lang === 'es' ? 'Evita empañamiento' : 'Prevents fogging' });
-  }
+  upsells.push({ id: 'foto', nombre: 'Fotocromático', precio: 949, razon: lang === 'es' ? 'Se oscurece en exterior automáticamente' : 'Automatically darkens outdoors' });
+  upsells.push({ id: 'blue', nombre: 'Blue Light', precio: 549, razon: lang === 'es' ? 'Para uso diario de pantallas' : 'For daily screen use' });
   return { vision, material, filtroBase, precioOriginal, precioFinal, descuento, condicion, explicacion, upsells };
 }
 
@@ -336,8 +328,11 @@ function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang, ti
   const [extras, setExtras] = useState<string[]>([]);
   const toggleExtra = (id: string) => setExtras(prev => prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]);
   const precioExtras = extras.reduce((sum, id) => sum + (paquete.upsells.find(u => u.id === id)?.precio || 0), 0);
-  const px = (usd: number) => lang === 'es' ? `$${redondearMXN(usd, tipoCambio)} MXN` : `$${usd} USD`;
-  const pxPlus = (usd: number) => lang === 'es' ? `+$${redondearMXN(usd, tipoCambio)} MXN` : `+$${usd} USD`;
+  // Lens prices are now in MXN directly
+  const pxMXN = (mxn: number) => lang === 'es' ? `$${mxn.toLocaleString('es-MX')} MXN` : `$${Math.round(mxn / tipoCambio)} USD`;
+  const pxPlusMXN = (mxn: number) => lang === 'es' ? `+$${mxn.toLocaleString('es-MX')} MXN` : `+$${Math.round(mxn / tipoCambio)} USD`;
+  // Frame price stays in USD from DB
+  const pxArmazon = (usd: number) => lang === 'es' ? `$${redondearMXN(usd, tipoCambio)} MXN` : `$${usd} USD`;
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(28,28,26,0.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
       <div style={{ background: 'white', borderRadius: '12px', width: '100%', maxWidth: '440px', boxShadow: '0 24px 64px rgba(28,28,26,0.18)', overflow: 'hidden', animation: 'slideUp 0.3s ease-out', maxHeight: '90vh', overflowY: 'auto' }}>
@@ -356,10 +351,10 @@ function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang, ti
                 </div>
                 <div style={{ padding: '0.75rem 1rem' }}>
                   {[
-                    { label: armazonNombre, valor: px(PRECIO_ARMAZON) },
-                    { label: lang === 'es' ? paquete.vision.nombre : paquete.vision.nombre_en, valor: pxPlus(paquete.vision.precio) },
-                    { label: lang === 'es' ? paquete.material.nombre : paquete.material.nombre_en, valor: paquete.material.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : pxPlus(paquete.material.precio) },
-                    { label: lang === 'es' ? paquete.filtroBase.nombre : paquete.filtroBase.nombre_en, valor: pxPlus(paquete.filtroBase.precio) },
+                    { label: armazonNombre, valor: pxArmazon(PRECIO_ARMAZON) },
+                    { label: lang === 'es' ? paquete.vision.nombre : paquete.vision.nombre_en, valor: pxPlusMXN(paquete.vision.precio) },
+                    { label: lang === 'es' ? paquete.material.nombre : paquete.material.nombre_en, valor: paquete.material.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : pxPlusMXN(paquete.material.precio) },
+                    { label: lang === 'es' ? paquete.filtroBase.nombre : paquete.filtroBase.nombre_en, valor: pxPlusMXN(paquete.filtroBase.precio) },
                   ].map((item, i) => (
                     <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', padding: '6px 0', borderBottom: i < 3 ? '1px solid var(--cream)' : 'none' }}>
                       <span style={{ color: 'var(--warm-gray)' }}>{item.label}</span><span style={{ fontWeight: 500 }}>{item.valor}</span>
@@ -368,10 +363,10 @@ function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang, ti
                 </div>
                 <div style={{ padding: '0.75rem 1rem', background: 'var(--cream)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>{px(paquete.precioOriginal)}</div>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--sage)' }}>{px(paquete.precioFinal)}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>{pxMXN(paquete.precioOriginal)}</div>
+                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--sage)' }}>{pxMXN(paquete.precioFinal)}</div>
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{lang === 'es' ? `Ahorras ${px(paquete.descuento)}` : `You save ${px(paquete.descuento)}`}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{lang === 'es' ? `Ahorras ${pxMXN(paquete.descuento)}` : `You save ${pxMXN(paquete.descuento)}`}</div>
                 </div>
               </div>
               {/* DRAWER ACTION → TURQUESA */}
@@ -399,12 +394,12 @@ function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang, ti
                       <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{u.razon}</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--sage)', flexShrink: 0 }}>{pxPlus(u.precio)}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--sage)', flexShrink: 0 }}>{pxPlusMXN(u.precio)}</div>
                 </div>
               ))}
               <div style={{ background: 'var(--cream)', borderRadius: '6px', padding: '0.9rem 1rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--warm-gray)' }}>Total</span>
-                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--charcoal)' }}>{px(paquete.precioFinal + precioExtras)}</span>
+                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.3rem', fontWeight: 300, color: 'var(--charcoal)' }}>{pxMXN(paquete.precioFinal + precioExtras)}</span>
               </div>
               {/* DRAWER ACTION → TURQUESA */}
               <button onClick={() => onAceptar(extras)} style={{ width: '100%', background: TURQUESA, color: 'white', border: 'none', borderRadius: '6px', padding: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = TURQUESA_DARK)} onMouseLeave={e => (e.currentTarget.style.background = TURQUESA)}>
@@ -641,17 +636,17 @@ export default function DetalleArmazon() {
     }
   }, [lightboxOpen]);
 
-  const precioArmazon = esRegalo ? 0 : (armazon?.precio || PRECIO_ARMAZON);
-  const px = (usd: number) => lang === 'es' ? `$${redondearMXN(usd, tipoCambio)} MXN` : `$${usd} USD`;
-  const pxPlus = (usd: number) => lang === 'es' ? `+$${redondearMXN(usd, tipoCambio)} MXN` : `+$${usd} USD`;
-  const precioVision = (preciosDB.vision.find((v: any) => v.id === vision)?.precio || visionOpts.find(v => v.id === vision)?.precio || 0);
-  const precioMaterial = (preciosDB.material.find((m: any) => m.id === material)?.precio || materialOpts.find(m => m.id === material)?.precio || 0);
-  const precioFiltros = filtros.reduce((total, fid) => {
-    const precioDB = preciosDB.filtro.find((f: any) => f.id === fid)?.precio;
-    const precioLocal = filtroOpts.find((f: any) => f.id === fid)?.precio || 0;
-    return total + (precioDB || precioLocal);
+  const precioArmazonUSD = esRegalo ? 0 : (armazon?.precio || PRECIO_ARMAZON);
+  const precioArmazonMXN = esRegalo ? 0 : redondearMXN(precioArmazonUSD, tipoCambio);
+  // Lens prices are now stored in MXN directly
+  const pxMXN = (mxn: number) => lang === 'es' ? `$${mxn.toLocaleString('es-MX')} MXN` : `$${Math.round(mxn / tipoCambio)} USD`;
+  const pxPlus = (mxn: number) => lang === 'es' ? `+$${mxn.toLocaleString('es-MX')} MXN` : `+$${Math.round(mxn / tipoCambio)} USD`;
+  const precioVision = (visionOpts.find(v => v.id === vision)?.precio || 0);
+  const precioMaterial = (materialOpts.find(m => m.id === material)?.precio || 0);
+  const precioFiltros = filtros.reduce((sum, fid) => {
+    return sum + (filtroOpts.find((f: any) => f.id === fid)?.precio || 0);
   }, 0);
-  const total = soloArmazon ? precioArmazon : precioArmazon + precioVision + precioMaterial + precioFiltros;
+  const totalMXN = soloArmazon ? precioArmazonMXN : precioArmazonMXN + precioVision + precioMaterial + precioFiltros;
 
   const toggleFiltro = (fid: string) => setFiltros(prev => prev.includes(fid) ? prev.filter(f => f !== fid) : [...prev, fid]);
   const tieneReceta = recetaEstado === 'guardada' || recetaEstado === 'foto' || recetaEstado === 'sin_graduacion';
@@ -705,7 +700,7 @@ export default function DetalleArmazon() {
       armazon_id: armazon!.id,
       armazon_nombre: armazon!.nombre,
       armazon_imagen: armazon!.imagen_url,
-      armazon_precio: precioArmazon,
+      armazon_precio: precioArmazonUSD,
       es_regalo: esRegalo,
       solo_armazon: soloArmazon,
       lentes: soloArmazon ? undefined : {
@@ -719,7 +714,7 @@ export default function DetalleArmazon() {
         foto_url: recetaEstado === 'foto' ? fotoReceta : undefined,
       },
       paciente: paciente.trim() || undefined,
-      precio_total: total,
+      precio_total: totalMXN,
     };
     addItem(item);
     setDrawerOpen(false);
@@ -870,8 +865,8 @@ export default function DetalleArmazon() {
               <p style={{ fontSize: '0.8rem', color: 'var(--warm-gray)' }}>{t('Puedes llevarlos como vienen o personalizarlos.', 'Wear them as-is or customize them.')}</p>
             </div>
             {[
-              { title: t('Solo el armazón', 'Frame only'), precio: px(precioArmazon), desc: t('Incluye lentes oscuros estándar. Sin graduación.', 'Includes standard dark lenses. No prescription.'), dark: false, onClick: () => { setSoloArmazon(true); setDrawerEstado('config'); setPaso(4); } },
-              { title: t('Personalizar mis micas', 'Customize my lenses'), precio: `${t('desde', 'from')} ${px(precioArmazon + 15)}`, desc: t('Agregar graduación, polarizado, fotocromático y más.', 'Add prescription, polarized, photochromic and more.'), dark: true, onClick: () => { setSoloArmazon(false); setDrawerEstado('inicio'); } }
+              { title: t('Solo el armazón', 'Frame only'), precio: pxMXN(precioArmazonMXN), desc: t('Incluye lentes oscuros estándar. Sin graduación.', 'Includes standard dark lenses. No prescription.'), dark: false, onClick: () => { setSoloArmazon(true); setDrawerEstado('config'); setPaso(4); } },
+              { title: t('Personalizar mis micas', 'Customize my lenses'), precio: `${t('desde', 'from')} ${pxMXN(precioArmazonMXN + 749)}`, desc: t('Agregar graduación, polarizado, fotocromático y más.', 'Add prescription, polarized, photochromic and more.'), dark: true, onClick: () => { setSoloArmazon(false); setDrawerEstado('inicio'); } }
             ].map((opt, i) => (
               <div key={i} onClick={opt.onClick} style={{ border: opt.dark ? 'none' : '1px solid var(--border)', borderRadius: '8px', padding: '1.5rem', cursor: 'pointer', background: opt.dark ? 'var(--charcoal)' : 'var(--cream)', marginBottom: '0.75rem', transition: 'all 0.2s' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(28,28,26,0.08)'; }}
@@ -974,9 +969,9 @@ export default function DetalleArmazon() {
             {soloArmazon ? (
               <div style={{ padding: '2rem', flex: 1 }}>
                 <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1.25rem', marginBottom: '1.5rem', border: '1px solid var(--border)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px', borderBottom: '1px solid var(--border)' }}><span style={{ color: 'var(--warm-gray)' }}>{armazon.nombre}</span><span style={{ fontWeight: 500 }}>{px(precioArmazon)}</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px', borderBottom: '1px solid var(--border)' }}><span style={{ color: 'var(--warm-gray)' }}>{armazon.nombre}</span><span style={{ fontWeight: 500 }}>{pxMXN(precioArmazonMXN)}</span></div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontSize: '13px' }}><span style={{ color: 'var(--warm-gray)' }}>{t('Lentes oscuros estándar', 'Standard dark lenses')}</span><span style={{ color: 'var(--sage)', fontWeight: 500 }}>{t('Incluido', 'Included')}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}><span>Total</span><span>{px(precioArmazon)}</span></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}><span>Total</span><span>{pxMXN(precioArmazonMXN)}</span></div>
                 </div>
                 <button onClick={() => { setSoloArmazon(false); setDrawerEstado('inicio_solar'); }} style={{ width: '100%', background: 'none', border: '1px solid var(--border)', borderRadius: '6px', padding: '11px', fontSize: '12px', color: 'var(--warm-gray)', cursor: 'pointer', fontFamily: 'var(--font-sans)', marginBottom: '10px' }}>
                   {t('← Personalizar mis micas', '← Customize my lenses')}
@@ -1093,7 +1088,7 @@ export default function DetalleArmazon() {
                       </div>
                       <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1.1rem', marginBottom: '1.25rem', border: '1px solid var(--border)' }}>
                         {[
-                          { label: t('Armazón', 'Frame'), value: esRegalo ? `~~${px(armazon?.precio || PRECIO_ARMAZON)}~~ $0 🎁` : px(precioArmazon) },
+                          { label: t('Armazón', 'Frame'), value: esRegalo ? `~~${pxMXN(redondearMXN(armazon?.precio || PRECIO_ARMAZON, tipoCambio))}~~ $0 🎁` : pxMXN(precioArmazonMXN) },
                           { label: `${t('Visión', 'Vision')}: ${lang === 'es' ? (visionOpts.find(v => v.id === vision)?.nombre || '-') : (visionOpts.find(v => v.id === vision)?.nombre_en || '-')}`, value: pxPlus(precioVision) },
                           { label: `${t('Material', 'Material')}: ${lang === 'es' ? (materialOpts.find(m => m.id === material)?.nombre || '-') : (materialOpts.find(m => m.id === material)?.nombre_en || '-')}`, value: precioMaterial === 0 ? t('Incluido', 'Included') : pxPlus(precioMaterial) },
                           ...filtroOpts.filter(f => filtros.includes(f.id)).map(f => {
@@ -1111,7 +1106,7 @@ export default function DetalleArmazon() {
                           </div>
                         ))}
                         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 0 0', fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300 }}>
-                          <span>Total</span><span>{px(total)}</span>
+                          <span>Total</span><span>{pxMXN(totalMXN)}</span>
                         </div>
                       </div>
                       {!tieneReceta && (
@@ -1250,7 +1245,7 @@ export default function DetalleArmazon() {
               {armazon.descuento && armazon.descuento > 0 && <span style={{ background: 'var(--charcoal)', color: 'white', fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: '2px' }}>-{armazon.descuento}%</span>}
             </div>
             <div style={{ marginBottom: '1.75rem' }}>
-              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--charcoal)', margin: '0 0 3px' }}>{lang === 'es' ? `Graduadas desde $${redondearMXN(15, tipoCambio)} MXN` : 'With lenses from $15 USD'}</p>
+              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--charcoal)', margin: '0 0 3px' }}>{lang === 'es' ? 'Graduadas desde $749 MXN' : 'With lenses from $42 USD'}</p>
               <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', margin: 0 }}>Single Vision · Blue Light · {t('Fotocromático', 'Photochromic')} · {t('Progresivo', 'Progressive')}</p>
             </div>
             {/* PAGE CTA → SAGE */}
