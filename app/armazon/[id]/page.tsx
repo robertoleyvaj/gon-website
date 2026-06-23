@@ -47,8 +47,8 @@ const visionOpts = [
 
 const materialOpts = [
   { id: 'cr39', nombre: 'Essential', nombre_en: 'Essential', desc_es: 'Mica base incluida. Para graduaciones hasta ±2.00.', desc_en: 'Included base lens. For prescriptions up to ±2.00.', precio: 0 },
-  { id: 'poly', nombre: 'Poly Plus', nombre_en: 'Poly Plus', desc_es: 'Policarbonato 1.58. Muy resistente. Ideal para niños o uso activo.', desc_en: 'Polycarbonate 1.58. Highly resistant. Ideal for kids or active use.', precio: 997 },
   { id: 'hd', nombre: 'Slim HD', nombre_en: 'Slim HD', desc_es: 'Hi-Index 1.60. Más delgado que Poly Plus. Para graduaciones medias.', desc_en: 'Hi-Index 1.60. Thinner than Poly Plus. For mid-range prescriptions.', precio: 397 },
+  { id: 'poly', nombre: 'Poly Plus', nombre_en: 'Poly Plus', desc_es: 'Policarbonato 1.58. Muy resistente. Ideal para niños o uso activo.', desc_en: 'Polycarbonate 1.58. Highly resistant. Ideal for kids or active use.', precio: 997 },
   { id: 'hi', nombre: 'Ultra Slim', nombre_en: 'Ultra Slim', desc_es: 'Hi-Index 1.67. Significativamente más delgado y ligero.', desc_en: 'Hi-Index 1.67. Significantly thinner and lighter.', precio: 3197 },
   { id: 'shi', nombre: 'Ultra Slim Pro', nombre_en: 'Ultra Slim Pro', desc_es: 'Hi-Index 1.74. Nuestra opción más delgada para graduaciones altas.', desc_en: 'Hi-Index 1.74. Our thinnest option for high prescriptions.', precio: 4697 },
 ];
@@ -286,10 +286,10 @@ function calcularPaquete(r: RecetaData, lang: 'es' | 'en'): PaqueteGON {
   const astigmatismo = cyl >= 0.75;
   let vision = visionOpts[0];
   if (add > 0) vision = visionOpts[2];
-  let material = materialOpts[1]; // Poly Plus por defecto
+  let material = materialOpts[0]; // Essential por defecto
   if (eq > 4.0) material = materialOpts[4]; // Ultra Slim Pro
   else if (eq > 2.0) material = materialOpts[3]; // Ultra Slim
-  else if (eq > 1.5) material = materialOpts[2]; // Slim HD para graduaciones medias
+  else if (eq > 1.5) material = materialOpts[1]; // Slim HD para graduaciones medias
   const filtroBase = filtroOpts[0]; // Antirreflejo base
   let condicion = '', explicacion = '';
   if (add > 0) { condicion = lang === 'es' ? 'Presbicia' : 'Presbyopia'; explicacion = lang === 'es' ? `Tienes adición (ADD +${add.toFixed(2)}), indicando presbicia.` : `You have presbyopia. Progressive lenses correct all distances.`; }
