@@ -627,6 +627,172 @@ function ModalPedido({ pedido, onClose, onSaved }: { pedido: any; onClose: () =>
   );
 }
 
+// ── MÓDULO PROMOCIONES ────────────────────────────────────────────────────
+function ModuloPromociones() {
+  const [codigos, setCodigos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [mostrando, setMostrando] = useState<'lista' | 'crear'>('lista');
+  const [guardando, setGuardando] = useState(false);
+  const [form, setForm] = useState({ codigo: '', tipo: 'porcentaje', valor: '', minimo_compra: '', usos_maximos: '', expires_at: '', descripcion: '', activo: true });
+  const [errorForm, setErrorForm] = useState('');
+
+  const cargar = async () => {
+    setLoading(true);
+    const { data } = await supabase.from('codigos_descuento').select('*').order('created_at', { ascending: false });
+    setCodigos(data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { cargar(); }, []);
+
+  const toggleActivo = async (id: string, activo: boolean) => {
+    await supabase.from('codigos_descuento').update({ activo: !activo }).eq('id', id);
+    setCodigos(prev => prev.map(c => c.id === id ? { ...c, activo: !activo } : c));
+  };
+
+  const eliminar = async (id: string) => {
+    if (!confirm('¿Eliminar este código?')) return;
+    await supabase.from('codigos_descuento').delete().eq('id', id);
+    setCodigos(prev => prev.filter(c => c.id !== id));
+  };
+
+  const guardar = async () => {
+    if (!form.codigo.trim()) return setErrorForm('El código es requerido');
+    if (!form.valor || isNaN(Number(form.valor)) || Number(form.valor) <= 0) return setErrorForm('Ingresa un valor válido');
+    if (form.tipo === 'porcentaje' && Number(form.valor) > 100) return setErrorForm('El porcentaje no puede ser mayor a 100');
+    setGuardando(true);
+    setErrorForm('');
+    const payload: any = {
+      codigo: form.codigo.toUpperCase().trim(),
+      tipo: form.tipo,
+      valor: Number(form.valor),
+      minimo_compra: form.minimo_compra ? Number(form.minimo_compra) : 0,
+      usos_maximos: form.usos_maximos ? Number(form.usos_maximos) : null,
+      expires_at: form.expires_at || null,
+      descripcion: form.descripcion.trim(),
+      activo: form.activo,
+    };
+    const { error } = await supabase.from('codigos_descuento').insert([payload]);
+    setGuardando(false);
+    if (error) return setErrorForm(error.message.includes('unique') ? 'Ya existe un código con ese nombre' : error.message);
+    setForm({ codigo: '', tipo: 'porcentaje', valor: '', minimo_compra: '', usos_maximos: '', expires_at: '', descripcion: '', activo: true });
+    setMostrando('lista');
+    cargar();
+  };
+
+  const inp = { padding: '9px 12px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '13px', fontFamily: 'var(--font-sans)', outline: 'none', width: '100%', boxSizing: 'border-box' as any, color: 'var(--charcoal)', background: 'white' };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+        <div>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 400, color: 'var(--charcoal)', margin: 0 }}>Códigos de descuento</h2>
+          <p style={{ fontSize: '12px', color: 'var(--warm-gray)', margin: '4px 0 0' }}>Crea y administra cupones para tus clientes.</p>
+        </div>
+        <button onClick={() => setMostrando(mostrando === 'crear' ? 'lista' : 'crear')} style={{ background: mostrando === 'crear' ? '#f5f3ef' : 'var(--charcoal)', color: mostrando === 'crear' ? 'var(--charcoal)' : 'white', border: '1px solid var(--border)', borderRadius: '6px', padding: '9px 18px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.06em', fontFamily: 'var(--font-sans)' }}>
+          {mostrando === 'crear' ? '← Ver lista' : '+ Nuevo código'}
+        </button>
+      </div>
+
+      {mostrando === 'crear' && (
+        <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', padding: '1.5rem', marginBottom: '1.5rem' }}>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 400, color: 'var(--charcoal)', margin: '0 0 1.25rem' }}>Nuevo código</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '5px' }}>Código *</label>
+              <input style={inp} value={form.codigo} onChange={e => setForm(p => ({ ...p, codigo: e.target.value.toUpperCase() }))} placeholder="BIENVENIDO20"/>
+            </div>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '5px' }}>Tipo *</label>
+              <select style={inp} value={form.tipo} onChange={e => setForm(p => ({ ...p, tipo: e.target.value }))}>
+                <option value="porcentaje">Porcentaje (%)</option>
+                <option value="fijo">Monto fijo (MXN)</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '5px' }}>Valor * {form.tipo === 'porcentaje' ? '(ej: 20 = 20%)' : '(MXN)'}</label>
+              <input style={inp} type="number" value={form.valor} onChange={e => setForm(p => ({ ...p, valor: e.target.value }))} placeholder={form.tipo === 'porcentaje' ? '20' : '200'}/>
+            </div>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '5px' }}>Compra mínima (MXN)</label>
+              <input style={inp} type="number" value={form.minimo_compra} onChange={e => setForm(p => ({ ...p, minimo_compra: e.target.value }))} placeholder="0 = sin mínimo"/>
+            </div>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '5px' }}>Usos máximos</label>
+              <input style={inp} type="number" value={form.usos_maximos} onChange={e => setForm(p => ({ ...p, usos_maximos: e.target.value }))} placeholder="vacío = ilimitado"/>
+            </div>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '5px' }}>Expira</label>
+              <input style={inp} type="date" value={form.expires_at} onChange={e => setForm(p => ({ ...p, expires_at: e.target.value }))}/>
+            </div>
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', display: 'block', marginBottom: '5px' }}>Descripción interna</label>
+            <input style={inp} value={form.descripcion} onChange={e => setForm(p => ({ ...p, descripcion: e.target.value }))} placeholder="Ej: Campaña Instagram junio 2026"/>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', color: 'var(--charcoal)' }}>
+              <input type="checkbox" checked={form.activo} onChange={e => setForm(p => ({ ...p, activo: e.target.checked }))} style={{ width: '16px', height: '16px', accentColor: '#55624c' }}/>
+              Activo al crear
+            </label>
+          </div>
+          {errorForm && <p style={{ fontSize: '12px', color: '#c0392b', margin: '0 0 0.75rem', background: '#fff5f5', padding: '8px 12px', borderRadius: '6px', border: '1px solid #fcc' }}>{errorForm}</p>}
+          <button onClick={guardar} disabled={guardando} style={{ background: '#55624c', color: 'white', border: 'none', borderRadius: '6px', padding: '12px 24px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.08em', fontFamily: 'var(--font-sans)', opacity: guardando ? 0.6 : 1 }}>
+            {guardando ? 'Guardando...' : 'Crear código'}
+          </button>
+        </div>
+      )}
+
+      <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', overflow: 'hidden' }}>
+        {loading ? (
+          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--warm-gray)', fontSize: '13px' }}>Cargando...</div>
+        ) : codigos.length === 0 ? (
+          <div style={{ padding: '3rem', textAlign: 'center' }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 300, color: 'var(--charcoal)', margin: '0 0 0.5rem' }}>Sin códigos aún</p>
+            <p style={{ fontSize: '13px', color: 'var(--warm-gray)' }}>Crea tu primer código con el botón de arriba.</p>
+          </div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--border)', background: '#fafaf8' }}>
+                {['Código', 'Descuento', 'Mín. compra', 'Usos', 'Expira', 'Descripción', 'Estado', 'Acciones'].map(h => (
+                  <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontSize: '10px', fontWeight: 700, color: 'var(--warm-gray)', letterSpacing: '0.1em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {codigos.map(c => (
+                <tr key={c.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td style={{ padding: '12px 14px', fontWeight: 700, color: 'var(--charcoal)', letterSpacing: '0.06em', fontFamily: 'monospace', fontSize: '13px' }}>{c.codigo}</td>
+                  <td style={{ padding: '12px 14px', color: '#3a4f33', fontWeight: 600 }}>
+                    {c.tipo === 'porcentaje' ? `${c.valor}%` : `$${c.valor.toLocaleString('es-MX')} MXN`}
+                  </td>
+                  <td style={{ padding: '12px 14px', color: 'var(--warm-gray)' }}>{c.minimo_compra > 0 ? `$${c.minimo_compra.toLocaleString('es-MX')}` : '—'}</td>
+                  <td style={{ padding: '12px 14px', color: 'var(--warm-gray)' }}>{c.usos_actuales ?? 0}{c.usos_maximos ? ` / ${c.usos_maximos}` : ''}</td>
+                  <td style={{ padding: '12px 14px', color: 'var(--warm-gray)', whiteSpace: 'nowrap' }}>
+                    {c.expires_at ? new Date(c.expires_at).toLocaleDateString('es-MX') : '—'}
+                  </td>
+                  <td style={{ padding: '12px 14px', color: 'var(--warm-gray)', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.descripcion || '—'}</td>
+                  <td style={{ padding: '12px 14px' }}>
+                    <button onClick={() => toggleActivo(c.id, c.activo)} style={{ background: c.activo ? '#d1fae5' : '#f5f3ef', color: c.activo ? '#065f46' : '#6f6a63', border: 'none', borderRadius: '20px', padding: '3px 10px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                      {c.activo ? 'Activo' : 'Inactivo'}
+                    </button>
+                  </td>
+                  <td style={{ padding: '12px 14px' }}>
+                    <button onClick={() => eliminar(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c0392b', fontSize: '11px', fontFamily: 'var(--font-sans)', textDecoration: 'underline', padding: 0 }}>
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── ADMIN PRINCIPAL ───────────────────────────────────────────────────────
 export default function Admin() {
   const [modulo, setModulo] = useState('dashboard');
@@ -1180,12 +1346,7 @@ export default function Admin() {
             </div>
           )}
 
-          {modulo === 'promociones' && (
-            <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', padding: '3rem', textAlign: 'center' }}>
-              <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '0.5rem' }}>Promociones</p>
-              <p style={{ fontSize: '13px', color: 'var(--warm-gray)' }}>Disponible en la siguiente fase.</p>
-            </div>
-          )}
+          {modulo === 'promociones' && <ModuloPromociones />}
           {modulo === 'marketing' && (
             <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--border)', padding: '3rem', textAlign: 'center' }}>
               <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '0.5rem' }}>Marketing & UTM</p>
