@@ -1080,7 +1080,6 @@ export default function DetalleArmazon() {
                                 <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div>
                                 <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div>
                               </div>
-                              <LensZoneSVG tipo={o.id as 'mono' | 'bi' | 'prog'} />
                               <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)', flexShrink: 0 }}>{pxPlus(o.precio)}</div>
                             </div>
                           </div>
