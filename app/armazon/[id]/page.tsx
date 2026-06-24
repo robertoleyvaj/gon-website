@@ -97,11 +97,11 @@ function getColoresDisponibles(visionId: string, materialId: string) {
   const soloGris = [{ id: 'gris', nombre_es: 'Gris', nombre_en: 'Gray', hex: '#6B7280' }];
   if (visionId === 'bi') return soloGris;
   if (visionId === 'mono') {
-    if (materialId === 'cr39' || materialId === 'hi') return COLORES_FOTO;
+    if (materialId === 'cr39' || materialId === 'hd' || materialId === 'hi') return COLORES_FOTO;
     return soloGris;
   }
   if (visionId === 'prog') {
-    if (materialId === 'cr39' || materialId === 'hi')
+    if (materialId === 'cr39' || materialId === 'hd' || materialId === 'hi')
       return COLORES_FOTO.filter(c => c.id === 'gris' || c.id === 'cafe');
     return soloGris;
   }
@@ -305,6 +305,49 @@ function calcularPaquete(r: RecetaData, lang: 'es' | 'en'): PaqueteGON {
   upsells.push({ id: 'foto', nombre: 'Fotocromático', precio: 949, razon: lang === 'es' ? 'Se oscurece en exterior automáticamente' : 'Automatically darkens outdoors' });
   upsells.push({ id: 'blue', nombre: 'Blue Light', precio: 549, razon: lang === 'es' ? 'Para uso diario de pantallas' : 'For daily screen use' });
   return { vision, material, filtroBase, precioOriginal, precioFinal, descuento, condicion, explicacion, upsells };
+}
+
+function LensZoneSVG({ tipo }: { tipo: 'mono' | 'bi' | 'prog' }) {
+  const W = 76, H = 46, rx = 10;
+  const id = `lz-${tipo}`;
+  if (tipo === 'mono') return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ flexShrink: 0 }}>
+      <defs><clipPath id={id}><rect x="2" y="2" width={W-4} height={H-4} rx={rx}/></clipPath></defs>
+      <rect x="2" y="2" width={W-4} height={H-4} rx={rx} fill="rgba(74,89,64,0.10)" stroke="var(--charcoal)" strokeWidth="1.5"/>
+      <text x={W/2} y={H/2+4} textAnchor="middle" fontSize="8" fill="var(--warm-gray)" fontFamily="var(--font-sans)">Lejos · Cerca</text>
+    </svg>
+  );
+  if (tipo === 'bi') {
+    const lineY = H * 0.60;
+    return (
+      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ flexShrink: 0 }}>
+        <defs><clipPath id={id}><rect x="2" y="2" width={W-4} height={H-4} rx={rx}/></clipPath></defs>
+        <rect x="2" y="2" width={W-4} height={H-4} rx={rx} fill="rgba(74,89,64,0.08)" stroke="var(--charcoal)" strokeWidth="1.5"/>
+        <rect x="2" y={lineY} width={W-4} height={H-lineY-2} rx={`0 0 ${rx} ${rx}`} fill="rgba(74,89,64,0.25)" clipPath={`url(#${id})`}/>
+        <line x1="2" y1={lineY} x2={W-2} y2={lineY} stroke="var(--charcoal)" strokeWidth="1.5"/>
+        <text x={W/2} y={lineY-6} textAnchor="middle" fontSize="7.5" fill="var(--warm-gray)" fontFamily="var(--font-sans)">Lejos</text>
+        <text x={W/2} y={lineY+12} textAnchor="middle" fontSize="7.5" fill="var(--sage)" fontFamily="var(--font-sans)" fontWeight="600">Cerca</text>
+      </svg>
+    );
+  }
+  // Progressive
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ flexShrink: 0 }}>
+      <defs>
+        <clipPath id={id}><rect x="2" y="2" width={W-4} height={H-4} rx={rx}/></clipPath>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(74,89,64,0.06)"/>
+          <stop offset="55%" stopColor="rgba(74,89,64,0.18)"/>
+          <stop offset="100%" stopColor="rgba(74,89,64,0.38)"/>
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width={W-4} height={H-4} rx={rx} fill={`url(#${id}-g)`} clipPath={`url(#${id})`}/>
+      <rect x="2" y="2" width={W-4} height={H-4} rx={rx} fill="none" stroke="var(--charcoal)" strokeWidth="1.5"/>
+      <text x={W/2} y={12} textAnchor="middle" fontSize="7" fill="var(--warm-gray)" fontFamily="var(--font-sans)">Lejos</text>
+      <text x={W/2} y={H/2+2} textAnchor="middle" fontSize="7" fill="var(--warm-gray)" fontFamily="var(--font-sans)">Intermedio</text>
+      <text x={W/2} y={H-6} textAnchor="middle" fontSize="7" fill="var(--sage)" fontFamily="var(--font-sans)" fontWeight="600">Cerca</text>
+    </svg>
+  );
 }
 
 function LenteSVG({ color, forma, size = 'large', solar = false }: { color: string; forma: string; size?: string; solar?: boolean }) {
@@ -1008,10 +1051,14 @@ export default function DetalleArmazon() {
                       <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', marginBottom: '1.25rem' }}>{t('¿Cómo ves?', 'How do you see?')}</p>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {visionOpts.map(o => (
-                          <div key={o.id} onClick={() => setVision(o.id)} style={{ border: vision === o.id ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: vision === o.id ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div><div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>{pxPlus(o.precio)}</div>
+                          <div key={o.id} onClick={() => setVision(o.id)} style={{ border: vision === o.id ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: '8px', padding: '0.9rem 1.1rem', cursor: 'pointer', background: vision === o.id ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div>
+                                <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div>
+                              </div>
+                              <LensZoneSVG tipo={o.id as 'mono' | 'bi' | 'prog'} />
+                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)', flexShrink: 0 }}>{pxPlus(o.precio)}</div>
                             </div>
                           </div>
                         ))}
