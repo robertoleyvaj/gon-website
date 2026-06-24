@@ -308,44 +308,67 @@ function calcularPaquete(r: RecetaData, lang: 'es' | 'en'): PaqueteGON {
 }
 
 function LensZoneSVG({ tipo }: { tipo: 'mono' | 'bi' | 'prog' }) {
-  const W = 76, H = 46, rx = 10;
+  const W = 64, H = 44;
+  // Lens shape: use an ellipse-like rounded rect, wider than tall like a real lens
   const id = `lz-${tipo}`;
+  const clip = `url(#${id}-clip)`;
+  const lensPath = `M 14 2 Q 2 2 2 12 L 2 ${H-12} Q 2 ${H-2} 14 ${H-2} L ${W-14} ${H-2} Q ${W-2} ${H-2} ${W-2} ${H-12} L ${W-2} 12 Q ${W-2} 2 ${W-14} 2 Z`;
+
   if (tipo === 'mono') return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ flexShrink: 0 }}>
-      <defs><clipPath id={id}><rect x="2" y="2" width={W-4} height={H-4} rx={rx}/></clipPath></defs>
-      <rect x="2" y="2" width={W-4} height={H-4} rx={rx} fill="rgba(74,89,64,0.10)" stroke="var(--charcoal)" strokeWidth="1.5"/>
-      <text x={W/2} y={H/2+4} textAnchor="middle" fontSize="8" fill="var(--warm-gray)" fontFamily="var(--font-sans)">Lejos · Cerca</text>
+      <defs>
+        <clipPath id={`${id}-clip`}><path d={lensPath}/></clipPath>
+        <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(85,98,76,0.07)"/>
+          <stop offset="100%" stopColor="rgba(85,98,76,0.18)"/>
+        </linearGradient>
+      </defs>
+      <path d={lensPath} fill={`url(#${id}-g)`} clipPath={clip}/>
+      <path d={lensPath} fill="none" stroke="#55624c" strokeWidth="1.5" opacity="0.7"/>
+      {/* Dot in center indicating uniform zone */}
+      <circle cx={W/2} cy={H/2} r="3" fill="#55624c" opacity="0.35"/>
     </svg>
   );
+
   if (tipo === 'bi') {
-    const lineY = H * 0.60;
+    const lineY = Math.round(H * 0.62);
     return (
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ flexShrink: 0 }}>
-        <defs><clipPath id={id}><rect x="2" y="2" width={W-4} height={H-4} rx={rx}/></clipPath></defs>
-        <rect x="2" y="2" width={W-4} height={H-4} rx={rx} fill="rgba(74,89,64,0.08)" stroke="var(--charcoal)" strokeWidth="1.5"/>
-        <rect x="2" y={lineY} width={W-4} height={H-lineY-2} rx={`0 0 ${rx} ${rx}`} fill="rgba(74,89,64,0.25)" clipPath={`url(#${id})`}/>
-        <line x1="2" y1={lineY} x2={W-2} y2={lineY} stroke="var(--charcoal)" strokeWidth="1.5"/>
-        <text x={W/2} y={lineY-6} textAnchor="middle" fontSize="7.5" fill="var(--warm-gray)" fontFamily="var(--font-sans)">Lejos</text>
-        <text x={W/2} y={lineY+12} textAnchor="middle" fontSize="7.5" fill="var(--sage)" fontFamily="var(--font-sans)" fontWeight="600">Cerca</text>
+        <defs>
+          <clipPath id={`${id}-clip`}><path d={lensPath}/></clipPath>
+        </defs>
+        {/* Top zone — far vision */}
+        <path d={lensPath} fill="rgba(85,98,76,0.08)" clipPath={clip}/>
+        {/* Bottom zone — near vision */}
+        <rect x="0" y={lineY} width={W} height={H} fill="rgba(85,98,76,0.32)" clipPath={clip}/>
+        {/* Dividing line */}
+        <line x1="4" y1={lineY} x2={W-4} y2={lineY} stroke="#55624c" strokeWidth="1.2" opacity="0.8"/>
+        {/* Lens border */}
+        <path d={lensPath} fill="none" stroke="#55624c" strokeWidth="1.5" opacity="0.7"/>
+        {/* Zone dots */}
+        <circle cx={W/2} cy={lineY/2} r="2.5" fill="#55624c" opacity="0.25"/>
+        <circle cx={W/2} cy={lineY + (H-lineY)/2} r="2.5" fill="#55624c" opacity="0.6"/>
       </svg>
     );
   }
-  // Progressive
+
+  // Progresivo — smooth gradient with 3 zone indicators
   return (
     <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ flexShrink: 0 }}>
       <defs>
-        <clipPath id={id}><rect x="2" y="2" width={W-4} height={H-4} rx={rx}/></clipPath>
+        <clipPath id={`${id}-clip`}><path d={lensPath}/></clipPath>
         <linearGradient id={`${id}-g`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(74,89,64,0.06)"/>
-          <stop offset="55%" stopColor="rgba(74,89,64,0.18)"/>
-          <stop offset="100%" stopColor="rgba(74,89,64,0.38)"/>
+          <stop offset="0%"   stopColor="rgba(85,98,76,0.06)"/>
+          <stop offset="45%"  stopColor="rgba(85,98,76,0.20)"/>
+          <stop offset="100%" stopColor="rgba(85,98,76,0.48)"/>
         </linearGradient>
       </defs>
-      <rect x="2" y="2" width={W-4} height={H-4} rx={rx} fill={`url(#${id}-g)`} clipPath={`url(#${id})`}/>
-      <rect x="2" y="2" width={W-4} height={H-4} rx={rx} fill="none" stroke="var(--charcoal)" strokeWidth="1.5"/>
-      <text x={W/2} y={12} textAnchor="middle" fontSize="7" fill="var(--warm-gray)" fontFamily="var(--font-sans)">Lejos</text>
-      <text x={W/2} y={H/2+2} textAnchor="middle" fontSize="7" fill="var(--warm-gray)" fontFamily="var(--font-sans)">Intermedio</text>
-      <text x={W/2} y={H-6} textAnchor="middle" fontSize="7" fill="var(--sage)" fontFamily="var(--font-sans)" fontWeight="600">Cerca</text>
+      <path d={lensPath} fill={`url(#${id}-g)`} clipPath={clip}/>
+      <path d={lensPath} fill="none" stroke="#55624c" strokeWidth="1.5" opacity="0.7"/>
+      {/* Three zone dots */}
+      <circle cx={W/2} cy={10} r="2" fill="#55624c" opacity="0.22"/>
+      <circle cx={W/2} cy={H/2} r="2.2" fill="#55624c" opacity="0.42"/>
+      <circle cx={W/2} cy={H-10} r="2.5" fill="#55624c" opacity="0.7"/>
     </svg>
   );
 }
