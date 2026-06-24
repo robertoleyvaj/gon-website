@@ -34,7 +34,7 @@ const faqSchema = {
       name: "¿Cuánto cuestan los lentes graduados en Rosarito?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "En GON Óptica los lentes graduados comienzan desde $230 MXN para monofocal con armazón básico. El precio final depende del tipo de visión (monofocal, bifocal o progresivo), el material de la mica y los filtros que elijas.",
+        text: "En GON Óptica los lentes graduados monofocales comienzan desde $749 MXN. Los bifocales desde $1,149 MXN y los progresivos desde $1,899 MXN. El precio final incluye el armazón y puede variar según el material de la mica y los filtros que elijas.",
       },
     },
     {
@@ -50,7 +50,7 @@ const faqSchema = {
       name: "¿Qué tipo de mica necesito según mi graduación?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Para graduaciones leves (SPH ±0 a ±2) recomendamos Standard (índice 1.50). Para medias (±2 a ±4), Ultra Thin (1.67). Para altas (±4 o más), Ultra Thin Pro (1.74). A mayor graduación, más delgada y ligera debe ser la mica.",
+        text: "Para graduaciones leves (hasta ±2.00) recomendamos Essential (índice 1.50), que es la opción base incluida. Para graduaciones medias (±2.00 a ±4.00) el Slim HD (1.60) o Poly Plus (1.58 policarbonato). Para graduaciones altas, Ultra Slim (1.67) o Ultra Slim Pro (1.74). A mayor graduación, más delgada y ligera debe ser la mica.",
       },
     },
     {

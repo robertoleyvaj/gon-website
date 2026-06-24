@@ -64,7 +64,6 @@ export default function StructuredData() {
         "hasMap": "https://maps.google.com/?q=Optica+Baja+Vision+Blvd+Benito+Juarez+Rosarito",
         "parentOrganization": { "@id": "https://gonmx.com/#organization" },
         "description": "Óptica en Rosarito con más de 9 años de experiencia. Armazones, lentes graduados, examen de la vista profesional.",
-        "servesCuisine": null,
         "paymentAccepted": "Cash, Credit Card, Debit Card",
         "currenciesAccepted": "MXN, USD",
       },
