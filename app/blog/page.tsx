@@ -1,8 +1,7 @@
 'use client';
 
-import { useContext } from 'react';
 import Link from 'next/link';
-import { LanguageContext } from '../components/LanguageContext';
+import { useLang } from '../components/LanguageContext';
 import { posts } from './posts';
 
 const CATEGORIAS = {
@@ -20,7 +19,7 @@ const CATEGORIA_COLORS: Record<string, string> = {
 };
 
 export default function BlogPage() {
-  const { lang } = useContext(LanguageContext);
+  const { lang } = useLang();
   const es = lang === 'es';
 
   return (

@@ -3,8 +3,7 @@
 import { use, useState } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { useContext } from 'react';
-import { LanguageContext } from '../../components/LanguageContext';
+import { useLang } from '../../components/LanguageContext';
 import { sucursales } from '../sucursales';
 import PhotoCarousel from '../../components/PhotoCarousel';
 
@@ -34,7 +33,7 @@ function GoogleLogo() {
 
 export default function SucursalPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const { lang } = useContext(LanguageContext);
+  const { lang } = useLang();
   const es = lang === 'es';
 
   const s = sucursales.find(s => s.slug === slug);

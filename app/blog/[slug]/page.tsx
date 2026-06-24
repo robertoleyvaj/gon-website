@@ -1,9 +1,8 @@
 'use client';
 
-import { useContext } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { LanguageContext } from '../../components/LanguageContext';
+import { useLang } from '../../components/LanguageContext';
 import { posts } from '../posts';
 import { use } from 'react';
 
@@ -23,7 +22,7 @@ const CATEGORIA_COLORS: Record<string, string> = {
 
 export default function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const { lang } = useContext(LanguageContext);
+  const { lang } = useLang();
   const es = lang === 'es';
 
   const post = posts.find(p => p.slug === slug);
