@@ -1,6 +1,8 @@
 // app/sitemap.ts
 import { MetadataRoute } from "next";
 import { supabase } from "./lib/supabase";
+import { posts } from "./blog/posts";
+import { sucursales } from "./sucursales/sucursales";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://gonmx.com";
@@ -14,7 +16,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/nosotros`,           lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/lenses`,             lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
     { url: `${baseUrl}/sunglasses`,         lastModified: new Date(), changeFrequency: "weekly",  priority: 0.6 },
+    { url: `${baseUrl}/blog`,              lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
   ];
+
+  // Páginas de sucursal individual
+  const sucursalPages: MetadataRoute.Sitemap = sucursales.map(s => ({
+    url: `${baseUrl}/sucursales/${s.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.85, // alta prioridad — SEO local
+  }));
+
+  // Blog posts
+  const blogPages: MetadataRoute.Sitemap = posts.map(post => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.fecha),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
 
   // Armazones individuales
   let armazonPages: MetadataRoute.Sitemap = [];
@@ -30,5 +49,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch (_) {}
 
-  return [...staticPages, ...armazonPages];
+  return [...staticPages, ...sucursalPages, ...blogPages, ...armazonPages];
 }

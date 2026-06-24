@@ -8,6 +8,7 @@ import { useLang } from '../components/LanguageContext';
 const SUCURSALES = [
   {
     id: 'bajavision',
+    slug: 'optica-baja-vision-rosarito',
     nombre: 'Óptica Baja Visión',
     direccion: 'Blvd. Benito Juárez 79B, Centro, Rosarito, B.C.',
     años: '9',
@@ -22,6 +23,7 @@ const SUCURSALES = [
   },
   {
     id: '5demayo',
+    slug: 'optica-5-de-mayo-rosarito',
     nombre: 'Óptica Rosarito 5 de Mayo',
     direccion: 'C. 5 de Mayo 200, Local 1, Rosarito, B.C.',
     años: '12+',
@@ -35,6 +37,7 @@ const SUCURSALES = [
   },
   {
     id: 'laureles',
+    slug: 'optica-laureles-rosarito',
     nombre: 'Óptica Rosarito Plaza Laureles',
     direccion: 'C. José María Morelos 118, Plaza Laureles, Rosarito, B.C.',
     años: '6',
@@ -217,9 +220,18 @@ export default function UbicacionesPage() {
                   <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--charcoal)' }}>{s.nombre}</span>
                 </div>
                 <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', margin: '0 0 0.75rem', lineHeight: 1.5 }}>{s.direccion}</p>
-                <span style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.05em' }}>
-                  {t('Ver detalles →', 'View details →')}
-                </span>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--accent)', letterSpacing: '0.05em' }}>
+                    {t('Ver en mapa →', 'View on map →')}
+                  </span>
+                  <Link
+                    href={`/sucursales/${s.slug}`}
+                    onClick={e => e.stopPropagation()}
+                    style={{ fontSize: '0.68rem', fontWeight: 600, color: 'var(--sage)', letterSpacing: '0.05em', textDecoration: 'none' }}
+                  >
+                    {t('Página completa →', 'Full page →')}
+                  </Link>
+                </div>
               </div>
             ))}
           </div>

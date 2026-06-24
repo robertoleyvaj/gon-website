@@ -139,6 +139,7 @@ const navLinks = [
   { href: "/Tienda", label_es: "Armazones", label_en: "Frames" },
   { href: "/lenses", label_es: "Lentes", label_en: "Lenses" },
   { href: "/examen", label_es: "Examen de la Vista", label_en: "Eye Exam" },
+  { href: "/blog", label_es: "Blog", label_en: "Blog" },
   { href: "/nosotros", label_es: "Sobre Nosotros", label_en: "About Us" },
   { href: "/ubicaciones", label_es: "Ubicaciones", label_en: "Locations" },
 ];
