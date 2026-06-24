@@ -1,23 +1,24 @@
 'use client';
 
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { useLang } from '../../components/LanguageContext';
 import { posts } from '../posts';
-import { use } from 'react';
+import Navbar from '../../components/Navbar';
 
 const CATEGORIAS = {
-  local: { es: 'Local', en: 'Local' },
+  local:          { es: 'Local',        en: 'Local'      },
   'salud-visual': { es: 'Salud Visual', en: 'Eye Health' },
-  frontera: { es: 'Frontera', en: 'Border' },
-  moda: { es: 'Moda', en: 'Style' },
+  frontera:       { es: 'Frontera',     en: 'Border'     },
+  moda:           { es: 'Moda',         en: 'Style'      },
 };
 
-const CATEGORIA_COLORS: Record<string, string> = {
-  local: 'bg-blue-100 text-blue-800',
-  'salud-visual': 'bg-green-100 text-green-800',
-  frontera: 'bg-orange-100 text-orange-800',
-  moda: 'bg-purple-100 text-purple-800',
+const CAT_COLORS: Record<string, string> = {
+  local: '#DBEAFE', 'salud-visual': '#D1FAE5', frontera: '#FEF3C7', moda: '#EDE9FE',
+};
+const CAT_TEXT: Record<string, string> = {
+  local: '#1E40AF', 'salud-visual': '#065F46', frontera: '#92400E', moda: '#5B21B6',
 };
 
 export default function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
@@ -28,94 +29,112 @@ export default function BlogPost({ params }: { params: Promise<{ slug: string }>
   const post = posts.find(p => p.slug === slug);
   if (!post) notFound();
 
-  const titulo = es ? post.titulo_es : post.titulo_en;
-  const contenido = es ? post.contenido_es : post.contenido_en;
-  const categoria = CATEGORIAS[post.categoria][lang];
-
-  // Related posts (same category, excluding self)
-  const related = posts
-    .filter(p => p.categoria === post.categoria && p.slug !== post.slug)
-    .slice(0, 3);
+  const related = posts.filter(p => p.categoria === post.categoria && p.slug !== post.slug).slice(0, 3);
 
   return (
-    <main className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="bg-[#012E40] text-white py-12 px-4">
-        <div className="max-w-3xl mx-auto">
-          <Link href="/blog" className="text-blue-300 text-sm hover:underline mb-4 inline-block">
+    <div style={{ minHeight: '100vh', background: 'var(--cream)' }}>
+      <Navbar />
+
+      {/* Header del artículo */}
+      <div style={{ paddingTop: '64px', background: 'var(--sage)', color: 'white' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 1.5rem 2.5rem' }}>
+          <Link href="/blog" style={{ fontSize: '0.75rem', color: 'var(--accent)', textDecoration: 'none', display: 'inline-block', marginBottom: '1rem', letterSpacing: '0.05em' }}>
             ← {es ? 'Blog' : 'Blog'}
           </Link>
-          <span className={`ml-3 text-xs font-semibold px-2 py-1 rounded-full ${CATEGORIA_COLORS[post.categoria]}`}>
-            {categoria}
+          <span style={{ marginLeft: '0.75rem', display: 'inline-block', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: '999px', background: CAT_COLORS[post.categoria], color: CAT_TEXT[post.categoria] }}>
+            {CATEGORIAS[post.categoria][lang]}
           </span>
-          <h1 className="text-3xl md:text-4xl font-bold mt-4 leading-tight">{titulo}</h1>
-          <p className="text-blue-200 mt-2 text-sm">
-            {new Date(post.fecha).toLocaleDateString(es ? 'es-MX' : 'en-US', {
-              year: 'numeric', month: 'long', day: 'numeric',
-            })}
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 300, letterSpacing: '-0.02em', marginTop: '1rem', lineHeight: 1.15 }}>
+            {es ? post.titulo_es : post.titulo_en}
+          </h1>
+          <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.55)', fontFamily: 'var(--font-sans)' }}>
+            {new Date(post.fecha).toLocaleDateString(es ? 'es-MX' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             {' · '}GON Óptica Rosarito
           </p>
         </div>
       </div>
 
-      {/* Content */}
-      <article className="max-w-3xl mx-auto px-4 py-10">
+      {/* Contenido */}
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 1.5rem' }}>
         <div
-          className="prose prose-lg prose-headings:text-[#012E40] prose-a:text-[#012E40] max-w-none"
-          dangerouslySetInnerHTML={{ __html: contenido }}
+          className="blog-content"
+          dangerouslySetInnerHTML={{ __html: es ? post.contenido_es : post.contenido_en }}
         />
 
         {/* CTA */}
-        <div className="mt-12 bg-[#F0F7FF] border border-blue-200 rounded-xl p-6 text-center">
-          <h3 className="text-xl font-bold text-[#012E40] mb-2">
+        <div style={{ marginTop: '3rem', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '16px', padding: '2rem', textAlign: 'center' }}>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--sage)', marginBottom: '0.5rem' }}>
             {es ? '¿Listo para ver mejor?' : 'Ready to see better?'}
           </h3>
-          <p className="text-gray-600 mb-4 text-sm">
+          <p style={{ fontSize: '0.85rem', color: 'var(--warm-gray)', marginBottom: '1.25rem', lineHeight: 1.7 }}>
             {es
               ? 'Visítanos en cualquiera de nuestras 3 sucursales en Rosarito. Examen de la vista gratis, sin cita.'
               : 'Visit any of our 3 locations in Rosarito. Free eye exam, no appointment needed.'}
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link
-              href="/Tienda"
-              className="bg-[#012E40] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#024060] transition-colors text-sm"
-            >
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
+            <Link href="/Tienda" style={{ background: 'var(--sage)', color: 'white', padding: '10px 24px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.08em', textDecoration: 'none', textTransform: 'uppercase' }}>
               {es ? 'Ver armazones' : 'Browse Frames'}
             </Link>
-            <Link
-              href="/ubicaciones"
-              className="border border-[#012E40] text-[#012E40] px-6 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors text-sm"
-            >
+            <Link href="/ubicaciones" style={{ border: '1px solid var(--sage)', color: 'var(--sage)', padding: '10px 24px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.08em', textDecoration: 'none', textTransform: 'uppercase' }}>
               {es ? 'Nuestras sucursales' : 'Our Locations'}
             </Link>
           </div>
         </div>
-      </article>
 
-      {/* Related posts */}
-      {related.length > 0 && (
-        <section className="max-w-3xl mx-auto px-4 pb-16">
-          <h2 className="text-xl font-bold text-[#012E40] mb-6">
-            {es ? 'Artículos relacionados' : 'Related Articles'}
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {related.map(r => (
-              <Link
-                key={r.slug}
-                href={`/blog/${r.slug}`}
-                className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow block"
-              >
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${CATEGORIA_COLORS[r.categoria]}`}>
-                  {CATEGORIAS[r.categoria][lang]}
-                </span>
-                <p className="mt-2 text-sm font-semibold text-gray-800 leading-snug">
-                  {es ? r.titulo_es : r.titulo_en}
-                </p>
-              </Link>
-            ))}
+        {/* Relacionados */}
+        {related.length > 0 && (
+          <div style={{ marginTop: '3rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '1.25rem' }}>
+              {es ? 'Artículos relacionados' : 'Related Articles'}
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
+              {related.map(r => (
+                <Link key={r.slug} href={`/blog/${r.slug}`} style={{ border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', textDecoration: 'none', color: 'inherit', display: 'block', background: 'white' }}>
+                  <span style={{ display: 'inline-block', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '999px', background: CAT_COLORS[r.categoria], color: CAT_TEXT[r.categoria], marginBottom: '0.5rem' }}>
+                    {CATEGORIAS[r.categoria][lang]}
+                  </span>
+                  <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: 'var(--charcoal)', lineHeight: 1.3 }}>
+                    {es ? r.titulo_es : r.titulo_en}
+                  </p>
+                </Link>
+              ))}
+            </div>
           </div>
-        </section>
-      )}
-    </main>
+        )}
+      </div>
+
+      {/* Estilos del contenido del artículo */}
+      <style>{`
+        .blog-content h2 {
+          font-family: var(--font-serif);
+          font-size: 1.6rem;
+          font-weight: 300;
+          color: var(--sage);
+          margin: 2rem 0 0.75rem;
+          letter-spacing: -0.02em;
+        }
+        .blog-content p {
+          font-size: 0.95rem;
+          color: var(--warm-gray);
+          line-height: 1.85;
+          margin-bottom: 1rem;
+        }
+        .blog-content ul {
+          margin: 0.5rem 0 1rem 1.25rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
+        .blog-content li {
+          font-size: 0.92rem;
+          color: var(--warm-gray);
+          line-height: 1.7;
+        }
+        .blog-content strong {
+          color: var(--charcoal);
+          font-weight: 600;
+        }
+      `}</style>
+    </div>
   );
 }
