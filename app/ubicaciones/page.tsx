@@ -9,6 +9,7 @@ const SUCURSALES = [
   {
     id: 'bajavision',
     slug: 'optica-baja-vision-rosarito',
+    telefono: '661 104 0873',
     nombre: 'Óptica Baja Visión',
     direccion: 'Blvd. Benito Juárez 79B, Centro, Rosarito, B.C.',
     años: '9',
@@ -24,6 +25,7 @@ const SUCURSALES = [
   {
     id: '5demayo',
     slug: 'optica-5-de-mayo-rosarito',
+    telefono: '661 612 0316',
     nombre: 'Óptica Rosarito 5 de Mayo',
     direccion: 'C. 5 de Mayo 200, Local 1, Rosarito, B.C.',
     años: '12+',
@@ -38,6 +40,7 @@ const SUCURSALES = [
   {
     id: 'laureles',
     slug: 'optica-laureles-rosarito',
+    telefono: '661 104 0431',
     nombre: 'Óptica Rosarito Plaza Laureles',
     direccion: 'C. José María Morelos 118, Plaza Laureles, Rosarito, B.C.',
     años: '6',
@@ -150,8 +153,11 @@ export default function UbicacionesPage() {
               <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" style={{ flexShrink: 0, marginTop: '2px' }}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.44 2 2 0 0 1 3.6 1.26h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16.92z"/></svg>
                 <div>
-                  <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '2px' }}>{t('WhatsApp', 'WhatsApp')}</div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--charcoal)' }}>664 834 3018</div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '2px' }}>{t('Teléfono', 'Phone')}</div>
+                  <a href={`tel:${sucursal.telefono}`} style={{ fontSize: '0.85rem', color: 'var(--charcoal)', textDecoration: 'none', fontWeight: 600 }}>{sucursal.telefono}</a>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--warm-gray)', marginTop: '4px' }}>
+                    WhatsApp: <a href="https://wa.me/526648343018" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>664 834 3018</a>
+                  </div>
                 </div>
               </div>
 
