@@ -19,9 +19,9 @@ function ItemCard({ item, onRemove }: { item: CartItem; onRemove: () => void }) 
   };
 
   return (
-    <div style={{ padding: '1.25rem 0', borderBottom: '1px solid #f0ede8' }}>
+    <div style={{ padding: '1.25rem 0', borderBottom: '1px solid var(--border)' }}>
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-        <div style={{ width: '72px', height: '60px', borderRadius: '8px', background: '#f5f2ed', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '72px', height: '60px', borderRadius: '8px', background: 'var(--cream-dark)', overflow: 'hidden', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {item.armazon_imagen
             ? <img src={item.armazon_imagen} alt={item.armazon_nombre} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
             : <svg width="40" height="22" viewBox="0 0 160 90" fill="none" style={{ opacity: 0.2 }}><rect x="4" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/><rect x="92" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/><path d="M68 38 C72 32, 88 32, 92 38" stroke="#1d1d1d" strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>
@@ -36,15 +36,15 @@ function ItemCard({ item, onRemove }: { item: CartItem; onRemove: () => void }) 
                 onChange={e => setNombreTemp(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') guardarNombre(); if (e.key === 'Escape') setEditandoPaciente(false); }}
                 placeholder={t('Nombre...', 'Name...')}
-                style={{ flex: 1, padding: '4px 8px', borderRadius: '6px', border: '1.5px solid #55624c', fontSize: '12px', fontFamily: 'var(--font-sans)', outline: 'none' }}
+                style={{ flex: 1, padding: '4px 8px', borderRadius: '6px', border: '1.5px solid var(--sage)', fontSize: '12px', fontFamily: 'var(--font-sans)', outline: 'none' }}
               />
-              <button onClick={guardarNombre} style={{ background: '#55624c', color: 'white', border: 'none', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}>✓</button>
-              <button onClick={() => setEditandoPaciente(false)} style={{ background: '#f5f3ef', color: '#6f6a63', border: 'none', borderRadius: '6px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>✕</button>
+              <button onClick={guardarNombre} style={{ background: 'var(--sage)', color: 'white', border: 'none', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}>✓</button>
+              <button onClick={() => setEditandoPaciente(false)} style={{ background: 'var(--cream-dark)', color: '#6f6a63', border: 'none', borderRadius: '6px', padding: '4px 8px', fontSize: '11px', cursor: 'pointer' }}>✕</button>
             </div>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
               {item.paciente
-                ? <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#55624c' }}>{item.paciente}</span>
+                ? <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--sage)' }}>{item.paciente}</span>
                 : <span style={{ fontSize: '10px', fontWeight: 600, color: '#c0392b', background: '#fff5f5', padding: '2px 8px', borderRadius: '20px', border: '1px solid #fcc' }}>⚠ {t('Sin nombre — requerido', 'No name — required')}</span>
               }
               <button onClick={() => { setNombreTemp(item.paciente || ''); setEditandoPaciente(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a9a9a', fontSize: '10px', fontFamily: 'var(--font-sans)', textDecoration: 'underline', padding: 0 }}>
@@ -63,12 +63,12 @@ function ItemCard({ item, onRemove }: { item: CartItem; onRemove: () => void }) 
             </div>
           )}
 
-          {item.solo_armazon && <span style={{ fontSize: '9px', fontWeight: 600, color: '#9a9a9a', background: '#f5f3ef', padding: '2px 8px', borderRadius: '20px' }}>{t('Solo armazón', 'Frame only')}</span>}
+          {item.solo_armazon && <span style={{ fontSize: '9px', fontWeight: 600, color: '#9a9a9a', background: 'var(--cream-dark)', padding: '2px 8px', borderRadius: '20px' }}>{t('Solo armazón', 'Frame only')}</span>}
 
           {item.receta && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px' }}>
-              <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: item.receta.metodo === 'despues' ? '#d97706' : '#55624c', flexShrink: 0 }}/>
-              <span style={{ fontSize: '10px', color: item.receta.metodo === 'despues' ? '#92400e' : '#55624c', fontWeight: 500 }}>
+              <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: item.receta.metodo === 'despues' ? '#d97706' : 'var(--sage)', flexShrink: 0 }}/>
+              <span style={{ fontSize: '10px', color: item.receta.metodo === 'despues' ? '#92400e' : 'var(--sage)', fontWeight: 500 }}>
                 {item.receta.metodo === 'manual' && t('Receta ingresada', 'Prescription entered')}
                 {item.receta.metodo === 'foto' && t('Foto adjunta', 'Photo attached')}
                 {item.receta.metodo === 'despues' && t('Receta pendiente', 'Prescription pending')}
@@ -165,12 +165,12 @@ export default function CartDrawer() {
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '420px', maxWidth: '100vw', background: 'white', zIndex: 301, boxShadow: '-2px 0 40px rgba(0,0,0,0.08)', transform: cartOpen ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)', display: 'flex', flexDirection: 'column' }}>
 
         {/* Header */}
-        <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid #f0ede8', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+        <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 400, margin: 0, color: '#1d1d1d' }}>{t('Tu carrito', 'Your cart')}</h3>
-            {totalItems > 0 && <span style={{ background: '#55624c', color: 'white', borderRadius: '20px', padding: '2px 8px', fontSize: '11px', fontWeight: 600 }}>{totalItems}</span>}
+            {totalItems > 0 && <span style={{ background: 'var(--sage)', color: 'white', borderRadius: '20px', padding: '2px 8px', fontSize: '11px', fontWeight: 600 }}>{totalItems}</span>}
           </div>
-          <button onClick={() => setCartOpen(false)} style={{ background: '#f5f3ef', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '18px', color: '#6f6a63', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+          <button onClick={() => setCartOpen(false)} style={{ background: 'var(--cream-dark)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '18px', color: '#6f6a63', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
         </div>
 
         {/* Contenido */}
@@ -204,7 +204,7 @@ export default function CartDrawer() {
 
         {/* Footer */}
         {items.length > 0 && (
-          <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid #f0ede8', background: 'white', flexShrink: 0 }}>
+          <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid var(--border)', background: 'white', flexShrink: 0 }}>
 
             {/* Desglose */}
             <div style={{ marginBottom: '0.75rem' }}>
@@ -220,15 +220,15 @@ export default function CartDrawer() {
 
             {/* Cupón aplicado */}
             {cuponAplicado && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f0f4ef', borderRadius: '6px', padding: '8px 12px', marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#EFF6FF', borderRadius: '6px', padding: '8px 12px', marginBottom: '0.75rem' }}>
                 <div>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#3a4f33' }}>🏷 {cuponAplicado.codigo}</span>
-                  <span style={{ fontSize: '11px', color: '#55624c', marginLeft: '8px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--sage)' }}>🏷 {cuponAplicado.codigo}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--sage)', marginLeft: '8px' }}>
                     {cuponAplicado.tipo === 'porcentaje' ? `-${cuponAplicado.valor}%` : `-$${cuponAplicado.valor.toLocaleString('es-MX')}`}
                   </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#3a4f33' }}>-${descuento.toLocaleString('es-MX')} MXN</span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--sage)' }}>-${descuento.toLocaleString('es-MX')} MXN</span>
                   <button onClick={quitarCupon} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9a9a9a', fontSize: '14px', lineHeight: 1, padding: 0 }}>×</button>
                 </div>
               </div>
@@ -254,7 +254,7 @@ export default function CartDrawer() {
             )}
 
             {/* Total */}
-            <div style={{ paddingTop: '0.75rem', borderTop: '1px solid #f0ede8', marginBottom: '1rem' }}>
+            <div style={{ paddingTop: '0.75rem', borderTop: '1px solid var(--border)', marginBottom: '1rem' }}>
               {cuponAplicado && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#9a9a9a', marginBottom: '4px' }}>
                   <span>{t('Subtotal', 'Subtotal')}</span>
@@ -263,7 +263,7 @@ export default function CartDrawer() {
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                 <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 600, color: '#1d1d1d', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Total</span>
-                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 400, color: cuponAplicado ? '#3a4f33' : '#1d1d1d' }}>
+                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 400, color: cuponAplicado ? 'var(--sage)' : '#1d1d1d' }}>
                   ${totalConDescuento.toLocaleString('es-MX')} <span style={{ fontSize: '0.75rem', color: '#9a9a9a', fontFamily: 'var(--font-sans)' }}>MXN</span>
                 </span>
               </div>
@@ -271,7 +271,7 @@ export default function CartDrawer() {
 
             {/* Checkout */}
             <button onClick={handleCheckout} disabled={loadingCheckout} style={{ width: '100%', background: loadingCheckout ? '#9a9a9a' : '#1d1d1d', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: loadingCheckout ? 'not-allowed' : 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s', marginBottom: '10px' }}
-              onMouseEnter={e => !loadingCheckout && (e.currentTarget.style.background = '#55624c')}
+              onMouseEnter={e => !loadingCheckout && (e.currentTarget.style.background = 'var(--sage)')}
               onMouseLeave={e => !loadingCheckout && (e.currentTarget.style.background = '#1d1d1d')}
             >
               {loadingCheckout ? t('Procesando...', 'Processing...') : t('Pagar con tarjeta →', 'Checkout →')}

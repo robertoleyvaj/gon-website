@@ -40,7 +40,7 @@ export const sucursales: Sucursal[] = [
     direccion: 'Blvd. Benito Juárez 79B, Playas de Rosarito, B.C.',
     ciudad: 'Playas de Rosarito',
     mapsUrl: 'https://maps.google.com/?q=Optica+Baja+Vision+Blvd+Benito+Juarez+Rosarito',
-    telefono: '+52 664 834 3018',
+    telefono: '661 104 0873',
     horario_es: 'Lunes a domingo 10:00 — 18:00',
     horario_en: 'Monday to Sunday 10:00 AM — 6:00 PM',
     descripcion_es: 'Nuestra sucursal del Bulevar Benito Juárez es la más conocida de Rosarito. Atención personalizada, optometristas certificados y entrega rápida de lentes graduados.',
