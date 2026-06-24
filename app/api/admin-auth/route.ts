@@ -46,7 +46,22 @@ export async function POST(req: NextRequest) {
   // Login exitoso — resetear contador
   loginAttempts.delete(ip);
 
-  const response = NextResponse.json({ ok: true });
+  // También autenticar con Supabase Auth para que RLS funcione en el admin
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  const { data: authData } = await supabase.auth.signInWithPassword({
+    email: process.env.ADMIN_EMAIL!,
+    password: process.env.ADMIN_PASSWORD!,
+  });
+
+  const response = NextResponse.json({
+    ok: true,
+    supabase_access_token: authData?.session?.access_token || null,
+    supabase_refresh_token: authData?.session?.refresh_token || null,
+  });
   response.cookies.set('gon_admin', process.env.ADMIN_TOKEN_SECRET!, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
