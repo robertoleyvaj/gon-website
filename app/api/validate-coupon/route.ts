@@ -6,7 +6,22 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// Rate limiting: 20 intentos por IP cada 10 minutos
+const couponAttempts = new Map<string, { count: number; resetAt: number }>();
+function isCouponRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const r = couponAttempts.get(ip);
+  if (!r || now > r.resetAt) { couponAttempts.set(ip, { count: 1, resetAt: now + 10 * 60 * 1000 }); return false; }
+  if (r.count >= 20) return true;
+  r.count++;
+  return false;
+}
+
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
+  if (isCouponRateLimited(ip))
+    return NextResponse.json({ valido: false, error: 'Demasiados intentos. Espera unos minutos.' }, { status: 429 });
+
   try {
     const { codigo, total } = await req.json();
     if (!codigo) return NextResponse.json({ valido: false, error: 'Ingresa un código' });
