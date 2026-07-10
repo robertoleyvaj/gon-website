@@ -19,7 +19,10 @@ export interface Sucursal {
   nombre_largo: string;   // "Óptica Baja Visión — GON Rosarito"
   direccion: string;
   ciudad: string;
-  mapsUrl: string;
+  lat: number;            // Coordenadas para schema LocalBusiness
+  lng: number;
+  mapsUrl: string;        // Link "Cómo llegar" → Google Maps
+  googleUrl: string;      // Link al perfil de Google Business (reseñas)
   telefono: string;
   horario_es: string;
   horario_en: string;
@@ -39,7 +42,11 @@ export const sucursales: Sucursal[] = [
     nombre_largo: 'Óptica Baja Visión — GON Rosarito',
     direccion: 'Blvd. Benito Juárez 79B, Playas de Rosarito, B.C.',
     ciudad: 'Playas de Rosarito',
-    mapsUrl: 'https://maps.google.com/?q=Optica+Baja+Vision+Blvd+Benito+Juarez+Rosarito',
+    lat: 32.3611,
+    lng: -117.0592,
+    mapsUrl: 'https://www.google.com/maps/search/Óptica+Baja+Visión+Blvd+Benito+Juárez+79+Rosarito',
+    // 📌 Actualiza esta URL: busca tu negocio en Google Maps → Compartir → Copiar enlace
+    googleUrl: 'https://www.google.com/maps/search/Óptica+Baja+Visión+Rosarito+661+104+0873',
     telefono: '661 104 0873',
     horario_es: 'Lunes a domingo 10:00 — 18:00',
     horario_en: 'Monday to Sunday 10:00 AM — 6:00 PM',
@@ -113,7 +120,11 @@ export const sucursales: Sucursal[] = [
     nombre_largo: 'Óptica Rosarito 5 de Mayo — GON',
     direccion: 'C. 5 de Mayo 200, Local 1, Playas de Rosarito, B.C.',
     ciudad: 'Playas de Rosarito',
-    mapsUrl: 'https://maps.google.com/?q=Optica+Rosarito+5+de+Mayo+Local+1+Rosarito+BC',
+    lat: 32.3652,
+    lng: -117.0552,
+    mapsUrl: 'https://www.google.com/maps/search/Optica+Rosarito+5+de+Mayo+200+Local+1+Rosarito+BC',
+    // 📌 Actualiza esta URL: busca tu negocio en Google Maps → Compartir → Copiar enlace
+    googleUrl: 'https://www.google.com/maps/search/Optica+Rosarito+5+de+Mayo+661+612+0316',
     telefono: '661 612 0316',
     horario_es: 'Lunes a sábado 10:00 — 18:00',
     horario_en: 'Monday to Saturday 10:00 AM — 6:00 PM',
@@ -177,7 +188,11 @@ export const sucursales: Sucursal[] = [
     nombre_largo: 'Óptica Plaza Laureles — GON Rosarito',
     direccion: 'C. José María Morelos 118, Plaza Laureles, Playas de Rosarito, B.C.',
     ciudad: 'Playas de Rosarito',
-    mapsUrl: 'https://maps.google.com/?q=Plaza+Laureles+Jose+Maria+Morelos+118+Rosarito+BC',
+    lat: 32.3620,
+    lng: -117.0538,
+    mapsUrl: 'https://www.google.com/maps/search/Óptica+Rosarito+Plaza+Laureles+Morelos+Rosarito+BC',
+    // 📌 Actualiza esta URL: busca tu negocio en Google Maps → Compartir → Copiar enlace
+    googleUrl: 'https://www.google.com/maps/search/Óptica+Rosarito+Plaza+Laureles+661+104+0431',
     telefono: '661 104 0431',
     horario_es: 'Lunes a domingo 10:00 — 18:00',
     horario_en: 'Monday to Sunday 10:00 AM — 6:00 PM',

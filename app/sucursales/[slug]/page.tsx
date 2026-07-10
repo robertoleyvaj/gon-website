@@ -144,6 +144,16 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
               </div>
             </div>
             {/* Flechas paginación */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+            <a
+              href={s.googleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: 'white', border: '1.5px solid var(--border)', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 600, color: 'var(--charcoal)', textDecoration: 'none', transition: 'border-color 0.15s' }}
+            >
+              <GoogleLogo />
+              Dejar reseña en Google
+            </a>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               {[
                 { fn: () => setReviewStart(r => Math.max(0, r - visibles)), pts: '15 18 9 12 15 6', dis: currentPage === 0 },
