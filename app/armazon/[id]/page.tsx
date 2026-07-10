@@ -10,7 +10,7 @@ import { useCart, generateCartId } from '../../context/CartContext';
 
 type Armazon = {
   id: number; nombre: string; forma: string; genero: string;
-  stock: number; badge: string | null; precio: number; color: string;
+  stock: number; badge: string | null; precio: number; precio_gon?: number; color: string;
   imagen_url?: string; imagen2_url?: string; imagen3_url?: string;
   imagen4_url?: string; imagen5_url?: string; tipo?: string;
   material?: string; medidas?: string; talla?: string; descuento?: number;
@@ -705,7 +705,8 @@ export default function DetalleArmazon() {
   }, [lightboxOpen]);
 
   const precioArmazonUSD = esRegalo ? 0 : (armazon?.precio || PRECIO_ARMAZON);
-  const precioArmazonMXN = esRegalo ? 0 : redondearMXN(precioArmazonUSD, tipoCambio);
+  // Usa precio_gon (MXN directo) si está disponible, si no convierte desde USD
+  const precioArmazonMXN = esRegalo ? 0 : (armazon?.precio_gon || redondearMXN(precioArmazonUSD, tipoCambio));
   // Lens prices are now stored in MXN directly
   const pxMXN = (mxn: number) => lang === 'es' ? `$${mxn.toLocaleString('es-MX')} MXN` : `$${Math.round(mxn / tipoCambio)} USD`;
   const pxPlus = (mxn: number) => lang === 'es' ? `+$${mxn.toLocaleString('es-MX')} MXN` : `+$${Math.round(mxn / tipoCambio)} USD`;
@@ -1311,9 +1312,9 @@ export default function DetalleArmazon() {
               {[armazon.material, armazon.forma && `${armazon.forma.charAt(0).toUpperCase() + armazon.forma.slice(1)}`].filter(Boolean).join(' · ')}
             </p>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '0.5rem' }}>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', fontWeight: 400, letterSpacing: '-0.02em', lineHeight: 1 }}>{lang === 'es' ? `$${redondearMXN(armazon.precio, tipoCambio)}` : `$${armazon.precio}`}</span>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', fontWeight: 400, letterSpacing: '-0.02em', lineHeight: 1 }}>{lang === 'es' ? `$${(armazon.precio_gon || redondearMXN(armazon.precio, tipoCambio)).toLocaleString('es-MX')}` : `$${armazon.precio}`}</span>
               <span style={{ fontSize: '0.85rem', color: 'var(--warm-gray)', fontWeight: 400 }}>{lang === 'es' ? 'MXN' : 'USD'}</span>
-              {armazon.descuento && armazon.descuento > 0 && <span style={{ background: 'var(--charcoal)', color: 'white', fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: '2px' }}>-{armazon.descuento}%</span>}
+              {(armazon.descuento ?? 0) > 0 && <span style={{ background: 'var(--charcoal)', color: 'white', fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: '2px' }}>-{armazon.descuento}%</span>}
             </div>
             <div style={{ marginBottom: '1.75rem' }}>
               <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--charcoal)', margin: '0 0 3px' }}>{lang === 'es' ? 'Graduadas desde $749 MXN' : 'With lenses from $42 USD'}</p>
