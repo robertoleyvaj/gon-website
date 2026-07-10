@@ -165,6 +165,7 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
               ))}
             </div>
           </div>
+          </div>
 
           {/* Cards reseñas */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem' }}>

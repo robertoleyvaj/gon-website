@@ -396,7 +396,6 @@ export const posts: BlogPost[] = [
 <p>At GON we provide free advice to help you choose the right lens material based on your exact prescription.</p>
     `,
   },
-];
 
   // ── 7. lentes baratos rosarito ─────────────────────────────
   {
@@ -1522,6 +1521,7 @@ export const posts: BlogPost[] = [
 <h2>Can I Check Google Reviews?</h2>
 <p>Yes. Search "Óptica Baja Visión Rosarito," "Óptica Rosarito 5 de Mayo," or "Óptica Plaza Laureles Rosarito" on Google Maps to see real reviews for each location.</p>`,
   },
+];
 
 export function getPost(slug: string): BlogPost | undefined {
   return posts.find(p => p.slug === slug);
