@@ -798,7 +798,7 @@ export default function DetalleArmazon() {
       const { data } = await supabase.from('armazones').select('*').eq('id', id).single();
       if (data) {
         setArmazon(data);
-        const { data: rel } = await supabase.from('armazones').select('*').eq('activo', true).neq('id', id).limit(6);
+        const { data: rel } = await supabase.from('armazones').select('*').eq('activo', true).eq('publicar_gon', true).neq('id', id).limit(6);
         setRelacionados(rel || []);
       }
       setLoading(false);

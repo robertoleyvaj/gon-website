@@ -133,7 +133,7 @@ function TiendaContent() {
   }, []);
 
   useEffect(() => {
-    supabase.from('armazones').select('*').eq('activo', true).order('id')
+    supabase.from('armazones').select('*').eq('activo', true).eq('publicar_gon', true).order('id')
       .then(({ data }) => { setArmazones(data || []); setLoading(false); });
   }, []);
 

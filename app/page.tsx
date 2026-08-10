@@ -56,7 +56,7 @@ export default function Home() {
 
   useEffect(() => {
     async function cargar() {
-      const { data } = await supabase.from('armazones').select('*').eq('activo', true).order('id').limit(8);
+      const { data } = await supabase.from('armazones').select('*').eq('activo', true).eq('publicar_gon', true).order('id').limit(8);
       setArmazones(data || []);
     }
     cargar();
