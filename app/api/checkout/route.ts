@@ -17,11 +17,13 @@ const FILTRO_PRICES_MXN: Record<string, number> = { ar: 279, blue: 549, foto: 94
 async function calcularPrecioItem(item: any): Promise<number> {
   let precioArmazonMXN = 0;
   if (item.armazon_id) {
-    const { data } = await supabase.from('armazones').select('precio, precio_gon').eq('id', item.armazon_id).eq('activo', true).single();
+    const { data } = await supabase.from('armazones').select('precio, precio_gon, descuento_gon').eq('id', item.armazon_id).eq('activo', true).single();
     if (data) {
-      precioArmazonMXN = (data.precio_gon && data.precio_gon > 0)
+      const base = (data.precio_gon && data.precio_gon > 0)
         ? data.precio_gon
         : Math.round(data.precio * TC_FALLBACK);
+      const dg = data.descuento_gon || 0;
+      precioArmazonMXN = Math.round(base * (1 - dg / 100));
     }
   }
   if (item.es_regalo) precioArmazonMXN = 0;

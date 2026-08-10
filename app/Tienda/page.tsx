@@ -12,7 +12,7 @@ type Armazon = {
   id: number; nombre: string; forma: string; genero: string;
   precio: number; precio_gon?: number; color: string; imagen_url?: string;
   badge?: string; material?: string; talla?: string; tipo?: string;
-  color1?: string; descuento?: number;
+  color1?: string; descuento?: number; descuento_gon?: number;
 };
 
 const FORMAS = ['Cuadrada', 'Redonda', 'Rectangular', 'Ovalada', 'Aviador'];
@@ -57,9 +57,9 @@ function ArmazonCard({ a, esMobil }: { a: Armazon; esMobil: boolean }) {
               {a.badge}
             </div>
           )}
-          {a.descuento && a.descuento > 0 && (
+          {a.descuento_gon && a.descuento_gon > 0 && (
             <div style={{ position: 'absolute', bottom: '10px', left: '10px', fontSize: '0.6rem', fontWeight: 700, padding: '3px 8px', borderRadius: '2px', background: 'var(--accent)', color: 'white' }}>
-              -{a.descuento}%
+              -{a.descuento_gon}%
             </div>
           )}
           <button
@@ -83,9 +83,20 @@ function ArmazonCard({ a, esMobil }: { a: Armazon; esMobil: boolean }) {
             </div>
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ fontSize: '0.85rem', color: 'var(--charcoal)' }}>
-              Desde <span style={{ fontWeight: 600 }}>${a.precio_gon ?? '—'} <span style={{ fontWeight: 400, color: 'var(--warm-gray)', fontSize: '0.75rem' }}>MXN</span></span>
-            </div>
+            {(() => {
+              const dg = a.descuento_gon || 0;
+              const base = a.precio_gon ?? 0;
+              const fin = Math.round(base * (1 - dg / 100));
+              return (
+                <div style={{ fontSize: '0.85rem', color: 'var(--charcoal)' }}>
+                  Desde{' '}
+                  {dg > 0 && a.precio_gon != null && (
+                    <span style={{ textDecoration: 'line-through', color: 'var(--warm-gray)', fontWeight: 400, fontSize: '0.78rem', marginRight: '5px' }}>${base}</span>
+                  )}
+                  <span style={{ fontWeight: 600 }}>${dg > 0 ? fin : (a.precio_gon ?? '—')} <span style={{ fontWeight: 400, color: 'var(--warm-gray)', fontSize: '0.75rem' }}>MXN</span></span>
+                </div>
+              );
+            })()}
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: '4px',
               fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase',
