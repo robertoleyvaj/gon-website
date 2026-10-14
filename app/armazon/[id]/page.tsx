@@ -6,6 +6,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import { useLang } from '../../components/LanguageContext';
 import { supabase } from '../../lib/supabase';
+import { waGon } from '../../lib/precio-gon';
 import { useCart, generateCartId } from '../../context/CartContext';
 
 type Armazon = {
@@ -818,6 +819,8 @@ export default function DetalleArmazon() {
     return () => { document.body.style.overflow = ''; };
   }, [drawerOpen, gonModal]);
 
+  // Apartar por WhatsApp (para quien llega de un anuncio y prefiere ir a la óptica)
+  const linkApartar = () => waGon(`Hola, quiero apartar el armazón ${armazon?.nombre || armazon?.modelo || ''} (#${armazon?.id}) que vi en gonmx.com/armazon/${armazon?.id}`);
   const abrirDrawer = () => { setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
 
   const resumenReceta = () => {
@@ -1358,6 +1361,13 @@ export default function DetalleArmazon() {
                 {esSolar ? t('Configurar mis lentes →', 'Configure my lenses →') : t('Personaliza tus micas →', 'Customize my lenses →')}
               </button>
             )}
+            {/* Apartar por WhatsApp y pasar a la óptica (examen gratis) */}
+            <a href={linkApartar()} target="_blank" rel="noopener noreferrer"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', background: '#fff', color: 'var(--charcoal)', border: '1.5px solid #25D366', padding: '15px 24px', borderRadius: '999px', fontSize: '0.9rem', fontWeight: 600, textDecoration: 'none', margin: esMobil ? '0 0 1.5rem' : '-1.5rem 0 1rem', fontFamily: 'var(--font-sans)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.31-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.89-5.34 11.89-11.89S18.6 0 12.05 0z"/></svg>
+              {t('Apartar por WhatsApp', 'Reserve on WhatsApp')}
+            </a>
+            <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', textAlign: 'center', margin: '0 0 2rem' }}>{t('Lo apartamos y pasas a la óptica por tu examen de la vista gratis.', 'We hold it and you come to the store for your free eye exam.')}</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1.5rem 0', marginBottom: '2.5rem' }}>
               {[
                 { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4a2 2 0 0 1 2 2v6H16V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>, label: t('Envío rápido', 'Fast shipping'), sub: t('5–7 días', '5–7 days') },

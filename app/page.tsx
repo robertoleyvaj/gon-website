@@ -1,355 +1,322 @@
-// app/page.tsx
+// app/page.tsx — Portada de GON (mismo diseño editorial que Verly, colores de GON, precios en pesos)
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
+import FooterGon from './components/FooterGon';
+import { useLang } from './components/LanguageContext';
 import { supabase } from './lib/supabase';
-import { usePrecios, redondearMXN } from './hooks/usePrecios';
+import { swatchColor, nombreColor } from './lib/colores';
+import { precioGon, mxn, waGon } from './lib/precio-gon';
 
-type Armazon = {
-  id: number;
-  nombre: string;
-  forma: string;
-  precio: number;
-  color: string;
-  imagen_url?: string;
-  badge?: string;
-};
+type Destacado = { id: number; nombre: string; precio: number; foto: string; colores: { color: string; hex?: string | null }[] };
 
-function useScrollReveal() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-  return { ref, visible };
-}
-
-function Reveal({ children, delay = 0, direction = 'up' }: { children: React.ReactNode; delay?: number; direction?: 'up' | 'left' | 'right' | 'none' }) {
-  const { ref, visible } = useScrollReveal();
-  const transforms: Record<string, string> = { up: 'translateY(32px)', left: 'translateX(-32px)', right: 'translateX(32px)', none: 'none' };
-  return (
-    <div ref={ref} style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : transforms[direction], transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms` }}>
-      {children}
-    </div>
-  );
-}
+const Flecha = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+);
 
 export default function Home() {
-  const [armazones, setArmazones] = useState<Armazon[]>([]);
-  const [esMobil, setEsMobil] = useState(false);
-  const { tipoCambio } = usePrecios();
+  const { t, lang } = useLang() as any;
+  const [destacados, setDestacados] = useState<Destacado[]>([]);
 
+  // Armazones reales de OptiOS: los primeros 4 publicados que ya tienen foto
   useEffect(() => {
-    const check = () => setEsMobil(window.innerWidth <= 768);
-    check();
-    window.addEventListener('resize', check, { passive: true });
-    return () => window.removeEventListener('resize', check);
+    (async () => {
+      const { data: arms } = await supabase.from('armazones').select('*')
+        .eq('activo', true).eq('publicar_gon', true).eq('tipo', 'optico').order('id', { ascending: false }).limit(40);
+      const lista = arms || [];
+      if (!lista.length) return;
+      const { data: cols } = await supabase.from('armazon_colores').select('armazon_id, color, hex, imagen_url, orden')
+        .in('armazon_id', lista.map((a: any) => a.id)).eq('publicar_gon', true).order('orden');
+      const porModelo: Record<number, any[]> = {};
+      for (const c of cols || []) (porModelo[c.armazon_id] ||= []).push(c);
+      const out: Destacado[] = [];
+      for (const a of lista as any[]) {
+        const cs = porModelo[a.id] || [];
+        const foto = a.imagen_url || cs.find(c => c.imagen_url)?.imagen_url;
+        if (!foto) continue;
+        out.push({ id: a.id, nombre: a.nombre, precio: precioGon(a), foto, colores: cs.length ? cs : [{ color: a.color || '' }] });
+        if (out.length === 4) break;
+      }
+      setDestacados(out);
+    })();
   }, []);
 
-  useEffect(() => {
-    async function cargar() {
-      const { data } = await supabase.from('armazones').select('*').eq('activo', true).eq('publicar_gon', true).order('id').limit(8);
-      setArmazones(data || []);
-    }
-    cargar();
-  }, []);
+  const formas = [
+    { img: '/home/forma-redondos.jpg', es: 'Redondos', en: 'Round', href: '/Tienda?forma=round' },
+    { img: '/home/forma-rectangulares.jpg', es: 'Rectangulares', en: 'Rectangular', href: '/Tienda?forma=rectangle,square' },
+    { img: '/home/forma-cateye.jpg', es: 'Cat-eye', en: 'Cat-eye', href: '/Tienda?forma=cat-eye' },
+    { img: '/home/forma-metal.jpg', es: 'De metal', en: 'Metal', href: '/Tienda?material=METAL' },
+  ];
+
+  const pasos = [
+    { es: 'Elige tu armazón', en: 'Choose your frame', des: 'Filtra por forma, color y talla. Todos los modelos están en nuestras ópticas.', den: 'Filter by shape, color and size. Every model is in our stores.', img: '/proceso-01.jpg' },
+    { es: 'Apártalo o cómpralo', en: 'Reserve or buy it', des: 'Apártalo por WhatsApp o cómpralo en línea con tus micas.', den: 'Reserve it on WhatsApp or buy it online with your lenses.', img: '/proceso-02.jpg' },
+    { es: 'Examen de la vista gratis', en: 'Free eye exam', des: 'Te revisamos la vista sin costo en cualquiera de nuestras ópticas.', den: 'We check your eyes for free at any of our stores.', img: '/proceso-03.jpg' },
+    { es: 'Recoge tus lentes', en: 'Pick up your glasses', des: 'Te avisamos cuando estén listos para que pases por ellos.', den: 'We let you know when they are ready to pick up.', img: '/proceso-04.jpg' },
+  ];
+
+  const faqs = [
+    { q: ['¿El examen de la vista es gratis?', 'Is the eye exam free?'], a: ['Sí. Te hacemos el examen sin costo en cualquiera de nuestras ópticas en Rosarito.', 'Yes. We give you a free eye exam at any of our stores in Rosarito.'] },
+    { q: ['¿Puedo apartar un armazón?', 'Can I reserve a frame?'], a: ['Sí. En cada armazón hay un botón para apartarlo por WhatsApp y lo tenemos listo para cuando vengas.', 'Yes. Every frame has a button to reserve it on WhatsApp and we hold it for your visit.'] },
+    { q: ['¿Atienden en inglés?', 'Do you speak English?'], a: ['Sí, te atendemos en español y en inglés.', 'Yes, we help you in English and Spanish.'] },
+    { q: ['¿Dónde están sus ópticas?', 'Where are your stores?'], a: ['Tenemos ópticas en Playas de Rosarito, Baja California. Revisa direcciones y horarios en Ubicaciones.', 'We have stores in Playas de Rosarito, Baja California. See addresses and hours under Locations.'] },
+  ];
 
   return (
-    <main style={{ fontFamily: 'var(--font-sans)', margin: 0, padding: 0, background: 'var(--cream)', color: 'var(--charcoal)', overflowX: 'hidden' }}>
+    <main className="vh">
       <Navbar />
 
-      {/* HERO */}
-      {esMobil ? (
-        /* ── Hero móvil: imagen arriba, texto superpuesto ── */
-        <section style={{ paddingTop: '64px' }}>
-          <div style={{ width: '100%', height: '72vw', minHeight: '260px', maxHeight: '400px', overflow: 'hidden' }}>
-            <img src="/hero-man.jpg" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%' }}/>
+      {/* Portada */}
+      <section className="vh-hero">
+        <picture>
+          <source media="(max-width: 768px)" srcSet="/home/hero-movil.jpg" />
+          <img src="/home/hero.jpg" alt={t('Armazones sobre pedestales de piedra', 'Frames on stone pedestals')} />
+        </picture>
+        <div className="vh-hero-tx">
+          <h1>{lang === 'es' ? <>Tus lentes nuevos,<br />en Rosarito.</> : <>Your new glasses,<br />in Rosarito.</>}</h1>
+          <p>{t('Examen de la vista gratis, atención bilingüe y armazones para toda la familia.', 'Free eye exam, bilingual service and frames for the whole family.')}</p>
+          <div className="vh-btns">
+            <Link href="/Tienda" className="vh-btn">{t('Ver armazones', 'Shop frames')} <Flecha /></Link>
+            <Link href="/examen" className="vh-btn vh-btn-2">{t('Examen gratis', 'Free eye exam')}</Link>
           </div>
-          <div style={{ background: 'var(--cream)', padding: '2rem 1.5rem 2.5rem', marginTop: '-2rem', borderRadius: '20px 20px 0 0', position: 'relative' }}>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.1rem', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '0.85rem' }}>
-              Tu visión.<br />Nuestra prioridad.<br />
-              <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Siempre cerca de ti.</em>
-            </h1>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--warm-gray)', lineHeight: 1.8, marginBottom: '1.5rem', fontWeight: 400 }}>
-              Armazones modernos, lentes de calidad y examen de la vista profesional en Rosarito.
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              <Link href="/Tienda" style={{ background: 'var(--sage)', color: 'white', padding: '15px 28px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', textDecoration: 'none', display: 'block', textAlign: 'center' }}>
-                Ver armazones
-              </Link>
-              <Link href="/examen" style={{ background: 'transparent', color: 'var(--charcoal)', padding: '14px 28px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase', border: '1px solid var(--border)', display: 'block', textAlign: 'center' }}>
-                Agendar examen
-              </Link>
+        </div>
+      </section>
+
+      {/* Formas */}
+      <section className="vh-sec">
+        <div className="vh-head">
+          <div>
+            <p className="vh-eye">{t('Nuestra colección', 'Our collection')}</p>
+            <h2>{t('Encuentra tu forma', 'Find your shape')}</h2>
+          </div>
+          <p className="vh-side">{t('Todos estos modelos los tenemos en nuestras ópticas de Rosarito.', 'All these models are available at our Rosarito stores.')}</p>
+        </div>
+        <div className="vh-formas">
+          {formas.map(f => (
+            <Link key={f.href} href={f.href} className="vh-forma">
+              <img src={f.img} alt={t(f.es, f.en)} loading="lazy" />
+              <span>{t(f.es, f.en)} <Flecha /></span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Destacados (productos reales) */}
+      {destacados.length > 0 && (
+        <section className="vh-sec">
+          <div className="vh-head">
+            <div>
+              <p className="vh-eye">{t('Destacados', 'Featured')}</p>
+              <h2>{t('Armazones destacados', 'Featured frames')}</h2>
             </div>
+            <Link href="/Tienda" className="vh-link">{t('Ver todos los armazones', 'View all frames')} <Flecha /></Link>
           </div>
-        </section>
-      ) : (
-        /* ── Hero escritorio: imagen de fondo con gradiente ── */
-        <section style={{ position: 'relative', width: '100%', minHeight: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
-          <img src="/hero-man.jpg" alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}/>
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(244,247,250,0.97) 0%, rgba(244,247,250,0.88) 38%, rgba(244,247,250,0.0) 65%)' }}/>
-          <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1180px', margin: '0 auto', padding: '0 2rem' }}>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1.25rem' }}>
-              Grupo Óptico del Noroeste — Est. 2012
-            </p>
-            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.8rem, 4.5vw, 4rem)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', color: 'var(--charcoal)', marginBottom: '1.25rem', maxWidth: '580px' }}>
-              Tu visión.<br />Nuestra prioridad.<br />
-              <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>Siempre cerca de ti.</em>
-            </h1>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '15px', color: 'var(--warm-gray)', lineHeight: 1.8, marginBottom: '2.5rem', maxWidth: '400px', fontWeight: 400 }}>
-              Armazones modernos, lentes de calidad y examen de la vista profesional en Rosarito.
-            </p>
-            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-              <Link href="/Tienda" style={{ background: 'var(--sage)', color: 'white', padding: '15px 36px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 600, letterSpacing: '1.2px', textTransform: 'uppercase', border: 'none', cursor: 'pointer', textDecoration: 'none', display: 'inline-block' }}>
-                Ver armazones
+          <div className="vh-prods">
+            {destacados.map(d => (
+              <Link key={d.id} href={`/armazon/${d.id}`} className="vh-prod">
+                <div className="vh-prod-img"><img src={d.foto} alt={d.nombre} loading="lazy" /></div>
+                <b>{d.nombre}</b>
+                <span>{mxn(d.precio)}</span>
+                <div className="vh-sws">
+                  {d.colores.slice(0, 5).map((c, i) => <i key={i} title={nombreColor(c.color, lang)} style={{ background: swatchColor(c.color, c.hex) }} />)}
+                </div>
               </Link>
-              <Link href="/lentes" style={{ background: 'rgba(255,255,255,0.85)', color: 'var(--charcoal)', padding: '14px 28px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '12px', fontWeight: 500, textDecoration: 'none', letterSpacing: '1px', textTransform: 'uppercase', border: '1px solid var(--border)', display: 'inline-block', backdropFilter: 'blur(8px)' }}>
-                Ver lentes
-              </Link>
-            </div>
-          </div>
-          <div style={{ position: 'absolute', bottom: '3rem', right: '3rem', background: 'white', borderRadius: '12px', padding: '1.25rem 1.5rem', boxShadow: '0 8px 40px rgba(27,58,107,0.12)', maxWidth: '260px', border: '1px solid var(--border)', zIndex: 2 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-              <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-              </div>
-              <span style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)' }}>Recoge en óptica</span>
-            </div>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--warm-gray)', lineHeight: 1.6, margin: 0 }}>
-              Compra en línea y recoge en cualquiera de nuestras ópticas en Rosarito.
-            </p>
-          </div>
-          <div style={{ position: 'absolute', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', opacity: 0.3, zIndex: 2 }}>
-            <div style={{ width: '1px', height: '48px', background: 'var(--charcoal)' }}/>
-            <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="var(--charcoal)" strokeWidth="1.2" strokeLinecap="round"/></svg>
+            ))}
           </div>
         </section>
       )}
 
-      {/* CÓMO FUNCIONA */}
-      <Reveal>
-        <section style={{ background: 'white', padding: '6rem 2rem' }}>
-          <div style={{ maxWidth: '1180px', margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '10px', fontWeight: 600, letterSpacing: '0.26em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1rem' }}>Cómo funciona</p>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.2rem, 4vw, 3.5rem)', fontWeight: 400, color: 'var(--charcoal)', margin: 0, lineHeight: 1.05 }}>
-                Cuatro pasos simples.<br/>Mejor visión.
-              </h2>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: esMobil ? '1rem' : '2rem' }}>
-              {[
-                { num: '1', icon: (<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>), label: 'Elige tus lentes', desc: 'Explora nuestra colección de armazones.' },
-                { num: '2', icon: (<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>), label: 'Personaliza', desc: 'Selecciona el tipo de visión, material y filtros.' },
-                { num: '3', icon: (<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>), label: 'Paga seguro', desc: 'Paga en línea con total seguridad a través de Stripe.' },
-                { num: '4', icon: (<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>), label: 'Recoge en óptica', desc: 'Te avisamos cuando tu pedido esté listo para recoger.' },
-              ].map((paso, i) => (
-                <Reveal key={i} delay={i * 100} direction="up">
-                  <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-                    <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--cream)', border: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
-                      {paso.icon}
-                    </div>
-                    <div style={{ fontFamily: 'var(--font-sans)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '0.5rem' }}>
-                      {paso.num}. {paso.label}
-                    </div>
-                    <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--warm-gray)', lineHeight: 1.7, margin: 0 }}>{paso.desc}</p>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
+      {/* Dos colecciones */}
+      <section className="vh-mitades">
+        <Link href="/Tienda?material=ACETATE" className="vh-mitad">
+          <img src="/home/acetato.jpg" alt={t('Armazón de acetato carey', 'Tortoise acetate frame')} loading="lazy" />
+          <div>
+            <h3>{t('Acetato clásico', 'Classic acetate')}</h3>
+            <p>{t('Armazones de acetato en carey, negro y colores.', 'Acetate frames in tortoise, black and colors.')}</p>
+            <span className="vh-link">{t('Ver colección', 'Shop the collection')} <Flecha /></span>
           </div>
-        </section>
-      </Reveal>
+        </Link>
+        <Link href="/Tienda?color=transparente" className="vh-mitad">
+          <img src="/home/transparentes.jpg" alt={t('Armazón transparente', 'Clear frame')} loading="lazy" />
+          <div>
+            <h3>{t('Transparentes', 'Clear frames')}</h3>
+            <p>{t('Ligeros y fáciles de combinar con todo.', 'Light and easy to wear with anything.')}</p>
+            <span className="vh-link">{t('Ver colección', 'Shop the collection')} <Flecha /></span>
+          </div>
+        </Link>
+      </section>
 
-      {/* ARMAZONES DESTACADOS */}
-      <section style={{ padding: '6rem 2rem', maxWidth: '1180px', margin: '0 auto' }}>
-        <Reveal>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem' }}>
-            <div>
-              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '10px', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--accent)', margin: '0 0 6px' }}>Catálogo</p>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 400, color: 'var(--charcoal)', margin: 0 }}>Armazones destacados</h2>
+      {/* Banner ancho */}
+      <Link href="/Tienda?material=METAL" className="vh-banner">
+        <img src="/home/metal-banner.jpg" alt={t('Armazón de metal dorado', 'Gold metal frame')} loading="lazy" />
+        <div>
+          <h3>{t('Armazones de metal', 'Metal frames')}</h3>
+          <p>{t('Delgados y ligeros, en dorado y plateado.', 'Thin and light, in gold and silver.')}</p>
+          <span className="vh-link">{t('Ver colección', 'Shop the collection')} <Flecha /></span>
+        </div>
+      </Link>
+
+      {/* Cómo funciona */}
+      <section className="vh-sec" id="como-funciona">
+        <p className="vh-eye">{t('Cómo funciona', 'How it works')}</p>
+        <h2>{t('Tus lentes en 4 pasos', 'Your glasses in 4 steps')}</h2>
+        <div className="vh-pasos">
+          {pasos.map((p, i) => (
+            <div key={i} className="vh-paso">
+              <div className="vh-paso-img"><img src={p.img} alt={t(p.es, p.en)} loading="lazy" /></div>
+              <span className="vh-num">{String(i + 1).padStart(2, '0')}</span>
+              <b>{t(p.es, p.en)}</b>
+              <span>{t(p.des, p.den)}</span>
             </div>
-            <Link href="/Tienda" style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: 'var(--warm-gray)', textDecoration: 'none', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              Ver todos <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-            </Link>
-          </div>
-        </Reveal>
-        <div style={{ display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: esMobil ? '10px' : '1.25rem' }}>
-          {armazones.slice(0, 4).map((a, i) => (
-            <Reveal key={a.id} delay={i * 80} direction="up">
-              <Link href={`/armazon/${a.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)', transition: 'all 0.35s ease', cursor: 'pointer' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-6px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 20px 60px rgba(27,58,107,0.10)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = 'none'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}
-                >
-                  <div style={{ aspectRatio: '4/3', background: 'var(--cream)', overflow: 'hidden', position: 'relative' }}>
-                    {a.imagen_url
-                      ? <img src={a.imagen_url} alt={a.nombre} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '12px', boxSizing: 'border-box' }}/>
-                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <svg width="70" height="38" viewBox="0 0 160 90" fill="none" style={{ opacity: 0.12 }}>
-                            <rect x="4" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/>
-                            <rect x="92" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/>
-                            <path d="M68 38 C72 32, 88 32, 92 38" stroke="#1d1d1d" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-                          </svg>
-                        </div>}
-                    {a.badge && <div style={{ position: 'absolute', top: '10px', left: '10px', fontSize: '0.55rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '3px 8px', borderRadius: '3px', background: 'var(--sage)', color: 'white' }}>{a.badge}</div>}
-                  </div>
-                  <div style={{ padding: '1rem 1.1rem 1.1rem' }}>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.05rem', fontWeight: 400, color: 'var(--charcoal)', marginBottom: '6px' }}>{a.nombre}</div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--charcoal)' }}>${redondearMXN(a.precio, tipoCambio)} <span style={{ fontWeight: 400, color: 'var(--warm-gray)', fontSize: '0.75rem' }}>MXN</span></div>
-                      <div style={{ fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent)' }}>Ver</div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </Reveal>
           ))}
         </div>
       </section>
 
-      {/* BANNER AZUL */}
-      <Reveal>
-        <section style={{ background: 'var(--sage)', padding: esMobil ? '3rem 1.5rem' : '5rem 2rem' }}>
-          <div style={{ maxWidth: '1180px', margin: '0 auto', display: 'grid', gridTemplateColumns: esMobil ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: esMobil ? '1.5rem' : '2rem' }}>
-            {[
-              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>), label: 'Examen de la vista', desc: 'Agenda tu cita con nuestros optometristas certificados.', link: '/examen', cta: 'Agendar examen →' },
-              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>), label: 'Marcas que amas', desc: 'Trabajamos con las mejores marcas del mundo.', link: '/Tienda', cta: 'Ver marcas →' },
-              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>), label: 'Promociones', desc: 'Descubre nuestras promociones y descuentos exclusivos.', link: '/Tienda', cta: 'Ver promociones →' },
-              { icon: (<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.07 6.07l.82-.82a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7a2 2 0 0 1 1.72 2.04z"/></svg>), label: '¿Necesitas ayuda?', desc: 'Estamos aquí para ayudarte por WhatsApp o en tienda.', link: 'https://wa.me/526648343018', cta: 'Contactar →' },
-            ].map((item, i) => (
-              <Reveal key={i} delay={i * 100} direction="up">
-                <div style={{ color: 'white' }}>
-                  <div style={{ marginBottom: '1rem' }}>{item.icon}</div>
-                  <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'white', marginBottom: '0.6rem' }}>{item.label}</h3>
-                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, marginBottom: '1rem' }}>{item.desc}</p>
-                  <Link href={item.link} style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: 'var(--accent)', textDecoration: 'none' }}>{item.cta}</Link>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-      </Reveal>
-
-      {/* COLECCIONES */}
-      <section style={{ padding: '6rem 2rem', maxWidth: '1180px', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: '1.25rem' }}>
+      {/* Nuestro compromiso: texto, sin íconos */}
+      <section className="vh-sec">
+        <p className="vh-eye">{t('Por qué GON', 'Why GON')}</p>
+        <h2>{t('Ópticas de confianza en Rosarito', 'Trusted optical stores in Rosarito')}</h2>
+        <div className="vh-comp">
           {[
-            { img: '/hero-hombre.jpg', titulo: 'Para él', href: '/Tienda?tipo=optico&genero=hombre' },
-            { img: '/hero-mujer.jpg', titulo: 'Para ella', href: '/Tienda?tipo=optico&genero=mujer' },
-          ].map((c, i) => (
-            <Reveal key={i} delay={i * 150} direction={i === 0 ? 'left' : 'right'}>
-              <Link href={c.href} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                <div style={{ position: 'relative', height: '420px', borderRadius: '12px', overflow: 'hidden', cursor: 'pointer' }}
-                  onMouseEnter={e => { (e.currentTarget.querySelector('img') as HTMLImageElement).style.transform = 'scale(1.05)'; }}
-                  onMouseLeave={e => { (e.currentTarget.querySelector('img') as HTMLImageElement).style.transform = 'scale(1)'; }}
-                >
-                  <img src={c.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', transition: 'transform 0.7s ease' }}/>
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(27,58,107,0.7) 0%, rgba(27,58,107,0.0) 55%)' }}/>
-                  <div style={{ position: 'absolute', bottom: '2rem', left: '2rem' }}>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', fontWeight: 400, color: 'white', lineHeight: 1, marginBottom: '0.6rem' }}>{c.titulo}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)' }}>Explorar</span>
-                      <div style={{ width: '24px', height: '1px', background: 'rgba(255,255,255,0.5)' }}/>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" strokeLinecap="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </Reveal>
+            { n: t('Gratis', 'Free'), u: '', h: t('Examen de la vista', 'Eye exam'), p: t('En cualquiera de nuestras ópticas, sin cita.', 'At any of our stores.'), href: '/examen' },
+            { n: 'ES · EN', u: '', h: t('Atención bilingüe', 'Bilingual service'), p: t('Te atendemos en español y en inglés.', 'We help you in English and Spanish.'), href: '/ubicaciones' },
+            { n: t('Apártalo', 'Reserve'), u: '', h: t('Por WhatsApp', 'On WhatsApp'), p: t('Apartamos tu armazón para cuando vengas.', 'We hold your frame for your visit.'), href: waGon(t('Hola, quiero apartar un armazón', 'Hi, I want to reserve a frame')) },
+          ].map(c => (
+            <Link key={c.href} href={c.href} className="vh-comp-i">
+              <span className="vh-comp-n">{c.n}<small>{c.u}</small></span>
+              <b>{c.h}</b>
+              <span>{c.p}</span>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" style={{ padding: '6rem 2rem', maxWidth: '640px', margin: '0 auto' }}>
-        <Reveal>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '10px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '0.75rem' }}>FAQ</p>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 3vw, 2.4rem)', fontWeight: 400, color: 'var(--charcoal)', margin: 0 }}>Preguntas frecuentes</h2>
-          </div>
-        </Reveal>
-        {[
-          { q: '¿Necesito cita para el examen de la vista?', a: 'Puedes agendar en línea o llegar directamente a cualquiera de nuestras ópticas en Rosarito.' },
-          { q: '¿Cuánto tiempo tardan mis lentes?', a: 'Los lentes con graduación están listos en 3 a 7 días hábiles según el tratamiento.' },
-          { q: '¿Cómo ingreso mi graduación?', a: 'Puedes escribir los números manualmente o subir una foto de tu receta al hacer el pedido.' },
-          { q: '¿Puedo pagar en pesos?', a: 'Sí, todos nuestros precios están en pesos mexicanos y aceptamos todas las tarjetas.' },
-          { q: '¿Tienen opciones para niños?', a: 'Sí, contamos con armazones especiales para niños con materiales resistentes y seguros.' },
-        ].map((f, i) => (
-          <Reveal key={i} delay={i * 60}>
-            <details style={{ borderBottom: '1px solid var(--border)', overflow: 'hidden' }}>
-              <summary style={{ padding: '1.25rem 0', fontFamily: 'var(--font-sans)', fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                {f.q}
-                <span style={{ color: 'var(--accent)', fontSize: '20px', fontWeight: 300, flexShrink: 0, marginLeft: '1rem', lineHeight: 1 }}>+</span>
-              </summary>
-              <div style={{ padding: '0 0 1.25rem', fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'var(--warm-gray)', lineHeight: 1.8 }}>
-                {f.a}
-              </div>
+      {/* Preguntas frecuentes para Google (schema.org FAQPage, en inglés) */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org', '@type': 'FAQPage',
+        mainEntity: faqs.map(f => ({ '@type': 'Question', name: f.q[1], acceptedAnswer: { '@type': 'Answer', text: f.a[1] } })),
+      }) }} />
+
+      {/* Preguntas */}
+      <section className="vh-sec vh-faq" id="faq">
+        <p className="vh-eye">{t('Preguntas frecuentes', 'FAQ')}</p>
+        <h2>{t('Antes de comprar', 'Before you buy')}</h2>
+        <div>
+          {faqs.map((f, i) => (
+            <details key={i}>
+              <summary>{t(f.q[0], f.q[1])}<span aria-hidden="true">+</span></summary>
+              <p>{t(f.a[0], f.a[1])}</p>
             </details>
-          </Reveal>
-        ))}
+          ))}
+        </div>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ background: 'var(--sage)', color: 'rgba(255,255,255,0.35)', padding: '4rem 2rem 2rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '2.5rem', maxWidth: '1100px', margin: '0 auto 3rem' }}>
-          <div>
-            <img src="/logo-gon.png" alt="GON" style={{ height: '48px', width: 'auto', marginBottom: '1rem' }}/>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', lineHeight: 1.8, maxWidth: '200px', color: 'rgba(255,255,255,0.45)' }}>Lentes accesibles para toda la familia. Rosarito, B.C.</p>
-          </div>
-          <div>
-            <h4 style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1.25rem' }}>Tienda</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {[{ href: '/Tienda', label: 'Armazones' }, { href: '/sunglasses', label: 'Lentes de sol' }, { href: '/lenses', label: 'Tipos de lente' }].map((l, i) => (
-                <a key={i} href={l.href} style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.35)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.15s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
-                >{l.label}</a>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h4 style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1.25rem' }}>Ayuda</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {[
-                { href: '#faq', label: 'FAQ' },
-                { href: 'https://wa.me/526648343018', label: 'WhatsApp' },
-                { href: 'mailto:gonmx.empresas@gmail.com', label: 'Contacto' },
-              ].map((l, i) => (
-                <a key={i} href={l.href} style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.35)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.15s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.8)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
-                >{l.label}</a>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h4 style={{ fontFamily: 'var(--font-sans)', color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '1.25rem' }}>Ubicaciones</h4>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.8 }}>
-              Playas de Rosarito<br/>Baja California, México<br/>Tel: 664-834-3018
-            </p>
-          </div>
-        </div>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.5rem', textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: '12px', maxWidth: '1100px', margin: '0 auto', color: 'rgba(255,255,255,0.2)' }}>
-          2026 Grupo Óptico del Noroeste
-        </div>
-      </footer>
+      <style>{`
+        .vh{background:var(--cream);color:var(--charcoal);overflow-x:hidden;padding-top:64px}
+        .vh h2{font-size:clamp(1.9rem,3.4vw,2.9rem);font-weight:500;letter-spacing:-.03em;line-height:1.05;margin:0}
+        .vh-eye{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--warm-gray);margin:0 0 10px}
+        .vh-link{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--charcoal);text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px;white-space:nowrap}
+        .vh-btn{display:inline-flex;align-items:center;gap:10px;background:var(--sage);color:#fff;padding:15px 28px;border-radius:999px;font-size:14px;font-weight:500;text-decoration:none;border:0;cursor:pointer;font-family:var(--font-sans);transition:background .2s}
+        .vh-btn:hover{background:var(--sage-light)}
+        .vh-btn-2{background:transparent;color:var(--charcoal);border:1px solid var(--charcoal)}
+        .vh-btn-2:hover{background:rgba(0,0,0,.04)}
 
-      {/* WHATSAPP FLOTANTE */}
-      <a href="https://wa.me/526648343018" target="_blank" rel="noopener noreferrer"
-        style={{ position: 'fixed', bottom: '2rem', right: '2rem', width: '52px', height: '52px', borderRadius: '50%', background: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(37,211,102,0.4)', zIndex: 100, transition: 'transform 0.2s' }}
-        onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
-        onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-      >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
-      </a>
+        .vh-hero{position:relative;overflow:hidden;background:var(--cream-dark)}
+        .vh-hero img{display:block;width:100%;height:clamp(460px,46vw,760px);object-fit:cover;object-position:right center}
+        .vh-hero-tx{position:absolute;inset:0;max-width:1280px;margin:0 auto;padding:0 2.5rem;display:flex;flex-direction:column;justify-content:center}
+        .vh-hero h1{font-size:clamp(2.6rem,4.6vw,4.4rem);font-weight:500;letter-spacing:-.035em;line-height:1.02;margin:0 0 18px;max-width:560px}
+        .vh-hero p{font-size:16px;line-height:1.65;color:#4a463f;max-width:400px;margin:0 0 30px}
+        .vh-btns{display:flex;gap:12px;flex-wrap:wrap}
+
+        .vh-sec{max-width:1280px;margin:0 auto;padding:96px 2.5rem 0}
+        .vh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:32px}
+        .vh-side{max-width:300px;font-size:14px;line-height:1.6;color:var(--warm-gray);margin:0}
+
+        .vh-formas{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+        .vh-forma{position:relative;display:block;aspect-ratio:8/9;overflow:hidden;border-radius:4px;text-decoration:none;color:var(--charcoal)}
+        .vh-forma img{width:100%;height:100%;object-fit:cover;transition:transform .8s ease}
+        .vh-forma:hover img{transform:scale(1.04)}
+        .vh-forma span{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;padding:16px 18px;font-size:16px;font-weight:500;background:linear-gradient(to top,rgba(247,244,239,.9),rgba(247,244,239,0))}
+
+        .vh-prods{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+        .vh-prod{text-decoration:none;color:var(--charcoal);display:flex;flex-direction:column;gap:4px}
+        .vh-prod-img{aspect-ratio:4/3;background:var(--foto-bg);border-radius:4px;overflow:hidden;margin-bottom:12px}
+        .vh-prod-img img{width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply;transform:scale(1.08);transition:transform .5s ease}
+        .vh-prod:hover .vh-prod-img img{transform:scale(1.13)}
+        .vh-prod b{font-size:15px;font-weight:500}
+        .vh-prod > span{font-size:13px;color:var(--warm-gray)}
+        .vh-sws{display:flex;gap:6px;margin-top:6px}
+        .vh-sws i{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.12)}
+
+        .vh-mitades{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:96px}
+        .vh-mitad{position:relative;display:block;overflow:hidden;text-decoration:none;color:var(--charcoal)}
+        .vh-mitad img{display:block;width:100%;height:clamp(380px,40vw,620px);object-fit:cover;transition:transform .8s ease}
+        .vh-mitad:hover img{transform:scale(1.03)}
+        .vh-mitad > div{position:absolute;left:clamp(24px,4vw,56px);bottom:clamp(28px,4vw,56px);max-width:320px}
+        .vh-mitad h3,.vh-banner h3{font-size:clamp(1.7rem,2.8vw,2.5rem);font-weight:500;letter-spacing:-.03em;line-height:1.05;margin:0 0 10px}
+        .vh-mitad p,.vh-banner p{font-size:14px;line-height:1.55;margin:0 0 18px;color:#3f3b35}
+
+        .vh-promo{margin-top:96px}
+        .vh-banner{position:relative;display:block;overflow:hidden;margin-top:6px;text-decoration:none;color:#fff;background:#1d2a20}
+        .vh-banner img{display:block;width:100%;height:clamp(340px,34vw,560px);object-fit:cover;object-position:right center}
+        .vh-banner > div{position:absolute;top:50%;transform:translateY(-50%);left:max(2.5rem,calc((100vw - 1280px)/2 + 2.5rem));max-width:360px}
+        .vh-banner p{color:rgba(255,255,255,.8)}
+        .vh-banner .vh-link{color:#fff}
+
+        .vh-pasos{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:36px}
+        .vh-paso{display:flex;flex-direction:column;gap:6px;color:var(--charcoal)}
+        .vh-paso-img{aspect-ratio:4/3;overflow:hidden;border-radius:4px;margin-bottom:12px;background:var(--cream-dark)}
+        .vh-paso-img img{width:100%;height:100%;object-fit:cover}
+                .vh-num{font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--sage)}
+        .vh-paso b{font-size:15px;font-weight:600}
+        .vh-paso > span:last-child{font-size:13.5px;line-height:1.55;color:var(--warm-gray)}
+
+        .vh-comp{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:36px;border-top:1px solid var(--border);padding-top:32px}
+        .vh-comp-i{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--charcoal)}
+        .vh-comp-i + .vh-comp-i{border-left:1px solid var(--border);padding-left:24px}
+        .vh-comp-n{font-size:clamp(2.4rem,4vw,3.4rem);font-weight:500;letter-spacing:-.04em;line-height:1;color:var(--sage);margin-bottom:8px}
+        .vh-comp-n small{font-size:.38em;letter-spacing:0;margin-left:6px;color:var(--warm-gray);font-weight:500}
+        .vh-comp-i b{font-size:15px;font-weight:600}
+        .vh-comp-i > span:last-child{font-size:13.5px;line-height:1.55;color:var(--warm-gray)}
+        .vh-faq{padding-bottom:110px}
+        .vh-faq > div{margin-top:28px;border-top:1px solid var(--border)}
+        .vh-faq details{border-bottom:1px solid var(--border)}
+        .vh-faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 0;font-size:15.5px;font-weight:500}
+        .vh-faq summary::-webkit-details-marker{display:none}
+        .vh-faq summary span{font-size:22px;font-weight:300;color:var(--sage);transition:transform .2s}
+        .vh-faq details[open] summary span{transform:rotate(45deg)}
+        .vh-faq details p{margin:0 0 20px;font-size:14px;line-height:1.7;color:var(--warm-gray);max-width:680px}
+
+        @media (max-width:900px){
+          .vh-formas,.vh-prods{grid-template-columns:1fr 1fr;gap:12px}
+          .vh-pasos{grid-template-columns:1fr 1fr;gap:24px 12px}
+          .vh-comp{grid-template-columns:1fr}
+          .vh-comp-i + .vh-comp-i{border-left:0;padding-left:0;border-top:1px solid var(--border);padding-top:24px}
+        }
+        @media (max-width:768px){
+          .vh{padding-top:64px}
+          /* Celular: todo sobre la foto. Título arriba (pared clara), botones abajo (piedra clara) */
+          .vh-hero img{height:auto;aspect-ratio:4/5;object-position:center}
+          .vh-hero::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(253,252,250,.85) 0%,rgba(253,252,250,0) 26%,rgba(253,252,250,0) 78%,rgba(253,252,250,.7) 100%)}
+          .vh-hero-tx{inset:0;justify-content:space-between;padding:44px 1.5rem 24px;z-index:1}
+          .vh-hero-tx > p{display:none}
+          .vh-hero h1{font-size:2.4rem;line-height:1.02;margin:0}
+          .vh-hero .vh-btn-2{background:rgba(253,252,250,.9);border-color:rgba(28,28,26,.25)}
+          .vh-hero p{font-size:14px;margin-bottom:18px;max-width:300px}
+          .vh-btn{padding:12px 20px;font-size:13px}
+          .vh-sec{padding:64px 1.25rem 0}
+          .vh-head{flex-direction:column;align-items:flex-start;margin-bottom:22px}
+          .vh-mitades{grid-template-columns:1fr;margin-top:64px}
+          .vh-promo{margin-top:64px}
+          .vh-mitad img{height:420px}
+          .vh-banner img{height:420px;object-position:72% center}
+          .vh-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(20,30,22,.75),rgba(20,30,22,0) 75%)}
+          .vh-banner > div{left:1.25rem;right:1.25rem;z-index:1}
+          .vh-faq{padding-bottom:80px}
+        }
+      `}</style>
+      <FooterGon />
     </main>
   );
 }
