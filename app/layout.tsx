@@ -31,6 +31,7 @@ export const metadata: Metadata = {
     "Armazones modernos, lentes de calidad y examen de la vista profesional en Playas de Rosarito. Compra en línea y recoge en cualquiera de nuestras ópticas.",
   icons: {
     icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
   keywords: [
     "óptica Rosarito",
