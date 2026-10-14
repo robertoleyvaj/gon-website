@@ -7,6 +7,7 @@ import Navbar from '../../components/Navbar';
 import { useLang } from '../../components/LanguageContext';
 import { supabase } from '../../lib/supabase';
 import { waGon, precioGon } from '../../lib/precio-gon';
+import { fbTrack } from '../../lib/fpixel';
 import { swatchColor as swatchLib, nombreColor } from '../../lib/colores';
 import { nombreMaterial, nombreBadge } from '../../lib/textos';
 import { FORMAS, normForma, tallaDeMedidas } from '../../lib/armazon-web';
@@ -796,6 +797,7 @@ export default function DetalleArmazon() {
       precio_total: totalMXN,
     };
     addItem(item);
+    fbTrack('AddToCart', { content_ids: [String(armazon!.id)], content_type: 'product_group', content_name: armazon!.nombre, value: totalMXN, currency: 'MXN' });
     setDrawerOpen(false);
     setPaso(1); setVision(''); setMaterial(''); setFiltros([]);
     setPaciente(''); setReutilizarReceta(null);
@@ -808,6 +810,8 @@ export default function DetalleArmazon() {
       const { data } = await supabase.from('armazones').select('*').eq('id', id).single();
       if (data) {
         setArmazon(data);
+        // Meta Pixel · ViewContent (mismo id que el catálogo)
+        fbTrack('ViewContent', { content_ids: [String(data.id)], content_type: 'product_group', content_name: data.nombre, value: data.precio_gon ? precioGon(data) : 0, currency: 'MXN' });
         const { data: rel } = await supabase.from('armazones').select('*').eq('activo', true).eq('publicar_gon', true)
           .eq('tipo', data.tipo || 'optico').neq('id', id).limit(30);
         setRelacionados(rel || []);
@@ -1357,7 +1361,7 @@ export default function DetalleArmazon() {
               {esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar mis micas', 'Customize my lenses')}
             </button>
           )}
-          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" className="va-cta va-cta-wa">
+          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" className="va-cta va-cta-wa" onClick={() => fbTrack('Lead', { content_ids: [String(armazon.id)], content_type: 'product_group', content_name: armazon.nombre, value: precioArmazonMXN, currency: 'MXN' })}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.31-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.89-5.34 11.89-11.89S18.6 0 12.05 0z"/></svg>
             {t('Apartar por WhatsApp', 'Reserve on WhatsApp')}
           </a>
@@ -1410,7 +1414,7 @@ export default function DetalleArmazon() {
       {esMobil && (
         <div className="va-sticky">
           <button onClick={abrirDrawer}>{esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar micas', 'Customize lenses')}</button>
-          <a href={linkApartar()} target="_blank" rel="noopener noreferrer">{t('Apartar', 'Reserve')}</a>
+          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" onClick={() => fbTrack('Lead', { content_ids: [String(armazon.id)], content_type: 'product_group', content_name: armazon.nombre, value: precioArmazonMXN, currency: 'MXN' })}>{t('Apartar', 'Reserve')}</a>
         </div>
       )}
 
