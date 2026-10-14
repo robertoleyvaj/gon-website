@@ -35,6 +35,7 @@ export default function FooterGon() {
             { href: '/ubicaciones', label: t('Ubicaciones', 'Locations') },
             { href: '/examen', label: t('Examen de la vista', 'Eye exam') },
             { href: '/nosotros', label: t('Nosotros', 'About us') },
+            { href: '/blog', label: 'Blog' },
           ])}
         </div>
         <div className="gft-base">© {new Date().getFullYear()} Grupo Óptico del Noroeste</div>

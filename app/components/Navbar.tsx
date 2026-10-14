@@ -135,13 +135,17 @@ function CartIcon() {
   );
 }
 
+// Menú de computadora: igual que Verly (pocas ligas) + el botón propio de GON "Agenda tu examen".
+// Blog, Nosotros y Ubicaciones siguen existiendo (pie de página y menú del celular) para SEO.
 const navLinks = [
   { href: "/Tienda", label_es: "Armazones", label_en: "Frames" },
-  { href: "/lenses", label_es: "Lentes", label_en: "Lenses" },
-  { href: "/examen", label_es: "Examen de la vista", label_en: "Eye exam" },
-  { href: "/blog", label_es: "Blog", label_en: "Blog" },
-  { href: "/nosotros", label_es: "Nosotros", label_en: "About us" },
+  { href: "/lenses", label_es: "Micas", label_en: "Lenses" },
+];
+const navMovil = [
+  ...navLinks,
+  { href: "/examen", label_es: "Agenda tu examen", label_en: "Book your eye exam" },
   { href: "/ubicaciones", label_es: "Ubicaciones", label_en: "Locations" },
+  { href: "/blog", label_es: "Blog", label_en: "Blog" },
 ];
 
 export default function Navbar() {
@@ -234,6 +238,9 @@ export default function Navbar() {
 
           {/* Right Actions */}
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexShrink: 0 }}>
+            <Link href="/examen" className="desktop-nav nav-cta">
+              {lang === "en" ? "Book your free eye exam" : "Agenda tu examen de la vista"}
+            </Link>
             <LangSwitcher />
             <FavoritosIcon />
             <CartIcon />
@@ -261,7 +268,7 @@ export default function Navbar() {
       {/* ── Menú móvil ── */}
       <div style={{
         position: "fixed", inset: 0, zIndex: 99,
-        background: "white",
+        background: "var(--cream)",
         display: "flex", flexDirection: "column", justifyContent: "center",
         padding: "3rem 2.5rem",
         opacity: menuOpen ? 1 : 0,
@@ -269,14 +276,14 @@ export default function Navbar() {
         transition: "opacity 0.35s ease",
       }}>
         <nav style={{ display: "flex", flexDirection: "column" }}>
-          {navLinks.map(({ href, label_es, label_en }, i) => (
+          {navMovil.map(({ href, label_es, label_en }, i) => (
             <Link
               key={href}
               href={href}
               style={{
                 fontFamily: "var(--font-serif)",
                 fontSize: "clamp(1.5rem, 7vw, 2.5rem)",
-                fontWeight: 300,
+                fontWeight: 400,
                 lineHeight: 1.1,
                 color: isActive(href) ? "var(--sage)" : "var(--charcoal)",
                 textDecoration: "none",
@@ -300,13 +307,15 @@ export default function Navbar() {
           fontFamily: "var(--font-sans)", fontSize: "0.62rem",
           letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--warm-gray)",
         }}>
-          Grupo Óptico del Noroeste — Est. 2012
+          Grupo Óptico del Noroeste
         </p>
       </div>
 
       <style jsx global>{`
         .nav-link:hover .nav-underline { transform: scaleX(1) !important; }
         .nav-link:hover { color: var(--sage) !important; }
+        .nav-cta { align-items:center; background: var(--sage); color: #fff !important; text-decoration: none; font-family: var(--font-sans); font-size: 0.8rem; font-weight: 500; padding: 10px 18px; border-radius: 999px; white-space: nowrap; transition: background .2s; }
+        .nav-cta:hover { background: var(--sage-light); }
         @media (min-width: 900px) {
           .hamburger { display: none !important; }
           .desktop-nav { display: flex !important; }
