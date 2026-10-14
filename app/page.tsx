@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from './components/Navbar';
-import FooterGon from './components/FooterGon';
 import { useLang } from './components/LanguageContext';
 import { supabase } from './lib/supabase';
 import { swatchColor, nombreColor } from './lib/colores';
 import { precioGon, mxn, waGon } from './lib/precio-gon';
+import { normForma } from './lib/armazon-web';
+import { claveMaterial } from './lib/textos';
 
 type Destacado = { id: number; nombre: string; precio: number; foto: string; colores: { color: string; hex?: string | null }[] };
 
@@ -18,12 +19,14 @@ const Flecha = () => (
 export default function Home() {
   const { t, lang } = useLang() as any;
   const [destacados, setDestacados] = useState<Destacado[]>([]);
+  // Foto real (de OptiOS) para cada forma: un armazón que tengamos de esa forma
+  const [fotoForma, setFotoForma] = useState<Record<string, string>>({});
 
   // Armazones reales de OptiOS: los primeros 4 publicados que ya tienen foto
   useEffect(() => {
     (async () => {
       const { data: arms } = await supabase.from('armazones').select('*')
-        .eq('activo', true).eq('publicar_gon', true).eq('tipo', 'optico').order('id', { ascending: false }).limit(40);
+        .eq('activo', true).eq('publicar_gon', true).eq('tipo', 'optico').order('id', { ascending: false }).limit(200);
       const lista = arms || [];
       if (!lista.length) return;
       const { data: cols } = await supabase.from('armazon_colores').select('armazon_id, color, hex, imagen_url, orden')
@@ -39,21 +42,34 @@ export default function Home() {
         if (out.length === 4) break;
       }
       setDestacados(out);
+      // Formas: el primer armazón con foto de cada forma (y uno de metal)
+      const ff: Record<string, string> = {};
+      for (const a of lista as any[]) {
+        const cs = porModelo[a.id] || [];
+        const foto = cs.find(c => c.imagen_url)?.imagen_url || a.imagen_url;
+        if (!foto) continue;
+        const fk = normForma(a.forma);
+        const k = fk === 'round' || fk === 'oval' ? 'red' : fk === 'rectangle' || fk === 'square' ? 'rect' : fk === 'cat-eye' ? 'cat' : '';
+        if (k && !ff[k]) ff[k] = foto;
+        if (!ff.metal && claveMaterial(a.material) === 'METAL') ff.metal = foto;
+      }
+      setFotoForma(ff);
     })();
   }, []);
 
+  // Armazones reales sobre un fondo de color liso (un tono distinto por forma)
   const formas = [
-    { img: '/home/forma-redondos.jpg', es: 'Redondos', en: 'Round', href: '/Tienda?forma=round' },
-    { img: '/home/forma-rectangulares.jpg', es: 'Rectangulares', en: 'Rectangular', href: '/Tienda?forma=rectangle,square' },
-    { img: '/home/forma-cateye.jpg', es: 'Cat-eye', en: 'Cat-eye', href: '/Tienda?forma=cat-eye' },
-    { img: '/home/forma-metal.jpg', es: 'De metal', en: 'Metal', href: '/Tienda?material=METAL' },
+    { k: 'red', bg: '#EEF2F8', es: 'Redondos', en: 'Round', href: '/Tienda?forma=round,oval' },
+    { k: 'rect', bg: '#F3F0EB', es: 'Rectangulares', en: 'Rectangular', href: '/Tienda?forma=rectangle,square' },
+    { k: 'cat', bg: '#F6EEF0', es: 'Cat-eye', en: 'Cat-eye', href: '/Tienda?forma=cat-eye' },
+    { k: 'metal', bg: '#EAF5F4', es: 'De metal', en: 'Metal', href: '/Tienda?material=METAL' },
   ];
 
   const pasos = [
-    { es: 'Elige tu armazón', en: 'Choose your frame', des: 'Filtra por forma, color y talla. Todos los modelos están en nuestras ópticas.', den: 'Filter by shape, color and size. Every model is in our stores.', img: '/proceso-01.jpg' },
-    { es: 'Apártalo o cómpralo', en: 'Reserve or buy it', des: 'Apártalo por WhatsApp o cómpralo en línea con tus micas.', den: 'Reserve it on WhatsApp or buy it online with your lenses.', img: '/proceso-02.jpg' },
-    { es: 'Examen de la vista gratis', en: 'Free eye exam', des: 'Te revisamos la vista sin costo en cualquiera de nuestras ópticas.', den: 'We check your eyes for free at any of our stores.', img: '/proceso-03.jpg' },
-    { es: 'Recoge tus lentes', en: 'Pick up your glasses', des: 'Te avisamos cuando estén listos para que pases por ellos.', den: 'We let you know when they are ready to pick up.', img: '/proceso-04.jpg' },
+    { es: 'Elige tu armazón', en: 'Choose your frame', des: 'Filtra por forma, color y talla. Todos los modelos están en nuestras ópticas.', den: 'Filter by shape, color and size. Every model is in our stores.' },
+    { es: 'Apártalo o cómpralo', en: 'Reserve or buy it', des: 'Apártalo por WhatsApp o cómpralo en línea con tus micas.', den: 'Reserve it on WhatsApp or buy it online with your lenses.' },
+    { es: 'Examen de la vista gratis', en: 'Free eye exam', des: 'Te revisamos la vista sin costo en cualquiera de nuestras ópticas.', den: 'We check your eyes for free at any of our stores.' },
+    { es: 'Recoge tus lentes', en: 'Pick up your glasses', des: 'Te avisamos cuando estén listos para que pases por ellos.', den: 'We let you know when they are ready to pick up.' },
   ];
 
   const faqs = [
@@ -70,8 +86,7 @@ export default function Home() {
       {/* Portada */}
       <section className="vh-hero">
         <picture>
-          <source media="(max-width: 768px)" srcSet="/home/hero-movil.jpg" />
-          <img src="/home/hero.jpg" alt={t('Armazones sobre pedestales de piedra', 'Frames on stone pedestals')} />
+          <img src="/hero-man.jpg" alt={t('Óptica GON en Rosarito', 'GON optical store in Rosarito')} />
         </picture>
         <div className="vh-hero-tx">
           <h1>{lang === 'es' ? <>Tus lentes nuevos,<br />en Rosarito.</> : <>Your new glasses,<br />in Rosarito.</>}</h1>
@@ -94,8 +109,8 @@ export default function Home() {
         </div>
         <div className="vh-formas">
           {formas.map(f => (
-            <Link key={f.href} href={f.href} className="vh-forma">
-              <img src={f.img} alt={t(f.es, f.en)} loading="lazy" />
+            <Link key={f.href} href={f.href} className="vh-forma vh-forma-real" style={{ background: f.bg }}>
+              {fotoForma[f.k] && <img src={fotoForma[f.k]} alt={t(f.es, f.en)} loading="lazy" />}
               <span>{t(f.es, f.en)} <Flecha /></span>
             </Link>
           ))}
@@ -164,7 +179,6 @@ export default function Home() {
         <div className="vh-pasos">
           {pasos.map((p, i) => (
             <div key={i} className="vh-paso">
-              <div className="vh-paso-img"><img src={p.img} alt={t(p.es, p.en)} loading="lazy" /></div>
               <span className="vh-num">{String(i + 1).padStart(2, '0')}</span>
               <b>{t(p.es, p.en)}</b>
               <span>{t(p.des, p.den)}</span>
@@ -224,6 +238,8 @@ export default function Home() {
 
         .vh-hero{position:relative;overflow:hidden;background:var(--cream-dark)}
         .vh-hero img{display:block;width:100%;height:clamp(460px,46vw,760px);object-fit:cover;object-position:right center}
+        .vh-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(255,255,255,.9) 0%,rgba(255,255,255,.75) 30%,rgba(255,255,255,0) 55%);pointer-events:none}
+        .vh-hero-tx{z-index:1}
         .vh-hero-tx{position:absolute;inset:0;max-width:1280px;margin:0 auto;padding:0 2.5rem;display:flex;flex-direction:column;justify-content:center}
         .vh-hero h1{font-size:clamp(2.6rem,4.6vw,4.4rem);font-weight:500;letter-spacing:-.035em;line-height:1.02;margin:0 0 18px;max-width:560px}
         .vh-hero p{font-size:16px;line-height:1.65;color:#4a463f;max-width:400px;margin:0 0 30px}
@@ -236,6 +252,8 @@ export default function Home() {
         .vh-formas{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
         .vh-forma{position:relative;display:block;aspect-ratio:8/9;overflow:hidden;border-radius:4px;text-decoration:none;color:var(--charcoal)}
         .vh-forma img{width:100%;height:100%;object-fit:cover;transition:transform .8s ease}
+        .vh-forma-real img{object-fit:contain;padding:14% 8% 22%;mix-blend-mode:multiply}
+        .vh-forma-real span{background:none}
         .vh-forma:hover img{transform:scale(1.04)}
         .vh-forma span{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;padding:16px 18px;font-size:16px;font-weight:500;background:linear-gradient(to top,rgba(247,244,239,.9),rgba(247,244,239,0))}
 
@@ -265,7 +283,8 @@ export default function Home() {
         .vh-banner .vh-link{color:#fff}
 
         .vh-pasos{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:36px}
-        .vh-paso{display:flex;flex-direction:column;gap:6px;color:var(--charcoal)}
+        .vh-paso{display:flex;flex-direction:column;gap:6px;color:var(--charcoal);background:var(--cream-dark);border-radius:6px;padding:24px 22px 26px}
+        .vh-paso .vh-num{font-size:2.2rem;font-weight:500;letter-spacing:-.03em;color:var(--sage);margin-bottom:6px}
         .vh-paso-img{aspect-ratio:4/3;overflow:hidden;border-radius:4px;margin-bottom:12px;background:var(--cream-dark)}
         .vh-paso-img img{width:100%;height:100%;object-fit:cover}
                 .vh-num{font-size:12px;font-weight:600;letter-spacing:.12em;color:var(--sage)}
@@ -297,7 +316,8 @@ export default function Home() {
         @media (max-width:768px){
           .vh{padding-top:64px}
           /* Celular: todo sobre la foto. Título arriba (pared clara), botones abajo (piedra clara) */
-          .vh-hero img{height:auto;aspect-ratio:4/5;object-position:center}
+          .vh-hero img{height:auto;aspect-ratio:4/5;object-position:72% center}
+          .vh-hero::before{background:linear-gradient(to bottom,rgba(255,255,255,.92) 0%,rgba(255,255,255,0) 34%)}
           .vh-hero::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(253,252,250,.85) 0%,rgba(253,252,250,0) 26%,rgba(253,252,250,0) 78%,rgba(253,252,250,.7) 100%)}
           .vh-hero-tx{inset:0;justify-content:space-between;padding:44px 1.5rem 24px;z-index:1}
           .vh-hero-tx > p{display:none}
@@ -316,7 +336,6 @@ export default function Home() {
           .vh-faq{padding-bottom:80px}
         }
       `}</style>
-      <FooterGon />
     </main>
   );
 }

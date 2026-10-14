@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo, Suspense, Fragment } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
-import FooterGon from '../components/FooterGon';
 import { useLang } from '../components/LanguageContext';
 import { supabase } from '../lib/supabase';
 import { useFavoritos } from '../context/FavoritosContext';
@@ -528,7 +527,6 @@ function TiendaContent() {
         }
         @keyframes vfsube{from{transform:translateY(100%)}to{transform:none}}
       `}</style>
-      <FooterGon />
     </main>
   );
 }

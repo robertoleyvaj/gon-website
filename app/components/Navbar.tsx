@@ -138,9 +138,9 @@ function CartIcon() {
 const navLinks = [
   { href: "/Tienda", label_es: "Armazones", label_en: "Frames" },
   { href: "/lenses", label_es: "Lentes", label_en: "Lenses" },
-  { href: "/examen", label_es: "Examen de la Vista", label_en: "Eye Exam" },
+  { href: "/examen", label_es: "Examen de la vista", label_en: "Eye exam" },
   { href: "/blog", label_es: "Blog", label_en: "Blog" },
-  { href: "/nosotros", label_es: "Sobre Nosotros", label_en: "About Us" },
+  { href: "/nosotros", label_es: "Nosotros", label_en: "About us" },
   { href: "/ubicaciones", label_es: "Ubicaciones", label_en: "Locations" },
 ];
 
@@ -169,9 +169,8 @@ export default function Navbar() {
         position: "fixed",
         top: 0, left: 0, right: 0,
         zIndex: 100,
-        background: "white",
-        borderBottom: "1px solid var(--border)",
-        boxShadow: "0 2px 16px rgba(27,58,107,0.06)",
+        background: "var(--cream)",
+        boxShadow: "0 1px 0 var(--border)",
       }}>
         <div style={{
           maxWidth: "1360px",
@@ -208,10 +207,9 @@ export default function Navbar() {
                 className="nav-link"
                 style={{
                   fontFamily: "var(--font-sans)",
-                  fontSize: "0.7rem",
-                  fontWeight: isActive(href) ? 600 : 400,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
+                  fontSize: "0.82rem",
+                  fontWeight: isActive(href) ? 500 : 400,
+                  letterSpacing: "0.01em",
                   color: isActive(href) ? "var(--sage)" : "var(--charcoal)",
                   textDecoration: "none",
                   position: "relative",
@@ -224,8 +222,8 @@ export default function Navbar() {
                 <span className="nav-underline" style={{
                   position: "absolute",
                   bottom: 0, left: 0, right: 0,
-                  height: "2px",
-                  background: "var(--accent)",
+                  height: "1px",
+                  background: "var(--sage)",
                   transform: isActive(href) ? "scaleX(1)" : "scaleX(0)",
                   transformOrigin: "left",
                   transition: "transform 0.3s ease",
