@@ -14,7 +14,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://*.supabase.co https://www.facebook.com",
-      "frame-src https://js.stripe.com https://hooks.stripe.com",
+      "frame-src https://js.stripe.com https://hooks.stripe.com https://maps.google.com https://www.google.com",
       "connect-src 'self' https://*.supabase.co https://open.er-api.com https://www.google-analytics.com https://analytics.google.com https://analytics.tiktok.com https://connect.facebook.net",
       "worker-src blob:",
     ].join("; "),

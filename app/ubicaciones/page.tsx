@@ -15,7 +15,7 @@ const SUCURSALES = [
     años: '9',
     maps: 'https://maps.google.com/?q=Optica+Baja+Vision+Blvd+Benito+Juarez+Rosarito',
     // OpenStreetMap embed — lat/lon centrado en Blvd. Benito Juárez, Rosarito
-    osm: 'https://www.openstreetmap.org/export/embed.html?bbox=-117.068%2C32.358%2C32.378%2C-117.038&layer=mapnik&marker=32.368%2C-117.058',
+    osm: 'https://maps.google.com/maps?q=Optica%20Baja%20Vision%2C%20Blvd.%20Benito%20Juarez%2079B%2C%20Centro%2C%20Rosarito%2C%20B.C.&z=16&output=embed',
     horario_es: 'Lun – Dom: 10:00 – 18:00',
     horario_en: 'Mon – Sun: 10:00 AM – 6:00 PM',
     horario_extra_es: 'Atención fuera de horario con cita previa',
@@ -30,7 +30,7 @@ const SUCURSALES = [
     direccion: 'C. 5 de Mayo 200, Local 1, Rosarito, B.C.',
     años: '12+',
     maps: 'https://maps.google.com/?q=Optica+Rosarito+5+de+Mayo+200+Rosarito+BC',
-    osm: 'https://www.openstreetmap.org/export/embed.html?bbox=-117.062%2C32.358%2C32.378%2C-117.032&layer=mapnik&marker=32.365%2C-117.050',
+    osm: 'https://maps.google.com/maps?q=C.%205%20de%20Mayo%20200%2C%20Rosarito%2C%20B.C.&z=16&output=embed',
     horario_es: 'Lun – Sáb: 10:00 – 18:00 · Dom: Cerrado',
     horario_en: 'Mon – Sat: 10:00 AM – 6:00 PM · Sun: Closed',
     horario_extra_es: 'Atención fuera de horario con cita previa',
@@ -45,7 +45,7 @@ const SUCURSALES = [
     direccion: 'C. José María Morelos 118, Plaza Laureles, Rosarito, B.C.',
     años: '6',
     maps: 'https://maps.google.com/?q=Plaza+Laureles+Jose+Maria+Morelos+118+Rosarito+BC',
-    osm: 'https://www.openstreetmap.org/export/embed.html?bbox=-117.065%2C32.358%2C32.378%2C-117.035&layer=mapnik&marker=32.370%2C-117.052',
+    osm: 'https://maps.google.com/maps?q=Plaza%20Laureles%2C%20C.%20Jose%20Maria%20Morelos%20118%2C%20Rosarito%2C%20B.C.&z=16&output=embed',
     horario_es: 'Lun – Dom: 10:00 – 18:00',
     horario_en: 'Mon – Sun: 10:00 AM – 6:00 PM',
     horario_extra_es: 'Atención fuera de horario con cita previa',
@@ -192,7 +192,7 @@ export default function UbicacionesPage() {
             </div>
           </div>
 
-          {/* Mapa OpenStreetMap — gratuito, sin API key */}
+          {/* Mapa de Google (embed sin API key) */}
           <div style={{ borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border)', height: esMobil ? '300px' : '480px' }}>
             <iframe
               key={activa}
