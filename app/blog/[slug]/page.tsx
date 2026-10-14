@@ -41,10 +41,10 @@ export default function BlogPost({ params }: { params: Promise<{ slug: string }>
           <Link href="/blog" style={{ fontSize: '0.75rem', color: 'var(--accent)', textDecoration: 'none', display: 'inline-block', marginBottom: '1rem', letterSpacing: '0.05em' }}>
             ← {es ? 'Blog' : 'Blog'}
           </Link>
-          <span style={{ marginLeft: '0.75rem', display: 'inline-block', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: '999px', background: CAT_COLORS[post.categoria], color: CAT_TEXT[post.categoria] }}>
+          <span style={{ marginLeft: '0.75rem', display: 'inline-block', fontSize: '0.88rem', fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: CAT_COLORS[post.categoria], color: CAT_TEXT[post.categoria] }}>
             {CATEGORIAS[post.categoria][lang]}
           </span>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 300, letterSpacing: '-0.02em', marginTop: '1rem', lineHeight: 1.15 }}>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(1.8rem, 4vw, 3rem)', fontWeight: 500, letterSpacing: '-0.03em', marginTop: '1rem', lineHeight: 1.15 }}>
             {es ? post.titulo_es : post.titulo_en}
           </h1>
           <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.55)', fontFamily: 'var(--font-sans)' }}>
@@ -63,7 +63,7 @@ export default function BlogPost({ params }: { params: Promise<{ slug: string }>
 
         {/* CTA */}
         <div style={{ marginTop: '3rem', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '16px', padding: '2rem', textAlign: 'center' }}>
-          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--sage)', marginBottom: '0.5rem' }}>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 500, color: 'var(--sage)', marginBottom: '0.5rem' }}>
             {es ? '¿Listo para ver mejor?' : 'Ready to see better?'}
           </h3>
           <p style={{ fontSize: '0.85rem', color: 'var(--warm-gray)', marginBottom: '1.25rem', lineHeight: 1.7 }}>
@@ -72,7 +72,7 @@ export default function BlogPost({ params }: { params: Promise<{ slug: string }>
               : 'Visit any of our 3 locations in Rosarito. Free eye exam, no appointment needed.'}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
-            <Link href="/Tienda" style={{ background: 'var(--sage)', color: 'white', padding: '10px 24px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.08em', textDecoration: 'none', textTransform: 'uppercase' }}>
+            <Link href="/Tienda" style={{ background: 'var(--sage)', color: 'white', padding: '10px 24px', borderRadius: '999px', fontFamily: 'var(--font-sans)', fontSize: '0.88rem', fontWeight: 600, textDecoration: 'none' }}>
               {es ? 'Ver armazones' : 'Browse Frames'}
             </Link>
             <Link href="/ubicaciones" style={{ border: '1px solid var(--sage)', color: 'var(--sage)', padding: '10px 24px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.08em', textDecoration: 'none', textTransform: 'uppercase' }}>
@@ -84,13 +84,13 @@ export default function BlogPost({ params }: { params: Promise<{ slug: string }>
         {/* Relacionados */}
         {related.length > 0 && (
           <div style={{ marginTop: '3rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '1.25rem' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '1.25rem' }}>
               {es ? 'Artículos relacionados' : 'Related Articles'}
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
               {related.map(r => (
                 <Link key={r.slug} href={`/blog/${r.slug}`} style={{ border: '1px solid var(--border)', borderRadius: '10px', padding: '1rem', textDecoration: 'none', color: 'inherit', display: 'block', background: 'white' }}>
-                  <span style={{ display: 'inline-block', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '2px 8px', borderRadius: '999px', background: CAT_COLORS[r.categoria], color: CAT_TEXT[r.categoria], marginBottom: '0.5rem' }}>
+                  <span style={{ display: 'inline-block', fontSize: '0.88rem', fontWeight: 500, padding: '2px 8px', borderRadius: '999px', background: CAT_COLORS[r.categoria], color: CAT_TEXT[r.categoria], marginBottom: '0.5rem' }}>
                     {CATEGORIAS[r.categoria][lang]}
                   </span>
                   <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: 'var(--charcoal)', lineHeight: 1.3 }}>

@@ -61,7 +61,7 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
           <Link href="/ubicaciones" style={{ fontSize: '0.72rem', color: 'var(--accent)', textDecoration: 'none', letterSpacing: '0.05em', display: 'inline-block', marginBottom: '1rem' }}>
             ← {t('Todas las sucursales', 'All locations')}
           </Link>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 500, letterSpacing: '-0.03em', lineHeight: 1.1 }}>
             {s.nombre_largo}
           </h1>
           <p style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>{s.direccion}</p>
@@ -133,7 +133,7 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
           {/* Header reseñas */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
-              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '0.4rem' }}>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '0.4rem' }}>
                 {t('Reseñas de Google', 'Google Reviews')}
               </h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -201,14 +201,14 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
 
         {/* ── CTA ── */}
         <div style={{ marginTop: '3rem', background: 'var(--sage)', borderRadius: '16px', padding: '2.5rem', textAlign: 'center', color: 'white' }}>
-          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 300, marginBottom: '0.5rem' }}>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 500, marginBottom: '0.5rem' }}>
             {t('¿Listo para visitarnos?', 'Ready to visit us?')}
           </h3>
           <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
             {t('No necesitas cita previa. Llega, haz tu examen gratis y elige tus lentes.', 'No appointment needed. Walk in, get your free eye exam, and choose your glasses.')}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem' }}>
-            <a href={`tel:${s.telefono}`} style={{ background: 'white', color: 'var(--sage)', padding: '10px 24px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textDecoration: 'none', textTransform: 'uppercase' }}>
+            <a href={`tel:${s.telefono}`} style={{ background: 'white', color: 'var(--sage)', padding: '10px 24px', borderRadius: '999px', fontFamily: 'var(--font-sans)', fontSize: '0.88rem', fontWeight: 500, textDecoration: 'none' }}>
               {t('Llamar', 'Call')} — {s.telefono}
             </a>
             <a href={s.mapsUrl} target="_blank" rel="noopener noreferrer" style={{ border: '1px solid rgba(255,255,255,0.5)', color: 'white', padding: '10px 24px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.08em', textDecoration: 'none', textTransform: 'uppercase' }}>
@@ -222,7 +222,7 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
 
         {/* ── Otras sucursales ── */}
         <div style={{ marginTop: '3rem' }}>
-          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 300, color: 'var(--charcoal)', marginBottom: '1rem' }}>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '1rem' }}>
             {t('Otras sucursales GON en Rosarito', 'Other GON Locations in Rosarito')}
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.75rem' }}>

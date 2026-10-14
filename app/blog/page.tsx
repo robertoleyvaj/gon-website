@@ -39,7 +39,7 @@ export default function BlogPage() {
           <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1rem' }}>
             GON ÓPTICA
           </p>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 300, letterSpacing: '-0.02em', marginBottom: '1rem', lineHeight: 1 }}>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 500, letterSpacing: '-0.03em', marginBottom: '1rem', lineHeight: 1 }}>
             {es ? 'Blog de Salud Visual' : 'Eye Health Blog'}
           </h1>
           <p style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.7)', maxWidth: '520px', margin: '0 auto', lineHeight: 1.8 }}>
@@ -63,7 +63,7 @@ export default function BlogPage() {
             >
               {/* Chip de categoría */}
               <div style={{ padding: '1rem 1rem 0' }}>
-                <span style={{ display: 'inline-block', fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', padding: '3px 10px', borderRadius: '999px', background: CAT_COLORS[post.categoria], color: CAT_TEXT[post.categoria] }}>
+                <span style={{ display: 'inline-block', fontSize: '0.88rem', fontWeight: 500, padding: '3px 10px', borderRadius: '999px', background: CAT_COLORS[post.categoria], color: CAT_TEXT[post.categoria] }}>
                   {CATEGORIAS[post.categoria][lang]}
                 </span>
               </div>

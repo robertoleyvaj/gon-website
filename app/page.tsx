@@ -59,10 +59,10 @@ export default function Home() {
 
   // Armazones reales sobre un fondo de color liso (un tono distinto por forma)
   const formas = [
-    { k: 'red', bg: '#EEF2F8', es: 'Redondos', en: 'Round', href: '/Tienda?forma=round,oval' },
-    { k: 'rect', bg: '#F3F0EB', es: 'Rectangulares', en: 'Rectangular', href: '/Tienda?forma=rectangle,square' },
-    { k: 'cat', bg: '#F6EEF0', es: 'Cat-eye', en: 'Cat-eye', href: '/Tienda?forma=cat-eye' },
-    { k: 'metal', bg: '#EAF5F4', es: 'De metal', en: 'Metal', href: '/Tienda?material=METAL' },
+    { k: 'red', img: '/home/gon-forma-redondo.jpg', bg: '#EEF2F8', es: 'Redondos', en: 'Round', href: '/Tienda?forma=round,oval' },
+    { k: 'rect', img: '/home/gon-forma-cuadrado.jpg', bg: '#F3F0EB', es: 'Rectangulares', en: 'Rectangular', href: '/Tienda?forma=rectangle,square' },
+    { k: 'cat', img: '/home/gon-forma-cat.jpg', bg: '#F6EEF0', es: 'Cat-eye', en: 'Cat-eye', href: '/Tienda?forma=cat-eye' },
+    { k: 'metal', img: '/home/gon-forma-metal.jpg', bg: '#EAF5F4', es: 'De metal', en: 'Metal', href: '/Tienda?material=METAL' },
   ];
 
   const pasos = [
@@ -109,8 +109,8 @@ export default function Home() {
         </div>
         <div className="vh-formas">
           {formas.map(f => (
-            <Link key={f.href} href={f.href} className="vh-forma vh-forma-real" style={{ background: f.bg }}>
-              {fotoForma[f.k] && <img src={fotoForma[f.k]} alt={t(f.es, f.en)} loading="lazy" />}
+            <Link key={f.href} href={f.href} className="vh-forma">
+              <img src={f.img} alt={t(f.es, f.en)} loading="lazy" />
               <span>{t(f.es, f.en)} <Flecha /></span>
             </Link>
           ))}

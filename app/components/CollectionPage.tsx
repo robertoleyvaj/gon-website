@@ -63,7 +63,7 @@ export default async function CollectionPage({
           <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(3rem, 6vw, 5.5rem)", fontWeight: 400, color: "var(--cream)", lineHeight: 0.95, letterSpacing: "-0.02em", margin: "0 0 1.5rem" }}>{heroKeyword}</h1>
           <p style={{ fontFamily: "var(--font-sans)", fontSize: "15px", color: "var(--warm-gray)", lineHeight: 1.8, maxWidth: "520px", margin: "0 0 2.5rem" }}>{description}</p>
           <div style={{ display: "flex", alignItems: "center", gap: "2rem", flexWrap: "wrap" }}>
-            <Link href="/Tienda" style={{ display: "inline-block", fontFamily: "var(--font-sans)", fontSize: "12px", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--cream)", background: "var(--sage)", padding: "14px 32px", borderRadius: "2px", textDecoration: "none" }}>
+            <Link href="/Tienda" style={{ display: "inline-block", fontFamily: "var(--font-sans)", fontSize: "12px", fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--cream)", background: "var(--sage)", padding: "14px 32px", borderRadius: '6px', textDecoration: "none" }}>
               Shop all frames
             </Link>
             <p style={{ fontFamily: "var(--font-sans)", fontSize: "13px", color: "var(--warm-gray)", margin: 0 }}>
@@ -184,7 +184,7 @@ export default async function CollectionPage({
                 key={l.href}
                 href={l.href}
                 className="collection-related-link"
-                style={{ fontFamily: "var(--font-sans)", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--charcoal)", border: "1px solid var(--border)", padding: "10px 20px", borderRadius: "2px", textDecoration: "none", background: "var(--cream)", transition: "border-color 0.2s ease, color 0.2s ease" }}
+                style={{ fontFamily: "var(--font-sans)", fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--charcoal)", border: "1px solid var(--border)", padding: "10px 20px", borderRadius: '6px', textDecoration: "none", background: "var(--cream)", transition: "border-color 0.2s ease, color 0.2s ease" }}
               >
                 {l.label}
               </Link>
@@ -199,7 +199,7 @@ export default async function CollectionPage({
         <p style={{ fontFamily: "var(--font-sans)", fontSize: "14px", color: "rgba(247,244,239,0.7)", margin: "0 auto 2.5rem", maxWidth: "400px", lineHeight: 1.7 }}>
           Frame + lenses included. No hidden fees. Prescription verified by our opticians.
         </p>
-        <Link href="/Tienda" style={{ display: "inline-block", fontFamily: "var(--font-sans)", fontSize: "12px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--sage)", background: "var(--cream)", padding: "16px 40px", borderRadius: "2px", textDecoration: "none" }}>
+        <Link href="/Tienda" style={{ display: "inline-block", fontFamily: "var(--font-sans)", fontSize: "12px", fontWeight: 500, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--sage)", background: "var(--cream)", padding: "16px 40px", borderRadius: '6px', textDecoration: "none" }}>
           Find your frames
         </Link>
       </section>

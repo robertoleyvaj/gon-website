@@ -136,15 +136,16 @@ function CartIcon() {
 }
 
 // Menú de computadora: igual que Verly (pocas ligas) + el botón propio de GON "Agenda tu examen".
-// Blog, Nosotros y Ubicaciones siguen existiendo (pie de página y menú del celular) para SEO.
+// Micas y Blog siguen existiendo (pie de página y menú del celular) para SEO.
 const navLinks = [
   { href: "/Tienda", label_es: "Armazones", label_en: "Frames" },
-  { href: "/lenses", label_es: "Micas", label_en: "Lenses" },
+  { href: "/nosotros", label_es: "Quiénes somos", label_en: "About us" },
+  { href: "/ubicaciones", label_es: "Ubicaciones", label_en: "Locations" },
 ];
 const navMovil = [
   ...navLinks,
   { href: "/examen", label_es: "Agenda tu examen", label_en: "Book your eye exam" },
-  { href: "/ubicaciones", label_es: "Ubicaciones", label_en: "Locations" },
+  { href: "/lenses", label_es: "Micas", label_en: "Lenses" },
   { href: "/blog", label_es: "Blog", label_en: "Blog" },
 ];
 

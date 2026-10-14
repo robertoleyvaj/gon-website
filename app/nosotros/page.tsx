@@ -55,7 +55,7 @@ export default function NosotrosPage() {
           <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--accent)', margin: '0 0 1rem' }}>
             {t('GON ÓPTICA — NUESTRA HISTORIA', 'GON ÓPTICA — OUR STORY')}
           </p>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '3rem' : '5rem', fontWeight: 300, letterSpacing: '-0.03em', margin: '0 0 1.5rem', lineHeight: 1.0, color: 'var(--charcoal)', maxWidth: '780px' }}>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '3rem' : '5rem', fontWeight: 500, letterSpacing: '-0.03em', margin: '0 0 1.5rem', lineHeight: 1.0, color: 'var(--charcoal)', maxWidth: '780px' }}>
             {t('Empezamos como familia.\nSeguimos siéndolo.', 'We started as a family.\nWe still are.')}
           </h1>
           <p style={{ fontSize: '0.95rem', color: 'var(--warm-gray)', lineHeight: 1.8, maxWidth: '560px', margin: 0 }}>
@@ -74,7 +74,7 @@ export default function NosotrosPage() {
             { num: '100%', label: t('optometristas certificados', 'certified optometrists') },
           ].map((s, i) => (
             <div key={i}>
-              <div style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.5rem' : '3.5rem', fontWeight: 300, color: 'white', lineHeight: 1, marginBottom: '0.5rem' }}>{s.num}</div>
+              <div style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2.5rem' : '3.5rem', fontWeight: 500, color: 'white', lineHeight: 1, marginBottom: '0.5rem' }}>{s.num}</div>
               <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.65)', fontWeight: 500, letterSpacing: '0.05em' }}>{s.label}</div>
             </div>
           ))}
@@ -87,14 +87,14 @@ export default function NosotrosPage() {
           <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 0.75rem' }}>
             {t('NUESTRA HISTORIA', 'OUR STORY')}
           </p>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 300, color: 'var(--charcoal)', margin: '0 0 3rem', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 500, color: 'var(--charcoal)', margin: '0 0 3rem', lineHeight: 1.1, letterSpacing: '-0.03em' }}>
             {t('De un local familiar a tres sucursales', 'From a family shop to three locations')}
           </h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : 'repeat(4, 1fr)', gap: '2rem' }}>
             {hitos.map((h, i) => (
               <div key={i} style={{ borderTop: '2px solid var(--accent)', paddingTop: '1.5rem' }}>
-                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 300, color: 'var(--sage)', marginBottom: '0.75rem' }}>{h.año}</div>
+                <div style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', fontWeight: 500, color: 'var(--sage)', marginBottom: '0.75rem' }}>{h.año}</div>
                 <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.88rem', fontWeight: 600, color: 'var(--charcoal)', margin: '0 0 0.5rem', lineHeight: 1.4 }}>{h.titulo}</h3>
                 <p style={{ fontSize: '0.8rem', color: 'var(--warm-gray)', lineHeight: 1.7, margin: 0 }}>{h.desc}</p>
               </div>
@@ -109,12 +109,12 @@ export default function NosotrosPage() {
           <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 0.75rem' }}>
             {t('¿POR QUÉ ELEGIRNOS?', 'WHY CHOOSE US?')}
           </p>
-          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 300, color: 'var(--charcoal)', margin: '0 0 3rem', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 500, color: 'var(--charcoal)', margin: '0 0 3rem', lineHeight: 1.1, letterSpacing: '-0.03em' }}>
             {t('Lo que nos hace diferentes', 'What makes us different')}
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: esMobil ? '1fr' : 'repeat(3, 1fr)', gap: '2rem' }}>
             {valores.map((v, i) => (
-              <div key={i} style={{ background: 'white', borderRadius: '4px', padding: '1.75rem', border: '1px solid var(--border)' }}>
+              <div key={i} style={{ background: 'white', borderRadius: '6px', padding: '1.75rem', border: '1px solid var(--border)' }}>
                 <div style={{ fontSize: '1.4rem', color: 'var(--accent)', marginBottom: '1rem' }}>{v.icono}</div>
                 <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: '0.88rem', fontWeight: 600, color: 'var(--charcoal)', margin: '0 0 0.5rem' }}>{v.titulo}</h3>
                 <p style={{ fontSize: '0.8rem', color: 'var(--warm-gray)', lineHeight: 1.7, margin: 0 }}>{v.desc}</p>
@@ -131,13 +131,13 @@ export default function NosotrosPage() {
             <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 0.75rem' }}>
               {t('LO QUE OFRECEMOS', 'WHAT WE OFFER')}
             </p>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 300, color: 'var(--charcoal)', margin: '0 0 1rem', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 500, color: 'var(--charcoal)', margin: '0 0 1rem', lineHeight: 1.1, letterSpacing: '-0.03em' }}>
               {t('Todo lo que tu vista necesita', 'Everything your eyes need')}
             </h2>
             <p style={{ fontSize: '0.88rem', color: 'var(--warm-gray)', lineHeight: 1.8, margin: '0 0 2rem' }}>
               {t('Desde un examen preventivo hasta los lentes más avanzados del mercado. Atendemos cualquier necesidad visual, a cualquier edad.', 'From a preventive exam to the most advanced lenses on the market. We handle any visual need, at any age.')}
             </p>
-            <Link href="/examen" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--sage)', color: 'white', padding: '14px 28px', borderRadius: '3px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none' }}>
+            <Link href="/examen" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--sage)', color: 'white', padding: '14px 28px', borderRadius: '999px', fontFamily: 'var(--font-sans)', fontSize: '0.88rem', fontWeight: 500, textDecoration: 'none' }}>
               {t('Agendar examen gratis', 'Schedule free exam')}
             </Link>
           </div>
@@ -154,17 +154,17 @@ export default function NosotrosPage() {
 
       {/* CTA FINAL */}
       <div style={{ background: 'var(--sage)', padding: esMobil ? '3rem 1.5rem' : '5rem 5rem', textAlign: 'center' }}>
-        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 300, color: 'white', margin: '0 0 1rem', letterSpacing: '-0.02em' }}>
+        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '2rem' : '3rem', fontWeight: 500, color: 'white', margin: '0 0 1rem', letterSpacing: '-0.03em' }}>
           {t('Ven a conocernos', 'Come visit us')}
         </h2>
         <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.7)', margin: '0 0 2rem', lineHeight: 1.7, maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto' }}>
           {t('Tres sucursales en Rosarito esperándote. Agenda tu cita o pasa directo — siempre habrá alguien listo para atenderte.', 'Three locations in Rosarito waiting for you. Schedule an appointment or just walk in — there will always be someone ready to help.')}
         </p>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/examen" style={{ display: 'inline-flex', alignItems: 'center', background: 'white', color: 'var(--sage)', border: 'none', borderRadius: '3px', padding: '14px 28px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none' }}>
+          <Link href="/examen" style={{ display: 'inline-flex', alignItems: 'center', background: 'white', color: 'var(--sage)', border: 'none', borderRadius: '999px', padding: '14px 28px', fontFamily: 'var(--font-sans)', fontSize: '0.88rem', fontWeight: 500, textDecoration: 'none' }}>
             {t('Agendar cita', 'Book appointment')}
           </Link>
-          <Link href="/ubicaciones" style={{ display: 'inline-flex', alignItems: 'center', background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '3px', padding: '14px 28px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 500, letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none' }}>
+          <Link href="/ubicaciones" style={{ display: 'inline-flex', alignItems: 'center', background: 'transparent', color: 'white', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '999px', padding: '14px 28px', fontFamily: 'var(--font-sans)', fontSize: '0.88rem', fontWeight: 500, textDecoration: 'none' }}>
             {t('Ver ubicaciones', 'See locations')}
           </Link>
         </div>
