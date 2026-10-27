@@ -1,4 +1,4 @@
-// Helper seguro para el Meta Pixel de GON (1036483012375096, se carga en layout.tsx).
+// Helper seguro para el Meta Pixel de GON (2352394322228270, se carga en layout.tsx).
 // content_ids = id del armazón y content_type 'product_group', igual que el feed /feed/productos,
 // para que el catálogo de Meta reconozca qué armazón vio cada persona.
 export type FbParams = Record<string, unknown>;
