@@ -9,7 +9,7 @@ import { supabase } from '../lib/supabase';
 import { useFavoritos } from '../context/FavoritosContext';
 import { swatchColor, nombreColor } from '../lib/colores';
 import { nombreMaterial, claveMaterial, nombreBadge } from '../lib/textos';
-import { precioGon, mxn, waGon } from '../lib/precio-gon';
+import { precioGon, descuentoWebGon, mxn, waGon } from '../lib/precio-gon';
 import { GENEROS, FORMAS, AROS, TALLAS, FAMILIAS, familiasDeColor, normForma, tallaDeMedidas } from '../lib/armazon-web';
 
 type Armazon = {
@@ -39,8 +39,8 @@ function ArmazonCard({
   const ambiente = colorSel?.portada_url || null;
   const href = `/armazon/${a.id}${colorIdx > 0 && colorSel?.sku ? `?color=${encodeURIComponent(colorSel.sku)}` : ''}`;
   const MAX_DOTS = 5;
-  const dv = a.descuento_gon || 0;
   const precio = precioGon(a);
+  const dv = precio < (a.precio_gon || 0) ? descuentoWebGon(a) : 0;
 
   return (
     <Link href={href} className="vc-card">
@@ -125,9 +125,10 @@ function IconoForma({ f }: { f: string }) {
 // ── PAGE ─────────────────────────────────────────────────
 type Rango = 'm20' | '20a30' | 'p30'
 const RANGOS: { v: Rango; es: string; en: string; ok: (p: number) => boolean }[] = [
-  { v: 'm20', es: 'Menos de $900', en: 'Under $900', ok: p => p < 900 },
-  { v: '20a30', es: '$900 a $1,300', en: '$900 – $1,300', ok: p => p >= 900 && p <= 1300 },
-  { v: 'p30', es: 'Más de $1,300', en: 'Over $1,300', ok: p => p > 1300 },
+  // Rangos sobre el PRECIO WEB (lista − descuento web)
+  { v: 'm20', es: 'Menos de $400', en: 'Under $400', ok: p => p < 400 },
+  { v: '20a30', es: '$400 a $600', en: '$400 – $600', ok: p => p >= 400 && p <= 600 },
+  { v: 'p30', es: 'Más de $600', en: 'Over $600', ok: p => p > 600 },
 ]
 type Orden = 'rec' | 'precio_asc' | 'precio_desc' | 'nuevos'
 type Filtros = { forma: string[]; aro: string[]; material: string[]; talla: string[]; color: string[]; precio: Rango[] }

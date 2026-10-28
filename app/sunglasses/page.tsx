@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
 import { supabase } from '../lib/supabase';
+import { precioGon } from '../lib/precio-gon';
 
 type Armazon = {
   id: number; nombre: string; forma: string; genero: string;
@@ -198,7 +199,7 @@ function SunglassesContent() {
                       ) : (
                         <div>
                           <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.95rem', fontWeight: 500, color: 'var(--charcoal)' }}>
-                            {lang === 'es' ? (a.precio_gon ?? '—') : `$${a.precio}`}
+                            {lang === 'es' ? (a.precio_gon ? precioGon(a) : '—') : `$${a.precio}`}
                           </span>
                           <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.68rem', color: 'var(--warm-gray)', marginLeft: '4px', letterSpacing: '0.06em' }}>
                             {lang === 'es' ? 'MXN' : 'USD'}

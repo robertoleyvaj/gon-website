@@ -1,6 +1,7 @@
 // app/armazon/[id]/layout.tsx  — server component
 import type { Metadata } from 'next';
 import { createClient } from '@supabase/supabase-js';
+import { precioGon } from '../../lib/precio-gon';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,7 +11,7 @@ const supabase = createClient(
 async function getArmazon(id: string) {
   const { data } = await supabase
     .from('armazones')
-    .select('nombre, modelo, forma, genero, tipo, imagen_url, precio_gon, precio')
+    .select('nombre, modelo, forma, genero, tipo, imagen_url, precio_gon, descuento_gon, precio')
     .eq('id', id)
     .eq('activo', true)
     .single();
@@ -68,7 +69,7 @@ export default async function ArmazonLayout({
     offers: {
       '@type': 'Offer',
       priceCurrency: 'MXN',
-      price: data.precio_gon || Math.round((data.precio || 0) * 18),
+      price: data.precio_gon ? precioGon(data) : Math.round((data.precio || 0) * 18),
       availability: 'https://schema.org/InStock',
       seller: { '@type': 'Organization', name: 'Grupo Óptico del Noroeste' },
       url: `https://gonmx.com/armazon/${id}`,

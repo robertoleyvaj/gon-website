@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { precioGon } from '../../lib/precio-gon';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const supabase = createClient(
@@ -19,11 +20,10 @@ async function calcularPrecioItem(item: any): Promise<number> {
   if (item.armazon_id) {
     const { data } = await supabase.from('armazones').select('precio, precio_gon, descuento_gon').eq('id', item.armazon_id).eq('activo', true).single();
     if (data) {
-      const base = (data.precio_gon && data.precio_gon > 0)
-        ? data.precio_gon
+      // Mismo precio web que ve el cliente (lista − descuento web), calculado aquí en el servidor
+      precioArmazonMXN = (data.precio_gon && data.precio_gon > 0)
+        ? precioGon(data)
         : Math.round(data.precio * TC_FALLBACK);
-      const dg = data.descuento_gon || 0;
-      precioArmazonMXN = Math.round(base * (1 - dg / 100));
     }
   }
   if (item.es_regalo) precioArmazonMXN = 0;

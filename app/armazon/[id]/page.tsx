@@ -850,7 +850,7 @@ export default function DetalleArmazon() {
   }, [drawerOpen, gonModal]);
 
   // Apartar por WhatsApp (para quien llega de un anuncio y prefiere ir a la óptica)
-  const linkApartar = () => waGon(`Hola, quiero apartar el armazón ${armazon?.nombre || armazon?.modelo || ''} (#${armazon?.id}) que vi en gonmx.com/armazon/${armazon?.id}`);
+  const linkApartar = () => waGon(`Hola, quiero apartar el armazón ${armazon?.nombre || armazon?.modelo || ''} (#${armazon?.id}) que vi en gonmx.com/armazon/${armazon?.id}${precioArmazonMXN > 0 && precioArmazonMXN < Number(armazon?.precio_gon || 0) ? ` con precio web de $${precioArmazonMXN.toLocaleString('es-MX')} (en óptica $${Number(armazon?.precio_gon).toLocaleString('es-MX')})` : ''}`);
   const abrirDrawer = () => { setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
 
   const resumenReceta = () => {
@@ -1334,6 +1334,12 @@ export default function DetalleArmazon() {
             {pxMXN(precioArmazonMXN)}
             {!esRegalo && precioArmazonMXN < Number(armazon.precio_gon || 0) && <s>{pxMXN(Number(armazon.precio_gon))}</s>}
           </div>
+          {!esRegalo && precioArmazonMXN < Number(armazon.precio_gon || 0) && (
+            <p className="va-pweb">
+              <b>{t('Precio web', 'Online price')}</b> · {t('en óptica', 'in store')} {pxMXN(Number(armazon.precio_gon))}.{' '}
+              {t('Apártalo en línea y te respetamos este precio en la óptica.', 'Reserve it online and we honor this price in store.')}
+            </p>
+          )}
           {descripcion && <p className="va-desc">{descripcion}</p>}
 
           {colores.length > 0 && (
@@ -1444,6 +1450,8 @@ export default function DetalleArmazon() {
         .va-precio{font-size:22px;font-weight:500;margin-bottom:14px}
         .va-precio small{font-size:12px;color:var(--warm-gray);font-weight:400}
         .va-precio s{font-size:15px;color:var(--warm-gray);margin-left:10px;font-weight:400}
+        .va-pweb{font-size:12.5px;line-height:1.5;color:var(--warm-gray);margin:-8px 0 14px}
+        .va-pweb b{color:var(--sage);font-weight:600}
         .va-desc{font-size:14.5px;line-height:1.65;color:#4a463f;margin:0 0 18px;max-width:440px}
         .va-bloque{border-top:1px solid var(--border);padding:16px 0}
         .va-lbl{font-size:13px;color:var(--warm-gray);margin:0 0 10px}
