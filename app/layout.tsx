@@ -8,6 +8,7 @@ import { CartProvider } from "./context/CartContext";
 import { FavoritosProvider } from "./context/FavoritosContext";
 import StructuredData from "./components/StructuredData";
 import FooterGon from "./components/FooterGon";
+import WhatsAppCodigo from "./components/WhatsAppCodigo";
 
 const fraunces = Fraunces({
   variable: "--font-cormorant",
@@ -121,6 +122,7 @@ export default function RootLayout({
             <FavoritosProvider>
               {children}
               <FooterGon />
+              <WhatsAppCodigo />
             </FavoritosProvider>
           </CartProvider>
         </LangProvider>

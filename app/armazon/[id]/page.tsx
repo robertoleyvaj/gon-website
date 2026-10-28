@@ -868,31 +868,13 @@ export default function DetalleArmazon() {
   }, [drawerOpen, gonModal]);
 
   // Apartar por WhatsApp (para quien llega de un anuncio y prefiere ir a la óptica)
-  const textoApartar = (codigo?: string) => {
-    const base = `Hola, quiero apartar el armazón ${armazon?.nombre || armazon?.modelo || ''} (#${armazon?.id}) que vi en gonmx.com/armazon/${armazon?.id}`;
-    const conWeb = precioArmazonMXN > 0 && precioArmazonMXN < Number(armazon?.precio_gon || 0);
-    if (!conWeb) return base;
-    return `${base} con precio web de $${precioArmazonMXN.toLocaleString('es-MX')} (en óptica $${Number(armazon?.precio_gon).toLocaleString('es-MX')}).${codigo ? ` Mi código web es ${codigo}` : ''}`;
-  };
+  // El código web lo agrega solo components/WhatsAppCodigo al dar clic (aplica a todos los botones de WhatsApp)
+  const textoApartar = () =>
+    `Hola, quiero apartar el armazón ${armazon?.nombre || armazon?.modelo || ''}${colorActivo?.color ? ` en color ${nombreColor(colorActivo.color, 'es')}` : ''}: gonmx.com/armazon/${armazon?.id}`;
   const linkApartar = () => waGon(textoApartar());
-  // Al apartar se genera un código WEB-XXXXX (precio web) que en la óptica se captura en OptiOS.
-  // La ventana se abre antes de pedir el código para que el navegador no la bloquee.
-  const apartar = async (e: React.MouseEvent) => {
+  const apartar = () => {
     if (!armazon) return;
-    e.preventDefault();
     fbTrack('Lead', { content_ids: [String(armazon.id)], content_type: 'product_group', content_name: armazon.nombre, value: precioArmazonMXN, currency: 'MXN' });
-    const w = window.open('', '_blank');
-    let url = linkApartar();
-    if (precioArmazonMXN > 0 && precioArmazonMXN < Number(armazon.precio_gon || 0)) {
-      try {
-        const j = await fetch('/api/codigo-web', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ armazon_id: armazon.id, color_sku: colorActivo?.sku || null }),
-        }).then(r => r.json());
-        if (j?.ok && j.codigo) url = waGon(textoApartar(j.codigo));
-      } catch { /* si falla, se manda el mensaje sin código */ }
-    }
-    if (w) w.location.href = url; else window.location.href = url;
   };
   const abrirDrawer = () => { setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
 
@@ -1410,7 +1392,7 @@ export default function DetalleArmazon() {
               {esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar mis micas', 'Customize my lenses')}
             </button>
           )}
-          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" className="va-cta va-cta-wa" onClick={apartar}>
+          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" className="va-cta va-cta-wa" onClick={apartar} data-armazon={armazon.id} data-color={colorActivo?.sku || undefined}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.31-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.89-5.34 11.89-11.89S18.6 0 12.05 0z"/></svg>
             {t('Apartar por WhatsApp', 'Reserve on WhatsApp')}
           </a>
@@ -1463,7 +1445,7 @@ export default function DetalleArmazon() {
       {esMobil && (
         <div className="va-sticky">
           <button onClick={abrirDrawer}>{esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar micas', 'Customize lenses')}</button>
-          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" onClick={apartar}>{t('Apartar', 'Reserve')}</a>
+          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" onClick={apartar} data-armazon={armazon.id} data-color={colorActivo?.sku || undefined}>{t('Apartar', 'Reserve')}</a>
         </div>
       )}
 

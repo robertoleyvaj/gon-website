@@ -1,7 +1,7 @@
-// POST /api/codigo-web  { armazon_id, color_sku? } → { ok, codigo, precio_web, precio_optica, vence }
-// Genera el código de "precio web" que el cliente manda por WhatsApp al apartar.
-// El precio lo calcula el servidor (no se confía en el navegador). En OptiOS el código
-// descuenta la diferencia entre el precio de la óptica y el precio web. Se usa una vez.
+// POST /api/codigo-web  { armazon_id?, color_sku? } → { ok, codigo, vence }
+// Genera el código WEB-XXXXX que el cliente manda por WhatsApp (desde cualquier botón de WhatsApp).
+// En OptiOS el código aplica el precio web a toda la compra (armazones de GON −60%, micas/filtros −15%).
+// El armazón es solo referencia. Se usa una vez y vence en 30 días.
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { precioGon, precioOpticaGon } from '../../lib/precio-gon';
@@ -27,37 +27,36 @@ export async function POST(req: NextRequest) {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'x';
     if (limitado(ip)) return NextResponse.json({ ok: false, error: 'Demasiados intentos' }, { status: 429 });
 
-    const b = await req.json().catch(() => ({})) as { armazon_id?: number; color_sku?: string };
-    const id = Number(b.armazon_id);
-    if (!id) return NextResponse.json({ ok: false, error: 'Falta el armazón' }, { status: 400 });
+    const b = await req.json().catch(() => ({})) as { armazon_id?: number | null; color_sku?: string | null };
+    const id = Number(b.armazon_id) || null;
 
-    const { data: a } = await supabase.from('armazones')
-      .select('id, sku, nombre, modelo, marca, precio_gon, descuento_gon')
-      .eq('id', id).eq('activo', true).eq('publicar_gon', true).maybeSingle();
-    if (!a) return NextResponse.json({ ok: false, error: 'Armazón no disponible' }, { status: 404 });
-
-    const precioOptica = precioOpticaGon(a);
-    const precioWeb = precioGon(a);
-    const monto = precioOptica - precioWeb;
-    if (!precioOptica || monto <= 0) return NextResponse.json({ ok: false, error: 'Sin precio web' }, { status: 400 });
-
-    // El color solo se acepta si de verdad es de ese armazón
+    // Armazón (opcional): solo como referencia de qué vio el cliente
+    let ref: { sku: string | null; nombre: string; optica: number | null; web: number | null; monto: number | null } =
+      { sku: null, nombre: '', optica: null, web: null, monto: null };
     let colorSku: string | null = null;
-    if (b.color_sku) {
-      const { data: c } = await supabase.from('armazon_colores').select('sku')
-        .eq('armazon_id', id).eq('sku', String(b.color_sku).toUpperCase()).maybeSingle();
-      colorSku = c?.sku ?? null;
+    if (id) {
+      const { data: a } = await supabase.from('armazones')
+        .select('id, sku, nombre, modelo, marca, precio_gon, descuento_gon')
+        .eq('id', id).eq('activo', true).eq('publicar_gon', true).maybeSingle();
+      if (a) {
+        const optica = precioOpticaGon(a), web = precioGon(a);
+        ref = { sku: a.sku ?? null, nombre: [a.marca, a.nombre || a.modelo].filter(Boolean).join(' '), optica: optica || null, web: web || null, monto: optica ? optica - web : null };
+        if (b.color_sku) {
+          const { data: c } = await supabase.from('armazon_colores').select('sku')
+            .eq('armazon_id', id).eq('sku', String(b.color_sku).toUpperCase()).maybeSingle();
+          colorSku = c?.sku ?? null;
+        }
+      }
     }
 
     const vence = new Date(Date.now() + DIAS_VIGENCIA * 86400_000).toLocaleDateString('en-CA', { timeZone: 'America/Tijuana' });
-    const nombre = [a.marca, a.nombre || a.modelo].filter(Boolean).join(' ');
     for (let i = 0; i < 5; i++) {
       const codigo = nuevoCodigo();
       const { error } = await supabase.from('codigos_web').insert({
-        codigo, armazon_id: id, armazon_sku: a.sku ?? null, color_sku: colorSku, nombre,
-        precio_optica: precioOptica, precio_web: precioWeb, monto, vence,
+        codigo, armazon_id: ref.sku ? id : null, armazon_sku: ref.sku, color_sku: colorSku, nombre: ref.nombre || null,
+        precio_optica: ref.optica, precio_web: ref.web, monto: ref.monto, vence,
       });
-      if (!error) return NextResponse.json({ ok: true, codigo, precio_web: precioWeb, precio_optica: precioOptica, vence });
+      if (!error) return NextResponse.json({ ok: true, codigo, vence });
       if (!/duplicate|unique/i.test(error.message)) return NextResponse.json({ ok: false, error: 'No se pudo generar' }, { status: 500 });
     }
     return NextResponse.json({ ok: false, error: 'No se pudo generar' }, { status: 500 });
