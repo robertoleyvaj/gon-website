@@ -32,7 +32,7 @@ export async function generateMetadata(
   const tipo   = data.tipo   ? `${data.tipo} ` : '';
 
   const title = `${nombre} — Armazón ${forma}${tipo}${genero} | GON Óptica Rosarito`;
-  const description = `Compra el ${nombre} en GON Óptica Rosarito. Armazón ${forma}${genero} con lentes graduados desde $749 MXN. Monofocal, bifocal o progresivo. Recoge el mismo día en cualquiera de nuestras 3 sucursales.`;
+  const description = `Compra el ${nombre} en GON Óptica Rosarito. Armazón ${forma}${genero} con lentes graduados desde $700 MXN. Monofocal, bifocal o progresivo. Recoge el mismo día en cualquiera de nuestras 3 sucursales.`;
 
   return {
     title,

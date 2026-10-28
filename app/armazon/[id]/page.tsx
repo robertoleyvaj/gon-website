@@ -7,6 +7,7 @@ import Navbar from '../../components/Navbar';
 import { useLang } from '../../components/LanguageContext';
 import { supabase } from '../../lib/supabase';
 import { waGon, precioGon } from '../../lib/precio-gon';
+import { PRECIOS_LISTA_DEFAULT, webVision, webMaterial, webFiltro, materialDisponible, type ListaPrecios } from '../../lib/precios-lentes';
 import { fbTrack } from '../../lib/fpixel';
 import { swatchColor as swatchLib, nombreColor } from '../../lib/colores';
 import { nombreMaterial, nombreBadge } from '../../lib/textos';
@@ -23,6 +24,7 @@ type Armazon = {
 };
 
 type PaqueteGON = {
+  precioArmazon: number;
   vision: { id: string; nombre: string; nombre_en: string; precio: number };
   material: { id: string; nombre: string; nombre_en: string; precio: number };
   filtroBase: { id: string; nombre: string; nombre_en: string; precio: number };
@@ -282,7 +284,7 @@ function FormReceta({ receta, onChange, errores, t }: { receta: RecetaData; onCh
   );
 }
 
-function calcularPaquete(r: RecetaData, lang: 'es' | 'en'): PaqueteGON {
+function calcularPaquete(r: RecetaData, lang: 'es' | 'en', L: ListaPrecios, precioArmazon: number): PaqueteGON {
   const sph_od = r.sph_od ?? 0, sph_os = r.sph_os ?? 0;
   const cyl_od = r.cyl_od ?? 0, cyl_os = r.cyl_os ?? 0;
   const add = r.add ?? 0;
@@ -303,13 +305,18 @@ function calcularPaquete(r: RecetaData, lang: 'es' | 'en'): PaqueteGON {
   else if (eq > 4.0) { condicion = lang === 'es' ? 'Graduación muy alta' : 'Very high prescription'; explicacion = lang === 'es' ? 'El Ultra Slim Pro hará tus lentes delgados y elegantes.' : 'Ultra Slim Pro makes your lenses thin and elegant.'; }
   else if (eq > 2.0) { condicion = lang === 'es' ? 'Graduación alta' : 'High prescription'; explicacion = lang === 'es' ? 'El Ultra Slim reducirá el grosor hasta un 30%.' : 'Ultra Slim will reduce lens thickness by up to 30%.'; }
   else { condicion = lang === 'es' ? 'Graduación moderada' : 'Moderate prescription'; explicacion = lang === 'es' ? 'Poly Plus es resistente y el Fotocromático te da comodidad en exteriores.' : 'Poly Plus is strong and Photochromic gives indoor/outdoor comfort.'; }
-  const precioOriginal = PRECIO_ARMAZON + vision.precio + material.precio + filtroBase.precio;
-  const descuento = Math.round(precioOriginal * 0.10);
-  const precioFinal = precioOriginal - descuento;
+  // Precios web reales (los mismos del configurador y del cobro); sin descuento inventado
+  if (!materialDisponible(L, vision.id, material.id)) material = materialOpts[3];
+  const v = { ...vision, precio: webVision(L, vision.id) };
+  const m = { ...material, precio: webMaterial(L, vision.id, material.id) };
+  const f = { ...filtroBase, precio: webFiltro(L, filtroBase.id) };
+  const precioOriginal = precioArmazon + v.precio + m.precio + f.precio;
+  const descuento = 0;
+  const precioFinal = precioOriginal;
   const upsells: { id: string; nombre: string; precio: number; razon: string }[] = [];
-  upsells.push({ id: 'foto', nombre: 'Fotocromático', precio: 949, razon: lang === 'es' ? 'Se oscurece en exterior automáticamente' : 'Automatically darkens outdoors' });
-  upsells.push({ id: 'blue', nombre: 'Blue Light', precio: 549, razon: lang === 'es' ? 'Para uso diario de pantallas' : 'For daily screen use' });
-  return { vision, material, filtroBase, precioOriginal, precioFinal, descuento, condicion, explicacion, upsells };
+  upsells.push({ id: 'foto', nombre: 'Fotocromático', precio: webFiltro(L, 'foto'), razon: lang === 'es' ? 'Se oscurece en exterior automáticamente' : 'Automatically darkens outdoors' });
+  upsells.push({ id: 'blue', nombre: 'Blue Light', precio: webFiltro(L, 'blue'), razon: lang === 'es' ? 'Para uso diario de pantallas' : 'For daily screen use' });
+  return { vision: v, material: m, filtroBase: f, precioOriginal, precioFinal, descuento, condicion, explicacion, upsells, precioArmazon };
 }
 
 function LensZoneSVG({ tipo }: { tipo: 'mono' | 'bi' | 'prog' }) {
@@ -420,11 +427,11 @@ function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang, ti
               <div style={{ border: '1px solid var(--border)', borderRadius: '6px', overflow: 'hidden', marginBottom: '1.25rem' }}>
                 <div style={{ background: 'var(--cream-dark)', padding: '0.65rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--charcoal)' }}>{lang === 'es' ? `Paquete ${paquete.condicion}` : `${paquete.condicion} Package`}</span>
-                  <span style={{ background: 'var(--sage)', color: 'white', padding: '2px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 500 }}>-{paquete.descuento}% OFF</span>
+                  {paquete.descuento > 0 && <span style={{ background: 'var(--sage)', color: 'white', padding: '2px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 500 }}>−{pxMXN(paquete.descuento)}</span>}
                 </div>
                 <div style={{ padding: '0.75rem 1rem' }}>
                   {[
-                    { label: armazonNombre, valor: pxArmazon(PRECIO_ARMAZON) },
+                    { label: armazonNombre, valor: pxMXN(paquete.precioArmazon) },
                     { label: lang === 'es' ? paquete.vision.nombre : paquete.vision.nombre_en, valor: pxPlusMXN(paquete.vision.precio) },
                     { label: lang === 'es' ? paquete.material.nombre : paquete.material.nombre_en, valor: paquete.material.precio === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : pxPlusMXN(paquete.material.precio) },
                     { label: lang === 'es' ? paquete.filtroBase.nombre : paquete.filtroBase.nombre_en, valor: pxPlusMXN(paquete.filtroBase.precio) },
@@ -436,10 +443,10 @@ function GONModalPaquete({ paquete, armazonNombre, onAceptar, onManual, lang, ti
                 </div>
                 <div style={{ padding: '0.75rem 1rem', background: 'var(--cream)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>{pxMXN(paquete.precioOriginal)}</div>
+                    {paquete.descuento > 0 && <div style={{ fontSize: '11px', color: 'var(--warm-gray)', textDecoration: 'line-through' }}>{pxMXN(paquete.precioOriginal)}</div>}
                     <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.5rem', fontWeight: 300, color: 'var(--sage)' }}>{pxMXN(paquete.precioFinal)}</div>
                   </div>
-                  <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{lang === 'es' ? `Ahorras ${pxMXN(paquete.descuento)}` : `You save ${pxMXN(paquete.descuento)}`}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{lang === 'es' ? 'Precio web' : 'Online price'}</div>
                 </div>
               </div>
               {/* DRAWER ACTION → TURQUESA */}
@@ -714,6 +721,19 @@ export default function DetalleArmazon() {
     }
   }, [lightboxOpen]);
 
+  // Precios de micas y filtros: lista de OptiOS − 15% (se actualizan solos)
+  const [listaLentes, setListaLentes] = useState<ListaPrecios>(PRECIOS_LISTA_DEFAULT);
+  useEffect(() => {
+    fetch('/api/precios-lentes').then(r => r.json()).then(j => { if (j?.ok && j.precios) setListaLentes(j.precios); }).catch(() => {});
+  }, []);
+  // Si cambia la visión y el material ya no existe para ella (p. ej. Bifocal + Ultra Slim Pro), regresa a Essential
+  useEffect(() => {
+    if (vision && material && !materialDisponible(listaLentes, vision, material)) setMaterial('cr39');
+  }, [vision, material, listaLentes]);
+  const pVision = (id: string) => webVision(listaLentes, id);
+  const pMaterial = (id: string) => webMaterial(listaLentes, vision || 'mono', id);
+  const pFiltro = (id: string) => webFiltro(listaLentes, id);
+
   const precioArmazonUSD = esRegalo ? 0 : (armazon?.precio || PRECIO_ARMAZON);
   // Usa precio_gon (MXN directo) si está disponible, si no convierte desde USD
   // Con descuento_gon aplicado (igual que el catálogo y el cobro)
@@ -721,11 +741,9 @@ export default function DetalleArmazon() {
   // Lens prices are now stored in MXN directly
   const pxMXN = (mxn: number) => lang === 'es' ? `$${mxn.toLocaleString('es-MX')} MXN` : `$${Math.round(mxn / tipoCambio)} USD`;
   const pxPlus = (mxn: number) => lang === 'es' ? `+$${mxn.toLocaleString('es-MX')} MXN` : `+$${Math.round(mxn / tipoCambio)} USD`;
-  const precioVision = (visionOpts.find(v => v.id === vision)?.precio || 0);
-  const precioMaterial = (materialOpts.find(m => m.id === material)?.precio || 0);
-  const precioFiltros = filtros.reduce((sum, fid) => {
-    return sum + (filtroOpts.find((f: any) => f.id === fid)?.precio || 0);
-  }, 0);
+  const precioVision = vision ? pVision(vision) : 0;
+  const precioMaterial = vision && material ? pMaterial(material) : 0;
+  const precioFiltros = filtros.reduce((sum, fid) => sum + pFiltro(fid), 0);
   const totalMXN = soloArmazon ? precioArmazonMXN : precioArmazonMXN + precioVision + precioMaterial + precioFiltros;
 
   const toggleFiltro = (fid: string) => setFiltros(prev => prev.includes(fid) ? prev.filter(f => f !== fid) : [...prev, fid]);
@@ -743,7 +761,7 @@ export default function DetalleArmazon() {
     const errs = validarReceta();
     if (errs.length > 0) { setErrores(errs); return; }
     setErrores([]);
-    const paquete = calcularPaquete(receta, lang || 'en');
+    const paquete = calcularPaquete(receta, lang || 'en', listaLentes, precioArmazonMXN);
     setPaqueteGON(paquete);
     setRecetaEstado('guardada');
     setGonModal(true);
@@ -850,7 +868,32 @@ export default function DetalleArmazon() {
   }, [drawerOpen, gonModal]);
 
   // Apartar por WhatsApp (para quien llega de un anuncio y prefiere ir a la óptica)
-  const linkApartar = () => waGon(`Hola, quiero apartar el armazón ${armazon?.nombre || armazon?.modelo || ''} (#${armazon?.id}) que vi en gonmx.com/armazon/${armazon?.id}${precioArmazonMXN > 0 && precioArmazonMXN < Number(armazon?.precio_gon || 0) ? ` con precio web de $${precioArmazonMXN.toLocaleString('es-MX')} (en óptica $${Number(armazon?.precio_gon).toLocaleString('es-MX')})` : ''}`);
+  const textoApartar = (codigo?: string) => {
+    const base = `Hola, quiero apartar el armazón ${armazon?.nombre || armazon?.modelo || ''} (#${armazon?.id}) que vi en gonmx.com/armazon/${armazon?.id}`;
+    const conWeb = precioArmazonMXN > 0 && precioArmazonMXN < Number(armazon?.precio_gon || 0);
+    if (!conWeb) return base;
+    return `${base} con precio web de $${precioArmazonMXN.toLocaleString('es-MX')} (en óptica $${Number(armazon?.precio_gon).toLocaleString('es-MX')}).${codigo ? ` Mi código web es ${codigo}` : ''}`;
+  };
+  const linkApartar = () => waGon(textoApartar());
+  // Al apartar se genera un código WEB-XXXXX (precio web) que en la óptica se captura en OptiOS.
+  // La ventana se abre antes de pedir el código para que el navegador no la bloquee.
+  const apartar = async (e: React.MouseEvent) => {
+    if (!armazon) return;
+    e.preventDefault();
+    fbTrack('Lead', { content_ids: [String(armazon.id)], content_type: 'product_group', content_name: armazon.nombre, value: precioArmazonMXN, currency: 'MXN' });
+    const w = window.open('', '_blank');
+    let url = linkApartar();
+    if (precioArmazonMXN > 0 && precioArmazonMXN < Number(armazon.precio_gon || 0)) {
+      try {
+        const j = await fetch('/api/codigo-web', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ armazon_id: armazon.id, color_sku: colorActivo?.sku || null }),
+        }).then(r => r.json());
+        if (j?.ok && j.codigo) url = waGon(textoApartar(j.codigo));
+      } catch { /* si falla, se manda el mensaje sin código */ }
+    }
+    if (w) w.location.href = url; else window.location.href = url;
+  };
   const abrirDrawer = () => { setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
 
   const resumenReceta = () => {
@@ -989,7 +1032,7 @@ export default function DetalleArmazon() {
             </div>
             {[
               { title: t('Solo el armazón', 'Frame only'), precio: pxMXN(precioArmazonMXN), desc: t('Incluye lentes oscuros estándar. Sin graduación.', 'Includes standard dark lenses. No prescription.'), dark: false, onClick: () => { setSoloArmazon(true); setDrawerEstado('config'); setPaso(4); } },
-              { title: t('Personalizar mis micas', 'Customize my lenses'), precio: `${t('desde', 'from')} ${pxMXN(precioArmazonMXN + 749)}`, desc: t('Agregar graduación, polarizado, fotocromático y más.', 'Add prescription, polarized, photochromic and more.'), dark: true, onClick: () => { setSoloArmazon(false); setDrawerEstado('inicio'); } }
+              { title: t('Personalizar mis micas', 'Customize my lenses'), precio: `${t('desde', 'from')} ${pxMXN(precioArmazonMXN + pVision('mono'))}`, desc: t('Agregar graduación, polarizado, fotocromático y más.', 'Add prescription, polarized, photochromic and more.'), dark: true, onClick: () => { setSoloArmazon(false); setDrawerEstado('inicio'); } }
             ].map((opt, i) => (
               <div key={i} onClick={opt.onClick} style={{ border: opt.dark ? 'none' : '1px solid var(--border)', borderRadius: '8px', padding: '1.5rem', cursor: 'pointer', background: opt.dark ? 'var(--charcoal)' : 'var(--cream)', marginBottom: '0.75rem', transition: 'all 0.2s' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-1px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 20px rgba(28,28,26,0.08)'; }}
@@ -1135,7 +1178,7 @@ export default function DetalleArmazon() {
                                 <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div>
                                 <div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div>
                               </div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)', flexShrink: 0 }}>{pxPlus(o.precio)}</div>
+                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)', flexShrink: 0 }}>{pxPlus(pVision(o.id))}</div>
                             </div>
                           </div>
                         ))}
@@ -1149,11 +1192,11 @@ export default function DetalleArmazon() {
                       <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '0.25rem', color: 'var(--charcoal)' }}>{t('Material de la mica', 'Lens material')}</h4>
                       <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', marginBottom: '1.25rem' }}>{t('Afecta el grosor y peso.', 'Affects thickness and weight.')}</p>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        {materialOpts.map(o => (
+                        {materialOpts.filter(o => materialDisponible(listaLentes, vision || 'mono', o.id)).map(o => (
                           <div key={o.id} onClick={() => setMaterial(o.id)} style={{ border: material === o.id ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: material === o.id ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                               <div><div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>{o.precio === 0 ? t('Incluido', 'Included') : pxPlus(o.precio)}</div>
+                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>{pMaterial(o.id) === 0 ? t('Incluido', 'Included') : pxPlus(pMaterial(o.id))}</div>
                             </div>
                           </div>
                         ))}
@@ -1180,7 +1223,7 @@ export default function DetalleArmazon() {
                                       <div style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>{t(o.desc_es, o.desc_en)}</div>
                                     </div>
                                   </div>
-                                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--sage)' }}>{pxPlus(o.precio)}</div>
+                                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--sage)' }}>{pxPlus(pFiltro(o.id))}</div>
                                 </div>
                               </div>
                               {o.id === 'foto' && filtros.includes('foto') && <div style={{ border: '1.5px solid var(--sage)', borderTop: 'none', borderRadius: '0 0 8px 8px', padding: '1rem', background: 'rgba(74,89,64,0.04)' }}><div style={{ fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--warm-gray)', marginBottom: '10px' }}>{t('Elige el color', 'Choose the color')}</div><SelectorColores colores={coloresDisponibles} valorActivo={colorFoto} onChange={setColorFoto} lang={lang}/></div>}
@@ -1223,7 +1266,7 @@ export default function DetalleArmazon() {
                             if (f.id === 'foto') label = `${nombre} — ${COLORES_FOTO.find(c => c.id === colorFoto)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorFoto}`;
                             if (f.id === 'pol') label = `${nombre} — ${COLORES_POLARIZADO.find(c => c.id === colorPolarizado)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorPolarizado}`;
                             if (f.id === 'tinte') label = `${nombre} — ${COLORES_TINTE.find(c => c.id === colorTinte)?.[lang === 'es' ? 'nombre_es' : 'nombre_en'] || colorTinte}`;
-                            return { label, value: pxPlus(f.precio) };
+                            return { label, value: pxPlus(pFiltro(f.id)) };
                           })
                         ].map((item, i, arr) => (
                           <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '7px 0', borderBottom: i < arr.length - 1 ? '1px solid var(--border)' : 'none', fontSize: '13px' }}>
@@ -1367,7 +1410,7 @@ export default function DetalleArmazon() {
               {esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar mis micas', 'Customize my lenses')}
             </button>
           )}
-          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" className="va-cta va-cta-wa" onClick={() => fbTrack('Lead', { content_ids: [String(armazon.id)], content_type: 'product_group', content_name: armazon.nombre, value: precioArmazonMXN, currency: 'MXN' })}>
+          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" className="va-cta va-cta-wa" onClick={apartar}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.31-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.89-5.34 11.89-11.89S18.6 0 12.05 0z"/></svg>
             {t('Apartar por WhatsApp', 'Reserve on WhatsApp')}
           </a>
@@ -1420,7 +1463,7 @@ export default function DetalleArmazon() {
       {esMobil && (
         <div className="va-sticky">
           <button onClick={abrirDrawer}>{esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar micas', 'Customize lenses')}</button>
-          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" onClick={() => fbTrack('Lead', { content_ids: [String(armazon.id)], content_type: 'product_group', content_name: armazon.nombre, value: precioArmazonMXN, currency: 'MXN' })}>{t('Apartar', 'Reserve')}</a>
+          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" onClick={apartar}>{t('Apartar', 'Reserve')}</a>
         </div>
       )}
 

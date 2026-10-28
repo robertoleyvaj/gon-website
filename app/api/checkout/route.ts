@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { precioGon } from '../../lib/precio-gon';
+import { obtenerPreciosLista, micaWeb, webFiltro, type ListaPrecios } from '../../lib/precios-lentes';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const supabase = createClient(
@@ -9,13 +10,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Precios en MXN (actualizados Jun 2026)
+// Precios en MXN. Micas y filtros = precio de lista de OptiOS − 15% (lib/precios-lentes)
 const TC_FALLBACK = 18; // tipo de cambio fallback si no hay precio_gon en armazon
-const VISION_PRICES_MXN: Record<string, number> = { mono: 749, bi: 1149, prog: 1899 };
-const MATERIAL_PRICES_MXN: Record<string, number> = { cr39: 0, hd: 397, poly: 997, hi: 3197, shi: 4697 };
-const FILTRO_PRICES_MXN: Record<string, number> = { ar: 279, blue: 549, foto: 949, pol: 1699, tinte: 549 };
 
-async function calcularPrecioItem(item: any): Promise<number> {
+async function calcularPrecioItem(item: any, L: ListaPrecios): Promise<number> {
   let precioArmazonMXN = 0;
   if (item.armazon_id) {
     const { data } = await supabase.from('armazones').select('precio, precio_gon, descuento_gon').eq('id', item.armazon_id).eq('activo', true).single();
@@ -28,10 +26,13 @@ async function calcularPrecioItem(item: any): Promise<number> {
   }
   if (item.es_regalo) precioArmazonMXN = 0;
   if (item.solo_armazon) return precioArmazonMXN;
-  const precioVision   = VISION_PRICES_MXN[item.lentes?.vision]    ?? 0;
-  const precioMaterial = MATERIAL_PRICES_MXN[item.lentes?.material] ?? 0;
-  const precioFiltros  = (item.lentes?.filtros || []).reduce((s: number, f: string) => s + (FILTRO_PRICES_MXN[f] ?? 0), 0);
-  return precioArmazonMXN + precioVision + precioMaterial + precioFiltros;
+  const filtros: string[] = item.lentes?.filtros || [];
+  const precioFiltros = filtros.reduce((s: number, f: string) => s + webFiltro(L, f), 0);
+  // Lentes de sol: sin graduación, solo filtros
+  if (!item.lentes?.vision) return precioArmazonMXN + precioFiltros;
+  const mica = micaWeb(L, item.lentes.vision, item.lentes.material || 'cr39');
+  if (mica == null) throw new Error('Combinación de micas no disponible');
+  return precioArmazonMXN + mica + precioFiltros;
 }
 
 const attempts = new Map<string, { count: number; resetAt: number }>();
@@ -53,7 +54,10 @@ export async function POST(req: NextRequest) {
     if (!Array.isArray(items) || items.length === 0 || items.length > 10)
       return NextResponse.json({ error: 'Carrito inválido' }, { status: 400 });
 
-    const totales = await Promise.all(items.map(calcularPrecioItem));
+    const L = await obtenerPreciosLista();
+    let totales: number[];
+    try { totales = await Promise.all(items.map((it: any) => calcularPrecioItem(it, L))); }
+    catch { return NextResponse.json({ error: 'Combinación de micas no disponible' }, { status: 400 }); }
     let total = totales.reduce((s, t) => s + t, 0);
     if (total <= 0) return NextResponse.json({ error: 'Total inválido' }, { status: 400 });
 

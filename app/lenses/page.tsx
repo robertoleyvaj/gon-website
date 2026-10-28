@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
 import { useConfigLentes } from '../hooks/useConfigLentes';
+import { PRECIOS_LISTA_DEFAULT, webVision, webMaterial, webFiltro, type ListaPrecios } from '../lib/precios-lentes';
 
 // ── InfoBtn ───────────────────────────────────────────────
 function InfoBtn({ tip, grad }: { tip: string; grad: string }) {
@@ -122,17 +123,27 @@ const filtroOpts = [
 export default function Lenses() {
   const { t, lang } = useLang() as any;
   const { byTipo, byKey } = useConfigLentes();
-  // Price helper: uses precio_gon for ES, precio_verly for EN
+  // Pesos: precios web (lista de OptiOS − 15%, los mismos del configurador). Inglés: precio Verly de config_lentes
+  const [lista, setLista] = useState<ListaPrecios>(PRECIOS_LISTA_DEFAULT);
+  useEffect(() => {
+    fetch('/api/precios-lentes').then(r => r.json()).then(j => { if (j?.ok && j.precios) setLista(j.precios); }).catch(() => {});
+  }, []);
+  const MAT: Record<string, string> = { std: 'cr39', hd: 'hd', thin: 'poly', ultra: 'hi', ultrapro: 'shi' };
+  const precioEs = (key: string): number =>
+    ['mono', 'bi', 'prog'].includes(key) ? webVision(lista, key)
+      : MAT[key] ? webMaterial(lista, 'mono', MAT[key])
+      : webFiltro(lista, key);
+  const fmt = (n: number) => `$${n.toLocaleString('es-MX')} MXN`;
   const px = (key: string, fallbackUsd: number) => {
+    if (lang === 'es') { const n = precioEs(key); return n === 0 ? 'Incluido' : fmt(n); }
     const cfg = byKey(key);
-    if (!cfg) return lang === 'es' ? `$${fallbackUsd * 18} MXN` : `$${fallbackUsd} USD`;
-    if (lang === 'es') return cfg.precio_gon === 0 ? 'Incluido' : `$${cfg.precio_gon} MXN`;
+    if (!cfg) return `$${fallbackUsd} USD`;
     return cfg.precio_verly === 0 ? 'Included' : `$${cfg.precio_verly} USD`;
   };
   const pxPlus = (key: string, fallbackUsd: number) => {
+    if (lang === 'es') { const n = precioEs(key); return n === 0 ? 'Incluido' : `+${fmt(n)}`; }
     const cfg = byKey(key);
-    if (!cfg) return lang === 'es' ? `+$${fallbackUsd * 18} MXN` : `+$${fallbackUsd} USD`;
-    if (lang === 'es') return cfg.precio_gon === 0 ? (lang === 'es' ? 'Incluido' : 'Included') : `+$${cfg.precio_gon} MXN`;
+    if (!cfg) return `+$${fallbackUsd} USD`;
     return cfg.precio_verly === 0 ? 'Included' : `+$${cfg.precio_verly} USD`;
   };
   const [esMobil, setEsMobil] = useState(false);

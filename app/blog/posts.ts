@@ -98,8 +98,8 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Lentes graduados en Rosarito desde San Diego — La guía completa',
     titulo_en: 'Getting Prescription Glasses in Rosarito from San Diego — Complete Guide',
-    descripcion_es: 'Cruza la frontera y ahorra hasta 60% en lentes graduados de calidad en Rosarito. GON Óptica ofrece examen gratis, lentes monofocales desde $749 MXN y recoge el mismo día.',
-    descripcion_en: 'Cross the border and save up to 60% on quality prescription glasses in Rosarito, Mexico. GON Optica offers free eye exams, single-vision lenses from $749 MXN, and same-day pickup.',
+    descripcion_es: 'Cruza la frontera y ahorra hasta 60% en lentes graduados de calidad en Rosarito. GON Óptica ofrece examen gratis, lentes monofocales desde $700 MXN y recoge el mismo día.',
+    descripcion_en: 'Cross the border and save up to 60% on quality prescription glasses in Rosarito, Mexico. GON Optica offers free eye exams, single-vision lenses from $700 MXN, and same-day pickup.',
     keywords_es: ['lentes graduados frontera Rosarito', 'óptica Rosarito San Diego', 'lentes baratos Rosarito', 'turismo médico Rosarito'],
     keywords_en: ['prescription glasses Rosarito Mexico', 'cheap glasses Rosarito', 'glasses San Diego border', 'prescription eyeglasses Tijuana Rosarito', 'affordable glasses Mexico border', 'eye care Rosarito Mexico'],
     contenido_es: `
@@ -107,7 +107,7 @@ export const posts: BlogPost[] = [
 <p>Sí, y mucho. Los lentes graduados en Estados Unidos pueden costar entre $300 y $800 USD, especialmente si incluyen micas progresivas o filtros especiales. En GON Óptica Rosarito, los mismos lentes de calidad cuestan entre 3 y 5 veces menos — sin sacrificar calidad ni atención profesional.</p>
 
 <h2>¿Cuánto me ahorro exactamente?</h2>
-<p>Un par de lentes monofocales con armazón en GON comienza en aproximadamente $749 MXN en micas más el precio del armazón. En dólares, eso equivale a menos de $45 USD al tipo de cambio actual. En una óptica de San Diego, el mismo servicio raramente baja de $150–200 USD.</p>
+<p>Un par de lentes monofocales con armazón en GON comienza en aproximadamente $700 MXN en micas más el precio del armazón. En dólares, eso equivale a menos de $45 USD al tipo de cambio actual. En una óptica de San Diego, el mismo servicio raramente baja de $150–200 USD.</p>
 
 <h2>¿Puedo usar mi receta de Estados Unidos?</h2>
 <p>Sí. Aceptamos recetas de optometristas y oftalmólogos de Estados Unidos. Solo trae tu receta y nosotros fabricamos tus lentes. Si no tienes receta actualizada, ofrecemos examen de la vista gratuito en cualquiera de nuestras 3 sucursales en Rosarito.</p>
@@ -123,7 +123,7 @@ export const posts: BlogPost[] = [
 <p>Absolutely. Prescription glasses in the US can cost between $300–$800 USD, especially with progressive lenses or specialty filters. At GON Optica in Rosarito, the same quality glasses cost 3 to 5 times less — without sacrificing quality or professional care.</p>
 
 <h2>How Much Can I Actually Save?</h2>
-<p>A pair of single-vision lenses with frame at GON starts at around $749 MXN for the lenses, plus the cost of the frame. At current exchange rates, that's under $45 USD. At a San Diego optical store, the same service rarely drops below $150–200 USD.</p>
+<p>A pair of single-vision lenses with frame at GON starts at around $700 MXN for the lenses, plus the cost of the frame. At current exchange rates, that's under $45 USD. At a San Diego optical store, the same service rarely drops below $150–200 USD.</p>
 
 <h2>Can I Use My US Prescription?</h2>
 <p>Yes. We accept prescriptions from US optometrists and ophthalmologists. Just bring your written prescription and we'll make your lenses. If your prescription is outdated, we offer a free eye exam at any of our 3 Rosarito locations — no appointment required.</p>
@@ -172,7 +172,7 @@ export const posts: BlogPost[] = [
 <p>Sí. En GON puedes agregar el filtro de luz azul a cualquier tipo de lente graduado — monofocal, bifocal o progresivo. Es solo un tratamiento adicional sobre la mica que ya elegiste.</p>
 
 <h2>¿Cuánto cuestan en GON Rosarito?</h2>
-<p>El filtro de luz azul en GON tiene un costo adicional de $549 MXN sobre el precio de tus micas. Es uno de los filtros más vendidos porque la diferencia en comodidad es notoria para quienes pasan muchas horas frente a pantallas.</p>
+<p>El filtro de luz azul en GON tiene un costo adicional de $492 MXN sobre el precio de tus micas. Es uno de los filtros más vendidos porque la diferencia en comodidad es notoria para quienes pasan muchas horas frente a pantallas.</p>
     `,
     contenido_en: `
 <h2>What Are Computer Glasses?</h2>
@@ -194,7 +194,7 @@ export const posts: BlogPost[] = [
 <p>Absolutely. At GON, you can add blue light filtering to any prescription lens — single vision, bifocal, or progressive. It's simply an additional coating applied to whatever lens material you choose.</p>
 
 <h2>How Much Do They Cost at GON Rosarito?</h2>
-<p>The blue light filter add-on at GON costs an additional $549 MXN on top of your lens price. It's one of our most popular upgrades because the difference in comfort is immediately noticeable for heavy screen users.</p>
+<p>The blue light filter add-on at GON costs an additional $492 MXN on top of your lens price. It's one of our most popular upgrades because the difference in comfort is immediately noticeable for heavy screen users.</p>
     `,
   },
 
@@ -292,8 +292,8 @@ export const posts: BlogPost[] = [
 
 <h2>Precios en GON Rosarito</h2>
 <ul>
-<li>Lentes <strong>bifocales</strong>: desde $1,149 MXN en micas + el armazón</li>
-<li>Lentes <strong>progresivos</strong>: desde $1,899 MXN en micas + el armazón</li>
+<li>Lentes <strong>bifocales</strong>: desde $1,074 MXN en micas + el armazón</li>
+<li>Lentes <strong>progresivos</strong>: desde $1,776 MXN en micas + el armazón</li>
 </ul>
 <p>En cualquiera de nuestras 3 sucursales en Rosarito te hacemos un examen gratuito y te asesoramos cuál opción se adapta mejor a tu graduación y estilo de vida.</p>
     `,
@@ -315,8 +315,8 @@ export const posts: BlogPost[] = [
 
 <h2>Prices at GON Rosarito</h2>
 <ul>
-<li><strong>Bifocal</strong> lenses: from $1,149 MXN for lenses + frame cost</li>
-<li><strong>Progressive</strong> lenses: from $1,899 MXN for lenses + frame cost</li>
+<li><strong>Bifocal</strong> lenses: from $1,074 MXN for lenses + frame cost</li>
+<li><strong>Progressive</strong> lenses: from $1,776 MXN for lenses + frame cost</li>
 </ul>
 <p>At any of our 3 Rosarito locations, we offer a free eye exam and personalized advice on which option best fits your prescription and lifestyle.</p>
     `,
@@ -404,38 +404,38 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Lentes baratos en Rosarito — precios reales sin letra chica',
     titulo_en: 'Cheap Glasses in Rosarito — Real Prices, No Hidden Fees',
-    descripcion_es: 'Lentes graduados baratos en Rosarito desde $749 MXN. Sin seguro, sin cita, sin sorpresas. Tres sucursales en Playas de Rosarito.',
-    descripcion_en: 'Affordable prescription glasses in Rosarito from $749 MXN. No insurance, no appointment, no surprises. Three locations in Playas de Rosarito.',
+    descripcion_es: 'Lentes graduados baratos en Rosarito desde $700 MXN. Sin seguro, sin cita, sin sorpresas. Tres sucursales en Playas de Rosarito.',
+    descripcion_en: 'Affordable prescription glasses in Rosarito from $700 MXN. No insurance, no appointment, no surprises. Three locations in Playas de Rosarito.',
     keywords_es: ['lentes baratos rosarito','lentes economicos rosarito','lentes graduados baratos rosarito','donde comprar lentes baratos rosarito'],
     keywords_en: ['cheap glasses rosarito','affordable glasses rosarito mexico','inexpensive prescription glasses rosarito'],
     contenido_es: `
 <h2>¿Cuánto cuestan los lentes en Rosarito?</h2>
-<p>En GON Óptica los precios son directos — sin seguros, sin intermediarios. Los lentes monofocales más sencillos comienzan desde <strong>$749 MXN</strong> en micas, más el armazón que elijas. La mayoría de nuestros armazones están entre $300 y $1,200 MXN.</p>
+<p>En GON Óptica los precios son directos — sin seguros, sin intermediarios. Los lentes monofocales más sencillos comienzan desde <strong>$700 MXN</strong> en micas, más el armazón que elijas. La mayoría de nuestros armazones están entre $300 y $1,200 MXN.</p>
 <h2>¿Por qué son tan baratos comparado con Estados Unidos?</h2>
 <p>Los lentes en México cuestan entre 3 y 5 veces menos que en EE.UU. porque no hay intermediarios de seguros, los costos operativos son menores y el peso mexicano hace que los precios sean muy accesibles para quien gana en dólares.</p>
 <h2>¿La calidad es buena aunque sean baratos?</h2>
 <p>Sí. Usamos micas de las mismas marcas internacionales — CR-39, policarbonato, Hi-Index. "Barato" en GON no significa baja calidad; significa que no pagas el margen de un seguro médico ni la renta de una plaza cara.</p>
 <h2>Precios de referencia en GON Rosarito</h2>
 <ul>
-<li><strong>Monofocal Essential (CR-39)</strong>: $749 MXN</li>
+<li><strong>Monofocal Essential (CR-39)</strong>: $700 MXN</li>
 <li><strong>Monofocal Slim HD (1.60)</strong>: $1,146 MXN</li>
-<li><strong>Bifocal</strong>: desde $1,149 MXN</li>
-<li><strong>Progresivo</strong>: desde $1,899 MXN</li>
+<li><strong>Bifocal</strong>: desde $1,074 MXN</li>
+<li><strong>Progresivo</strong>: desde $1,776 MXN</li>
 </ul>
 <p>El examen de la vista es gratis. No necesitas cita ni seguro médico.</p>`,
     contenido_en: `
 <h2>How Much Do Glasses Cost in Rosarito?</h2>
-<p>At GON Optica, prices are direct — no insurance, no middlemen. Single-vision lenses start from <strong>$749 MXN</strong> (around $40 USD), plus the frame you choose. Most frames range from $300 to $1,200 MXN.</p>
+<p>At GON Optica, prices are direct — no insurance, no middlemen. Single-vision lenses start from <strong>$700 MXN</strong> (around $40 USD), plus the frame you choose. Most frames range from $300 to $1,200 MXN.</p>
 <h2>Why Are They So Much Cheaper Than in the US?</h2>
 <p>Glasses in Mexico cost 3–5x less than in the US because there's no insurance markup, lower operating costs, and the exchange rate makes prices very accessible for USD earners.</p>
 <h2>Is the Quality Still Good?</h2>
 <p>Yes. We use the same international-grade lens materials — CR-39, polycarbonate, Hi-Index. "Cheap" at GON means you're not paying an insurance company's markup, not that quality is compromised.</p>
 <h2>Reference Prices at GON Rosarito</h2>
 <ul>
-<li><strong>Single Vision Essential (CR-39)</strong>: $749 MXN (~$40 USD)</li>
+<li><strong>Single Vision Essential (CR-39)</strong>: $700 MXN (~$40 USD)</li>
 <li><strong>Single Vision Slim HD (1.60)</strong>: $1,146 MXN (~$60 USD)</li>
-<li><strong>Bifocal</strong>: from $1,149 MXN (~$62 USD)</li>
-<li><strong>Progressive</strong>: from $1,899 MXN (~$102 USD)</li>
+<li><strong>Bifocal</strong>: from $1,074 MXN (~$62 USD)</li>
+<li><strong>Progressive</strong>: from $1,776 MXN (~$102 USD)</li>
 </ul>
 <p>Eye exam is free. No insurance or appointment needed.</p>`,
   },
@@ -568,8 +568,8 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Lentes baratos en Rosarito México — la guía para cruzar la frontera',
     titulo_en: 'Cheap Glasses in Rosarito Mexico — Everything You Need to Know',
-    descripcion_es: 'Ahorra hasta 70% en lentes graduados cruzando a Rosarito, México. GON Óptica: examen gratis, lentes desde $749 MXN, 3 sucursales, atención en inglés.',
-    descripcion_en: 'Save up to 70% on prescription glasses by crossing to Rosarito, Mexico. GON Optica: free eye exam, lenses from $749 MXN, 3 locations, English-speaking staff.',
+    descripcion_es: 'Ahorra hasta 70% en lentes graduados cruzando a Rosarito, México. GON Óptica: examen gratis, lentes desde $700 MXN, 3 sucursales, atención en inglés.',
+    descripcion_en: 'Save up to 70% on prescription glasses by crossing to Rosarito, Mexico. GON Optica: free eye exam, lenses from $700 MXN, 3 locations, English-speaking staff.',
     keywords_es: ['lentes baratos rosarito mexico','lentes economicos cruzar frontera','optica frontera rosarito'],
     keywords_en: ['cheap glasses rosarito mexico','affordable eyeglasses rosarito','cheap prescription glasses mexico border','glasses mexico border san diego'],
     contenido_es: `
@@ -622,8 +622,8 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Lentes graduados en Tijuana y Rosarito — precios y opciones',
     titulo_en: 'Prescription Glasses in Tijuana and Rosarito — Prices and Options',
-    descripcion_es: 'Compara opciones de lentes graduados en Tijuana y Rosarito. GON Óptica en Rosarito: más cerca de la frontera, examen gratis, precios desde $749 MXN.',
-    descripcion_en: 'Compare prescription glasses in Tijuana vs Rosarito. GON Optica in Rosarito: closer to the border, free exam, prices from $749 MXN.',
+    descripcion_es: 'Compara opciones de lentes graduados en Tijuana y Rosarito. GON Óptica en Rosarito: más cerca de la frontera, examen gratis, precios desde $700 MXN.',
+    descripcion_en: 'Compare prescription glasses in Tijuana vs Rosarito. GON Optica in Rosarito: closer to the border, free exam, prices from $700 MXN.',
     keywords_es: ['lentes graduados tijuana','optica tijuana rosarito','lentes tijuana precio'],
     keywords_en: ['prescription glasses tijuana','glasses tijuana mexico','eyeglasses tijuana','prescription glasses near tijuana border'],
     contenido_es: `
@@ -637,7 +637,7 @@ export const posts: BlogPost[] = [
 <h2>How Far Is Rosarito from the Tijuana Border?</h2>
 <p>From the San Ysidro or Otay crossing, Rosarito is about 30–40 minutes south on the Ensenada Toll Road (Autopista de Ensenada). It's a straight shot — no city traffic.</p>
 <h2>What Are the Prices Like?</h2>
-<p>Single-vision lenses at GON start at $749 MXN (~$40 USD). Progressive lenses start at $1,899 MXN (~$102 USD). Eye exam is free at all locations.</p>`,
+<p>Single-vision lenses at GON start at $700 MXN (~$40 USD). Progressive lenses start at $1,776 MXN (~$102 USD). Eye exam is free at all locations.</p>`,
   },
 
   // ── 14. lentes astigmatismo rosarito ───────────────────────
@@ -659,14 +659,14 @@ export const posts: BlogPost[] = [
 <h2>¿Qué material de mica es mejor para astigmatismo?</h2>
 <p>Para astigmatismos leves a moderados, el CR-39 (Essential) o el policarbonato (Poly Plus) funcionan muy bien. Para astigmatismos altos combinados con miopía fuerte, el Hi-Index (1.67 o 1.74) hace la mica más delgada y liviana.</p>
 <h2>¿Cuánto cuestan en GON Rosarito?</h2>
-<p>Los lentes para astigmatismo tienen el mismo precio que los monofocales normales — desde $749 MXN en micas. El astigmatismo no tiene costo adicional en la graduación.</p>`,
+<p>Los lentes para astigmatismo tienen el mismo precio que los monofocales normales — desde $700 MXN en micas. El astigmatismo no tiene costo adicional en la graduación.</p>`,
     contenido_en: `
 <h2>What Is Astigmatism?</h2>
 <p>Astigmatism is an irregular curvature of the cornea that causes blurry or distorted vision at all distances. It's very common — affecting over 30% of the population — and is perfectly corrected with prescription glasses.</p>
 <h2>Do Astigmatism Glasses Look Different?</h2>
 <p>No, they look exactly like regular glasses. The difference is in the lens, which has a cylindrical axis (the "CYL" and "AXIS" values on your prescription).</p>
 <h2>How Much Do They Cost at GON Rosarito?</h2>
-<p>Astigmatism correction glasses are priced the same as regular single-vision lenses — from $749 MXN. There's no extra charge for astigmatism correction.</p>`,
+<p>Astigmatism correction glasses are priced the same as regular single-vision lenses — from $700 MXN. There's no extra charge for astigmatism correction.</p>`,
   },
 
   // ── 15. vista cansada lentes rosarito ──────────────────────
@@ -674,10 +674,10 @@ export const posts: BlogPost[] = [
     slug: 'vista-cansada-lentes-rosarito',
     fecha: '2026-06-18',
     categoria: 'salud-visual',
-    titulo_es: 'Vista cansada en Rosarito — lentes para presbicia desde $1,149 MXN',
-    titulo_en: 'Tired Eyes in Rosarito — Reading Glasses and Progressives from $1,149 MXN',
-    descripcion_es: 'La vista cansada o presbicia se corrige con lentes bifocales o progresivos. Precios desde $1,149 MXN en GON Óptica Rosarito. Examen gratis.',
-    descripcion_en: 'Presbyopia (tired eyes) is corrected with bifocal or progressive lenses. Prices from $1,149 MXN at GON Optica Rosarito. Free eye exam.',
+    titulo_es: 'Vista cansada en Rosarito — lentes para presbicia desde $1,074 MXN',
+    titulo_en: 'Tired Eyes in Rosarito — Reading Glasses and Progressives from $1,074 MXN',
+    descripcion_es: 'La vista cansada o presbicia se corrige con lentes bifocales o progresivos. Precios desde $1,074 MXN en GON Óptica Rosarito. Examen gratis.',
+    descripcion_en: 'Presbyopia (tired eyes) is corrected with bifocal or progressive lenses. Prices from $1,074 MXN at GON Optica Rosarito. Free eye exam.',
     keywords_es: ['vista cansada lentes rosarito','presbicia lentes rosarito','lentes lectura rosarito','lentes para ver de cerca rosarito'],
     keywords_en: ['reading glasses rosarito','presbyopia glasses rosarito mexico','tired eyes glasses rosarito'],
     contenido_es: `
@@ -687,9 +687,9 @@ export const posts: BlogPost[] = [
 <p>Con lentes bifocales (zona de lejos + zona de cerca con línea visible) o progresivos (transición suave sin línea). También existen lentes monofocales de lectura para quien solo necesita ayuda para ver de cerca.</p>
 <h2>Precios en GON Rosarito</h2>
 <ul>
-<li><strong>Lentes de lectura monofocales</strong>: desde $749 MXN</li>
-<li><strong>Bifocales</strong>: desde $1,149 MXN</li>
-<li><strong>Progresivos</strong>: desde $1,899 MXN</li>
+<li><strong>Lentes de lectura monofocales</strong>: desde $700 MXN</li>
+<li><strong>Bifocales</strong>: desde $1,074 MXN</li>
+<li><strong>Progresivos</strong>: desde $1,776 MXN</li>
 </ul>
 <p>Examen de la vista gratuito en las 3 sucursales de Rosarito.</p>`,
     contenido_en: `
@@ -699,9 +699,9 @@ export const posts: BlogPost[] = [
 <p>With bifocal lenses (distance + near zones with a visible line) or progressive lenses (smooth transition, no visible line). Reading-only single-vision lenses also work if you only need help up close.</p>
 <h2>Prices at GON Rosarito</h2>
 <ul>
-<li><strong>Reading glasses (single vision)</strong>: from $749 MXN (~$40 USD)</li>
-<li><strong>Bifocal</strong>: from $1,149 MXN (~$62 USD)</li>
-<li><strong>Progressive</strong>: from $1,899 MXN (~$102 USD)</li>
+<li><strong>Reading glasses (single vision)</strong>: from $700 MXN (~$40 USD)</li>
+<li><strong>Bifocal</strong>: from $1,074 MXN (~$62 USD)</li>
+<li><strong>Progressive</strong>: from $1,776 MXN (~$102 USD)</li>
 </ul>`,
   },
 
@@ -815,8 +815,8 @@ export const posts: BlogPost[] = [
     categoria: 'salud-visual',
     titulo_es: 'Lentes fotocromáticos en Rosarito — se oscurecen solos con el sol',
     titulo_en: 'Photochromic Lenses in Rosarito — Lenses That Darken in the Sun',
-    descripcion_es: 'Los lentes fotocromáticos se oscurecen automáticamente bajo el sol y aclaran en interiores. En GON Rosarito desde $949 MXN. Ideales para usar todo el día.',
-    descripcion_en: 'Photochromic lenses automatically darken in sunlight and clear indoors. Available at GON Rosarito from $949 MXN. Perfect for all-day wear.',
+    descripcion_es: 'Los lentes fotocromáticos se oscurecen automáticamente bajo el sol y aclaran en interiores. En GON Rosarito desde $887 MXN. Ideales para usar todo el día.',
+    descripcion_en: 'Photochromic lenses automatically darken in sunlight and clear indoors. Available at GON Rosarito from $887 MXN. Perfect for all-day wear.',
     keywords_es: ['lentes fotocromáticos rosarito','lentes transitions rosarito','lentes que se oscurecen solos rosarito','lentes fotocromáticos precio rosarito'],
     keywords_en: ['photochromic lenses rosarito','transition lenses rosarito mexico','lenses that darken in sun rosarito'],
     contenido_es: `
@@ -827,7 +827,7 @@ export const posts: BlogPost[] = [
 <h2>¿En qué colores vienen?</h2>
 <p>En GON ofrecemos fotocromático en gris, café, verde y azul. El gris es el más popular porque no distorsiona los colores del entorno.</p>
 <h2>¿Cuánto cuestan?</h2>
-<p>El filtro fotocromático en GON cuesta <strong>$949 MXN</strong> adicionales sobre el precio base de tus micas.</p>`,
+<p>El filtro fotocromático en GON cuesta <strong>$887 MXN</strong> adicionales sobre el precio base de tus micas.</p>`,
     contenido_en: `
 <h2>How Do Photochromic Lenses Work?</h2>
 <p>Photochromic lenses contain UV-sensitive molecules that react by changing color when exposed to sunlight. Indoors they're clear (nearly like regular lenses); outside they darken within 30–60 seconds.</p>
@@ -836,7 +836,7 @@ export const posts: BlogPost[] = [
 <h2>What Colors Are Available?</h2>
 <p>At GON we offer photochromic in gray, brown, green, and blue. Gray is most popular because it doesn't distort surrounding colors.</p>
 <h2>How Much Do They Cost?</h2>
-<p>The photochromic filter at GON costs an additional <strong>$949 MXN</strong> (~$51 USD) on top of the base lens price.</p>`,
+<p>The photochromic filter at GON costs an additional <strong>$887 MXN</strong> (~$51 USD) on top of the base lens price.</p>`,
   },
 
   // ── 20. lentes de sol graduados rosarito ───────────────────
@@ -846,8 +846,8 @@ export const posts: BlogPost[] = [
     categoria: 'moda',
     titulo_es: 'Lentes de sol graduados en Rosarito — UV400, todos los estilos',
     titulo_en: 'Prescription Sunglasses in Rosarito — UV400, All Styles',
-    descripcion_es: 'Lentes de sol graduados en Rosarito con protección UV400. Todos los modelos de GON son graduables en monofocal, bifocal o progresivo. Desde $749 MXN en micas.',
-    descripcion_en: 'Prescription sunglasses in Rosarito with UV400 protection. All GON frames are available with prescription — single vision, bifocal, or progressive. Lenses from $749 MXN.',
+    descripcion_es: 'Lentes de sol graduados en Rosarito con protección UV400. Todos los modelos de GON son graduables en monofocal, bifocal o progresivo. Desde $700 MXN en micas.',
+    descripcion_en: 'Prescription sunglasses in Rosarito with UV400 protection. All GON frames are available with prescription — single vision, bifocal, or progressive. Lenses from $700 MXN.',
     keywords_es: ['lentes sol graduados rosarito','lentes sol con graduacion rosarito','gafas sol graduadas rosarito','lentes sol rosarito'],
     keywords_en: ['prescription sunglasses rosarito','sunglasses with prescription rosarito mexico','graduated sunglasses rosarito'],
     contenido_es: `
@@ -859,7 +859,7 @@ export const posts: BlogPost[] = [
 <p>El precio depende del armazón que elijas más el costo de las micas graduadas:</p>
 <ul>
 <li>Armazón de sol: desde $350 MXN</li>
-<li>Micas monofocales con tinte: desde $749 MXN + $549 MXN de tinte</li>
+<li>Micas monofocales con tinte: desde $700 MXN + $492 MXN de tinte</li>
 <li>Micas con polarizado: $1,699 MXN adicionales</li>
 </ul>`,
     contenido_en: `
@@ -870,7 +870,7 @@ export const posts: BlogPost[] = [
 <h2>How Much Do Prescription Sunglasses Cost at GON?</h2>
 <ul>
 <li>Sunglass frame: from $350 MXN</li>
-<li>Single-vision tinted lenses: from $749 MXN + $549 MXN tint</li>
+<li>Single-vision tinted lenses: from $700 MXN + $492 MXN tint</li>
 <li>With polarized filter: $1,699 MXN additional</li>
 </ul>`,
   },
@@ -965,7 +965,7 @@ export const posts: BlogPost[] = [
 <h2>¿Cómo se corrige?</h2>
 <p>Con lentes convergentes (signo positivo en la receta, ej. +1.50). La mica es ligeramente más gruesa en el centro que en los bordes.</p>
 <h2>¿Cuánto cuestan en GON Rosarito?</h2>
-<p>Igual que cualquier monofocal: desde <strong>$749 MXN</strong>. No hay sobrecargo por hipermetropía.</p>`,
+<p>Igual que cualquier monofocal: desde <strong>$700 MXN</strong>. No hay sobrecargo por hipermetropía.</p>`,
     contenido_en: `
 <h2>What Is Hyperopia (Farsightedness)?</h2>
 <p>Hyperopia is the opposite of myopia: the eye focuses images behind the retina, making near vision difficult. Young people can often compensate with eye muscle effort — but this causes eye strain and headaches.</p>
@@ -979,7 +979,7 @@ export const posts: BlogPost[] = [
 <h2>How Is It Corrected?</h2>
 <p>With converging lenses (positive sign on the prescription, e.g. +1.50).</p>
 <h2>How Much at GON Rosarito?</h2>
-<p>Same as any single-vision lens: from <strong>$749 MXN</strong> (~$40 USD). No surcharge for hyperopia.</p>`,
+<p>Same as any single-vision lens: from <strong>$700 MXN</strong> (~$40 USD). No surcharge for hyperopia.</p>`,
   },
 
   // ── 24. cuando necesito lentes ─────────────────────────────
@@ -1026,8 +1026,8 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Lentes progresivos en Rosarito — precios, tipos y cómo adaptarte',
     titulo_en: 'Progressive Lenses in Rosarito — Prices, Types, and How to Adapt',
-    descripcion_es: 'Lentes progresivos en Rosarito desde $1,899 MXN. GON ofrece progresivos en varias calidades sin línea visible. Examen gratis en 3 sucursales.',
-    descripcion_en: 'Progressive lenses in Rosarito from $1,899 MXN. GON offers multifocal progressives at various quality levels. Free exam at 3 locations.',
+    descripcion_es: 'Lentes progresivos en Rosarito desde $1,776 MXN. GON ofrece progresivos en varias calidades sin línea visible. Examen gratis en 3 sucursales.',
+    descripcion_en: 'Progressive lenses in Rosarito from $1,776 MXN. GON offers multifocal progressives at various quality levels. Free exam at 3 locations.',
     keywords_es: ['lentes progresivos rosarito','multifocales rosarito','progresivos precio rosarito','lentes progresivos baratos rosarito'],
     keywords_en: ['progressive lenses rosarito','multifocal glasses rosarito mexico','progressive eyeglasses rosarito price'],
     contenido_es: `
@@ -1036,7 +1036,7 @@ export const posts: BlogPost[] = [
 <h2>¿Son difíciles de usar?</h2>
 <p>Requieren un período de adaptación de 1 a 2 semanas. Durante ese tiempo puedes sentir mareo o distorsión al mover la cabeza. Después, la mayoría de los usuarios los usa sin ningún problema.</p>
 <h2>¿Cuánto cuestan en GON Rosarito?</h2>
-<p>Los progresivos en GON comienzan desde <strong>$1,899 MXN</strong> en la mica Essential. Hay opciones más avanzadas (con mayor zona de visión intermedia, ideal para pantallas) a precios mayores.</p>
+<p>Los progresivos en GON comienzan desde <strong>$1,776 MXN</strong> en la mica Essential. Hay opciones más avanzadas (con mayor zona de visión intermedia, ideal para pantallas) a precios mayores.</p>
 <h2>¿Puedo cruzar desde San Diego a comprarlos?</h2>
 <p>Sí, y el ahorro es significativo. Un par de progresivos en EE.UU. fácilmente cuesta $400–$800 USD. En GON puedes conseguirlos por una fracción de ese precio con la misma calidad óptica.</p>`,
     contenido_en: `
@@ -1045,7 +1045,7 @@ export const posts: BlogPost[] = [
 <h2>Are They Hard to Get Used To?</h2>
 <p>They require a 1–2 week adaptation period during which you may feel slight dizziness or distortion when moving your head. After that, most users wear them without any issues.</p>
 <h2>How Much Do They Cost at GON Rosarito?</h2>
-<p>Progressive lenses at GON start from <strong>$1,899 MXN</strong> (~$102 USD) for the Essential lens. More advanced options are available for larger intermediate vision zones, ideal for screen use.</p>`,
+<p>Progressive lenses at GON start from <strong>$1,776 MXN</strong> (~$102 USD) for the Essential lens. More advanced options are available for larger intermediate vision zones, ideal for screen use.</p>`,
   },
 
   // ── 26. lentes sin seguro rosarito ─────────────────────────
@@ -1055,8 +1055,8 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Lentes sin seguro médico en Rosarito — directo al consumidor',
     titulo_en: 'Glasses Without Insurance in Rosarito — Direct to Consumer',
-    descripcion_es: 'No tienes seguro médico y necesitas lentes. En GON Rosarito todos los precios son directos, sin intermediarios. Examen gratis + lentes desde $749 MXN.',
-    descripcion_en: "Don't have insurance and need glasses? At GON Rosarito all prices are direct to consumer. Free exam + lenses from $749 MXN.",
+    descripcion_es: 'No tienes seguro médico y necesitas lentes. En GON Rosarito todos los precios son directos, sin intermediarios. Examen gratis + lentes desde $700 MXN.',
+    descripcion_en: "Don't have insurance and need glasses? At GON Rosarito all prices are direct to consumer. Free exam + lenses from $700 MXN.",
     keywords_es: ['lentes sin seguro rosarito','lentes sin imss rosarito','donde comprar lentes sin seguro rosarito','lentes sin seguro baja california'],
     keywords_en: ['glasses without insurance rosarito','no insurance glasses rosarito mexico','uninsured glasses rosarito'],
     contenido_es: `
@@ -1121,20 +1121,20 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Lentes baratos en Tijuana — o mejor en Rosarito, a 30 minutos',
     titulo_en: 'Cheap Glasses Near Tijuana — Try Rosarito, Just 30 Minutes Away',
-    descripcion_es: 'Buscas lentes baratos en Tijuana. Rosarito queda a 30 minutos y GON Óptica ofrece mejores precios y menos tráfico. Desde $749 MXN, examen gratis.',
-    descripcion_en: 'Looking for cheap glasses near Tijuana? Rosarito is just 30 minutes away and GON Optica offers better prices with less traffic. From $749 MXN, free exam.',
+    descripcion_es: 'Buscas lentes baratos en Tijuana. Rosarito queda a 30 minutos y GON Óptica ofrece mejores precios y menos tráfico. Desde $700 MXN, examen gratis.',
+    descripcion_en: 'Looking for cheap glasses near Tijuana? Rosarito is just 30 minutes away and GON Optica offers better prices with less traffic. From $700 MXN, free exam.',
     keywords_es: ['lentes baratos tijuana','optica economica tijuana','lentes graduados tijuana baratos','optica buenos precios tijuana'],
     keywords_en: ['cheap glasses tijuana','affordable glasses near tijuana','glasses tijuana mexico price','inexpensive glasses tijuana border'],
     contenido_es: `
 <h2>¿Por qué ir a Rosarito en lugar de Tijuana para lentes baratos?</h2>
 <p>Si estás en la zona de Tijuana o cruzando desde San Diego, Rosarito es una alternativa muy conveniente: está a solo 30–40 minutos al sur de la garita de San Ysidro, tiene menos tráfico y congestión que el centro de Tijuana, y GON tiene 3 sucursales con precios competitivos y examen gratis.</p>
 <h2>¿Cuánto cuestan los lentes en Rosarito vs Tijuana?</h2>
-<p>Los precios son comparables, pero en Rosarito evitas el tráfico y el estrés del centro de Tijuana. En GON los monofocales básicos empiezan en $749 MXN con examen de la vista gratuito incluido.</p>`,
+<p>Los precios son comparables, pero en Rosarito evitas el tráfico y el estrés del centro de Tijuana. En GON los monofocales básicos empiezan en $700 MXN con examen de la vista gratuito incluido.</p>`,
     contenido_en: `
 <h2>Why Go to Rosarito Instead of Tijuana for Cheap Glasses?</h2>
 <p>If you're in the Tijuana area or crossing from San Diego, Rosarito is a very convenient alternative: it's just 30–40 minutes south of the San Ysidro crossing, has far less traffic than downtown Tijuana, and GON has 3 locations with competitive prices and free eye exams.</p>
 <h2>How Do Prices Compare?</h2>
-<p>Prices are comparable, but in Rosarito you avoid the traffic and stress of downtown Tijuana. At GON, basic single-vision lenses start at $749 MXN with a free eye exam included.</p>`,
+<p>Prices are comparable, but in Rosarito you avoid the traffic and stress of downtown Tijuana. At GON, basic single-vision lenses start at $700 MXN with a free eye exam included.</p>`,
   },
 
   // ── 29. lentes bifocales rosarito ──────────────────────────
@@ -1144,8 +1144,8 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Lentes bifocales en Rosarito — precio, ventajas y a quién le convienen',
     titulo_en: 'Bifocal Glasses in Rosarito — Price, Benefits, and Who Should Get Them',
-    descripcion_es: 'Lentes bifocales en Rosarito desde $1,149 MXN. GON Óptica tiene 3 sucursales. Descubre si los bifocales son mejor opción que los progresivos para ti.',
-    descripcion_en: 'Bifocal glasses in Rosarito from $1,149 MXN. GON Optica has 3 locations. Find out if bifocals are better than progressives for your needs.',
+    descripcion_es: 'Lentes bifocales en Rosarito desde $1,074 MXN. GON Óptica tiene 3 sucursales. Descubre si los bifocales son mejor opción que los progresivos para ti.',
+    descripcion_en: 'Bifocal glasses in Rosarito from $1,074 MXN. GON Optica has 3 locations. Find out if bifocals are better than progressives for your needs.',
     keywords_es: ['lentes bifocales rosarito','bifocales precio rosarito','lentes dos distancias rosarito'],
     keywords_en: ['bifocal glasses rosarito','bifocals rosarito mexico','bifocal lenses price rosarito'],
     contenido_es: `
@@ -1154,12 +1154,12 @@ export const posts: BlogPost[] = [
 <h2>¿Qué diferencia a los bifocales de los progresivos?</h2>
 <p>Los bifocales tienen una línea visible que separa la zona de lejos (arriba) y de cerca (abajo). Los progresivos no tienen línea — la transición es gradual y estética. Los bifocales son más baratos pero la línea puede resultar molesta estéticamente.</p>
 <h2>Precio en GON Rosarito</h2>
-<p>Los lentes bifocales en GON comienzan desde <strong>$1,149 MXN</strong> en micas, más el armazón. El examen de la vista es gratuito en las 3 sucursales.</p>`,
+<p>Los lentes bifocales en GON comienzan desde <strong>$1,074 MXN</strong> en micas, más el armazón. El examen de la vista es gratuito en las 3 sucursales.</p>`,
     contenido_en: `
 <h2>Who Should Get Bifocal Glasses?</h2>
 <p>Bifocals are ideal for people with presbyopia who need correction at two distances (far and near) and prefer a simpler, more affordable option than progressives. They're also great for those who've used bifocals before and don't want to change.</p>
 <h2>Price at GON Rosarito</h2>
-<p>Bifocal lenses at GON start from <strong>$1,149 MXN</strong> (~$62 USD) for lenses, plus the frame. Free eye exam at all 3 locations.</p>`,
+<p>Bifocal lenses at GON start from <strong>$1,074 MXN</strong> (~$62 USD) for lenses, plus the frame. Free eye exam at all 3 locations.</p>`,
   },
 
   // ── 30. lentes lectura rosarito ────────────────────────────
@@ -1184,7 +1184,7 @@ export const posts: BlogPost[] = [
 <li>Necesitas ver bien tanto de lejos como de cerca</li>
 </ul>
 <h2>¿Cuánto cuestan en GON?</h2>
-<p>Desde <strong>$749 MXN</strong> en micas monofocales para leer. El examen de la vista es gratuito en las 3 sucursales de Rosarito.</p>`,
+<p>Desde <strong>$700 MXN</strong> en micas monofocales para leer. El examen de la vista es gratuito en las 3 sucursales de Rosarito.</p>`,
     contenido_en: `
 <h2>Are Drugstore Reading Glasses the Same as Prescription Ones?</h2>
 <p>No. Drugstore readers are "fixed power" lenses — both eyes get the same positive prescription. If you have astigmatism, different prescriptions in each eye, or need distance correction too, drugstore readers won't work well for you.</p>
@@ -1196,7 +1196,7 @@ export const posts: BlogPost[] = [
 <li>You need to see well at both near and far distances</li>
 </ul>
 <h2>How Much at GON Rosarito?</h2>
-<p>From <strong>$749 MXN</strong> (~$40 USD) for single-vision reading lenses. Free eye exam at all 3 locations.</p>`,
+<p>From <strong>$700 MXN</strong> (~$40 USD) for single-vision reading lenses. Free eye exam at all 3 locations.</p>`,
   },
 
   // ── 31. optica playas de rosarito ──────────────────────────
@@ -1206,8 +1206,8 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Óptica en Playas de Rosarito — GON, la más completa de la zona',
     titulo_en: 'Optical Store in Playas de Rosarito — GON, the Most Complete in the Area',
-    descripcion_es: 'GON es la óptica más completa de Playas de Rosarito. 3 sucursales, examen de la vista gratis, más de 100 armazones, lentes graduados desde $749 MXN.',
-    descripcion_en: 'GON is the most complete optical store in Playas de Rosarito. 3 locations, free eye exams, 100+ frames, prescription lenses from $749 MXN.',
+    descripcion_es: 'GON es la óptica más completa de Playas de Rosarito. 3 sucursales, examen de la vista gratis, más de 100 armazones, lentes graduados desde $700 MXN.',
+    descripcion_en: 'GON is the most complete optical store in Playas de Rosarito. 3 locations, free eye exams, 100+ frames, prescription lenses from $700 MXN.',
     keywords_es: ['optica playas de rosarito','optica rosarito bc','lentes playas de rosarito','mejor optica rosarito'],
     keywords_en: ['optical store playas de rosarito','glasses playas de rosarito','best optical rosarito baja california'],
     contenido_es: `
@@ -1243,8 +1243,8 @@ export const posts: BlogPost[] = [
     categoria: 'salud-visual',
     titulo_es: 'Precio de lentes progresivos en México — cuánto deberías pagar',
     titulo_en: 'Price of Progressive Lenses in Mexico — How Much Should You Pay',
-    descripcion_es: 'Los lentes progresivos en México varían de $1,500 a $15,000 MXN. En GON Rosarito desde $1,899 MXN con calidad óptica garantizada.',
-    descripcion_en: 'Progressive lenses in Mexico range from $1,500 to $15,000 MXN. At GON Rosarito from $1,899 MXN with guaranteed optical quality.',
+    descripcion_es: 'Los lentes progresivos en México varían de $1,500 a $15,000 MXN. En GON Rosarito desde $1,776 MXN con calidad óptica garantizada.',
+    descripcion_en: 'Progressive lenses in Mexico range from $1,500 to $15,000 MXN. At GON Rosarito from $1,776 MXN with guaranteed optical quality.',
     keywords_es: ['lentes progresivos precio mexico','cuanto cuestan lentes progresivos mexico','precio multifocales mexico','lentes progresivos baratos mexico'],
     keywords_en: ['progressive lenses price mexico','cost progressive glasses mexico','how much progressive lenses mexico'],
     contenido_es: `
@@ -1257,12 +1257,12 @@ export const posts: BlogPost[] = [
 <li><strong>Tratamientos adicionales</strong>: antirreflejo, fotocromático, luz azul</li>
 </ul>
 <h2>¿Cuánto cobran en GON Rosarito?</h2>
-<p>Los progresivos en GON comienzan en <strong>$1,899 MXN</strong> y suben según el material y los filtros. Es una opción de buena calidad a precio muy accesible comparado con cadenas o clínicas privadas.</p>`,
+<p>Los progresivos en GON comienzan en <strong>$1,776 MXN</strong> y suben según el material y los filtros. Es una opción de buena calidad a precio muy accesible comparado con cadenas o clínicas privadas.</p>`,
     contenido_en: `
 <h2>Why Do Progressive Lens Prices Vary So Much?</h2>
 <p>Progressive lens prices in Mexico can range from $1,500 to over $15,000 MXN. Key differences include lens design quality, brand (Essilor, Zeiss, Shamir), lens material (CR-39 vs Hi-Index), and additional coatings.</p>
 <h2>How Much at GON Rosarito?</h2>
-<p>Progressives at GON start at <strong>$1,899 MXN</strong> (~$102 USD) and go up depending on material and filters. It's a solid quality option at a very accessible price compared to chains or private clinics.</p>`,
+<p>Progressives at GON start at <strong>$1,776 MXN</strong> (~$102 USD) and go up depending on material and filters. It's a solid quality option at a very accessible price compared to chains or private clinics.</p>`,
   },
 
   // ── 33. optometrist rosarito mexico (EN) ───────────────────
@@ -1380,8 +1380,8 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Óptica barata en Rosarito — calidad sin pagar de más',
     titulo_en: 'Affordable Optical Store in Rosarito — Quality Without Overpaying',
-    descripcion_es: 'GON es la óptica más accesible de Rosarito sin sacrificar calidad. Examen gratis, lentes desde $749 MXN, 3 sucursales. Sin seguro, sin cita.',
-    descripcion_en: 'GON is the most affordable optical store in Rosarito without sacrificing quality. Free exam, lenses from $749 MXN, 3 locations. No insurance, no appointment.',
+    descripcion_es: 'GON es la óptica más accesible de Rosarito sin sacrificar calidad. Examen gratis, lentes desde $700 MXN, 3 sucursales. Sin seguro, sin cita.',
+    descripcion_en: 'GON is the most affordable optical store in Rosarito without sacrificing quality. Free exam, lenses from $700 MXN, 3 locations. No insurance, no appointment.',
     keywords_es: ['optica barata rosarito','optica economica rosarito','optica buenos precios rosarito','optica accesible rosarito'],
     keywords_en: ['affordable optical store rosarito','cheap optical rosarito mexico','budget glasses store rosarito'],
     contenido_es: `
@@ -1403,8 +1403,8 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Lentes económicos en Baja California — la mejor opción en Rosarito',
     titulo_en: 'Affordable Glasses in Baja California — Best Option in Rosarito',
-    descripcion_es: 'Busca lentes económicos en Baja California. GON Óptica Rosarito ofrece los mejores precios de la región: desde $749 MXN con examen de la vista gratis.',
-    descripcion_en: 'Looking for affordable glasses in Baja California? GON Optica Rosarito offers the best prices in the region: from $749 MXN with free eye exam.',
+    descripcion_es: 'Busca lentes económicos en Baja California. GON Óptica Rosarito ofrece los mejores precios de la región: desde $700 MXN con examen de la vista gratis.',
+    descripcion_en: 'Looking for affordable glasses in Baja California? GON Optica Rosarito offers the best prices in the region: from $700 MXN with free eye exam.',
     keywords_es: ['lentes economicos baja california','optica baja california precio','lentes baratos bc','lentes graduados baja california'],
     keywords_en: ['affordable glasses baja california','cheap glasses baja california mexico','eyeglasses baja california price'],
     contenido_es: `
