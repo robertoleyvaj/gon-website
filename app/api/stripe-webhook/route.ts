@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
-import { correoCompraGon, type PagoGon } from '../../lib/emails-gon';
+import { correoCompraGon, correoAvisoGon, type PagoGon } from '../../lib/emails-gon';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const supabase = createClient(
@@ -87,6 +87,7 @@ async function procesarPagoGon(session: Stripe.Checkout.Session, csId: string) {
   // Pares con micas pero sin graduación: hay que hacer el examen antes de mandarlos a hacer
   const sinGraduacion = (it: any) => !it.solo_armazon && !!it.lentes?.vision && (!it.receta || it.receta.metodo === 'despues');
   const faltaExamen = items.some(sinGraduacion);
+  const soloArmazon = items.length > 0 && items.every((it: any) => it.solo_armazon || !it.lentes);
 
   for (const item of items) {
     const l = item.lentes;
@@ -150,6 +151,8 @@ async function procesarPagoGon(session: Stripe.Checkout.Session, csId: string) {
   }
 
   // Correo en español (una vez por compra). Nunca debe tumbar el webhook.
-  try { if (primerPedido && email) await correoCompraGon(primerPedido, email, nombre, detalle, pago, faltaExamen); }
+  try { if (primerPedido && email) await correoCompraGon(primerPedido, email, nombre, detalle, pago, faltaExamen, soloArmazon); }
   catch (e) { console.error('Correo compra GON:', e); }
+  try { if (primerPedido) await correoAvisoGon(primerPedido, { nombre, email, telefono }, detalle, pago, faltaExamen); }
+  catch (e) { console.error('Aviso compra GON:', e); }
 }

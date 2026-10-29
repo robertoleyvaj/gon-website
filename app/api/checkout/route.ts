@@ -56,6 +56,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Carrito inválido' }, { status: 400 });
     if (!SUCURSALES_PAGO.some(s => s.k === sucursal))
       return NextResponse.json({ error: 'Elige la sucursal donde recoges' }, { status: 400 });
+    // Solo armazón: no hay nada que mandar a hacer, así que no lleva anticipo (solo pagar todo o apartar)
+    if (modo === 'anticipo' && items.every((it: any) => it.solo_armazon))
+      return NextResponse.json({ error: 'Para un armazón solo puedes pagar todo o apartarlo' }, { status: 400 });
 
     // Precios recalculados en el servidor (precio web de armazones y micas)
     const L = await obtenerPreciosLista();

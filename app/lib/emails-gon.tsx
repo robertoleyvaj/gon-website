@@ -68,11 +68,15 @@ const sucursalHtml = (k: string) => {
 };
 
 // 1. Pago recibido (una sola vez por compra; se manda con el id del primer pedido)
-export async function correoCompraGon(order_id: number, to: string, nombre: string, detalle: string[], pago: PagoGon, faltaExamen = false) {
-  const titulo = pago.modo === 'apartar' ? '¡Apartamos tus lentes!' : '¡Recibimos tu pedido!';
+export async function correoCompraGon(order_id: number, to: string, nombre: string, detalle: string[], pago: PagoGon, faltaExamen = false, soloArmazon = false) {
+  const titulo = pago.modo === 'apartar' ? (soloArmazon ? '¡Apartamos tu armazón!' : '¡Apartamos tus lentes!') : '¡Recibimos tu pedido!';
   // Sin graduación: el siguiente paso es el examen (todavía no se pueden mandar a hacer)
   const explicaExamen = `${pago.modo === 'apartar' ? 'Tu apartado está confirmado' : 'Tu pedido está pagado'}. El siguiente paso es tu <b>examen de la vista gratis</b>: en cuanto tengamos tu graduación mandamos a hacer tus lentes. Si tu graduación necesita otro material, te avisamos la diferencia antes de hacerlos.${pago.modo === 'apartar' && pago.apartado_vence ? ` Recuerda que tu apartado vale hasta el <b>${fechaLarga(pago.apartado_vence)}</b>.` : ''}`;
-  const explica = faltaExamen ? explicaExamen : pago.modo === 'apartar'
+  // Solo armazón: no se manda a hacer nada, solo se prepara en la sucursal
+  const explicaArmazon = pago.modo === 'apartar'
+    ? `Tu apartado está confirmado. Te guardamos tu armazón con tu precio web hasta el <b>${pago.apartado_vence ? fechaLarga(pago.apartado_vence) : '10 días'}</b>; pasa a recogerlo y pagas el resto. El apartado no es reembolsable; si no pasas a tiempo, tu dinero queda como saldo a favor por 30 días.`
+    : 'Tu armazón está pagado. Te avisamos en cuanto esté listo para recoger en la óptica que elegiste.';
+  const explica = soloArmazon ? explicaArmazon : faltaExamen ? explicaExamen : pago.modo === 'apartar'
     ? `Tu apartado está confirmado. Tienes hasta el <b>${pago.apartado_vence ? fechaLarga(pago.apartado_vence) : '10 días'}</b> para pasar a la óptica a completar tu anticipo (35% o más) y mandamos a hacer tus lentes. El apartado no es reembolsable; si no se completa a tiempo, tu dinero queda como saldo a favor por 30 días.`
     : pago.modo === 'anticipo'
       ? 'Recibimos tu anticipo y ya mandamos a hacer tus lentes. Te avisamos en cuanto estén listos; el resto lo pagas al recogerlos.'
@@ -82,7 +86,7 @@ export async function correoCompraGon(order_id: number, to: string, nombre: stri
     <p class="p">Hola ${nombre.split(' ')[0] || ''}, ${explica}</p>
     <hr class="hr"/>
     <p class="l">Pedido</p><p class="v"><span class="code">${codigoPedido(order_id)}</span></p>
-    <p class="l">Tus lentes</p><p class="v">${detalle.join('<br/>')}</p>
+    <p class="l">${soloArmazon ? 'Tu armazón' : 'Tus lentes'}</p><p class="v">${detalle.join('<br/>')}</p>
     <div class="box">
       <p class="l">Total web</p><p class="v">${mxn(pago.total)}</p>
       <p class="l">Pagaste</p><p class="v">${mxn(pago.pagado)}</p>
@@ -91,6 +95,27 @@ export async function correoCompraGon(order_id: number, to: string, nombre: stri
     ${sucursalHtml(pago.sucursal)}
     ${faltaExamen ? `<p style="margin:16px 0 0"><a class="btn" href="${WA}?text=${encodeURIComponent(`¡Hola GON! 👋 Ya hice mi pedido ${codigoPedido(order_id)} en línea y quiero agendar mi examen de la vista.`)}">Agendar mi examen por WhatsApp</a></p>` : ''}`);
   await enviar(order_id, 'compra', to, `${titulo} · ${codigoPedido(order_id)}`, html);
+}
+
+// Aviso interno: cada compra en línea le llega a GON (AVISO_PEDIDOS_EMAIL o, si no existe, ADMIN_EMAIL)
+export async function correoAvisoGon(order_id: number, cliente: { nombre: string; email: string; telefono: string }, detalle: string[], pago: PagoGon, faltaExamen = false) {
+  const to = process.env.AVISO_PEDIDOS_EMAIL || process.env.ADMIN_EMAIL || '';
+  const modo = pago.modo === 'apartar' ? 'Apartado' : pago.modo === 'anticipo' ? 'Anticipo' : 'Pagado completo';
+  const suc = SUCURSALES_GON[pago.sucursal]?.nombre || pago.sucursal;
+  const tel = (cliente.telefono || '').replace(/[^\d]/g, '');
+  const html = marco(`
+    <p class="t">🛒 Nueva compra en gonmx.com</p>
+    <p class="l">Pedido</p><p class="v"><span class="code">${codigoPedido(order_id)}</span> · ${modo}${faltaExamen ? ' · <b style="color:#c2410c">Falta examen</b>' : ''}</p>
+    <p class="l">Cliente</p><p class="v">${cliente.nombre || '—'}<br/>${cliente.email || ''}${cliente.telefono ? `<br/>${cliente.telefono}` : ''}</p>
+    <p class="l">Lleva</p><p class="v">${detalle.join('<br/>')}</p>
+    <div class="box">
+      <p class="l">Total web</p><p class="v">${mxn(pago.total)}</p>
+      <p class="l">Pagó en línea</p><p class="v">${mxn(pago.pagado)}</p>
+      <p class="l">Debe al recoger</p><p class="v" style="margin:0">${mxn(pago.saldo)}</p>
+    </div>
+    <p class="l">Recoge en</p><p class="v">${suc}${pago.apartado_vence ? ` · apartado hasta ${pago.apartado_vence}` : ''}</p>
+    ${tel ? `<p style="margin:12px 0 0"><a class="btn" href="https://wa.me/${tel}">Escribirle por WhatsApp</a></p>` : ''}`);
+  await enviar(order_id, 'aviso_admin', to, `🛒 ${modo} ${mxn(pago.pagado)} · ${codigoPedido(order_id)} · ${cliente.nombre || cliente.email}`, html);
 }
 
 // 2. En proceso (se mandó a hacer)
@@ -103,14 +128,14 @@ export async function correoProcesoGon(order_id: number, to: string, nombre: str
 }
 
 // 3. Listos para recoger
-export async function correoListoGon(order_id: number, to: string, nombre: string, pago?: PagoGon | null) {
+export async function correoListoGon(order_id: number, to: string, nombre: string, pago?: PagoGon | null, soloArmazon = false) {
   const html = marco(`
-    <p class="t">¡Tus lentes están listos! 🎉</p>
-    <p class="p">Hola ${nombre.split(' ')[0] || ''}, ya puedes pasar por ellos. No olvides traer tu identificación.</p>
+    <p class="t">${soloArmazon ? '¡Tu armazón está listo! 🎉' : '¡Tus lentes están listos! 🎉'}</p>
+    <p class="p">Hola ${nombre.split(' ')[0] || ''}, ya puedes pasar por ${soloArmazon ? 'él' : 'ellos'}. No olvides traer tu identificación.</p>
     <p class="l">Pedido</p><p class="v"><span class="code">${codigoPedido(order_id)}</span></p>
     ${pago && pago.saldo > 0 ? `<div class="box"><p class="l">Pendiente al recoger</p><p class="v" style="margin:0">${mxn(pago.saldo)}</p></div>` : ''}
     ${pago ? sucursalHtml(pago.sucursal) : ''}`);
-  await enviar(order_id, 'listo', to, `¡Tus lentes están listos para recoger! · ${codigoPedido(order_id)}`, html);
+  await enviar(order_id, 'listo', to, `${soloArmazon ? '¡Tu armazón está listo para recoger!' : '¡Tus lentes están listos para recoger!'} · ${codigoPedido(order_id)}`, html);
 }
 
 // 4. Entregados

@@ -14,6 +14,13 @@ const OPCIONES: { k: ModoPago; titulo: string; corto: string; ayuda: string }[] 
   { k: 'apartar', titulo: 'Solo apartarlos', corto: `Te guardamos tus lentes y tu precio web ${DIAS_APARTADO} días`,
     ayuda: `Dejas de $100 a $300 y te guardamos tus lentes con tu precio web. Tienes ${DIAS_APARTADO} días para pasar a la óptica a dejar tu anticipo y los mandamos a hacer. El apartado no es reembolsable; si no pasas a tiempo, tu dinero queda como saldo a favor por ${DIAS_SALDO_FAVOR} días.` },
 ];
+// Si todo el carrito es "solo armazón" no hay nada que mandar a hacer: solo Pagar todo o Apartar
+const OPCIONES_ARMAZON: typeof OPCIONES = [
+  { k: 'liquidar', titulo: 'Pagar todo', corto: 'Solo pasas a recogerlo',
+    ayuda: 'Pagas el total en línea y te avisamos cuando tu armazón esté listo en la óptica que elegiste.' },
+  { k: 'apartar', titulo: 'Solo apartarlo', corto: `Te lo guardamos con tu precio web ${DIAS_APARTADO} días`,
+    ayuda: `Dejas de $100 a $300 y te guardamos tu armazón con tu precio web. Tienes ${DIAS_APARTADO} días para pasar a recogerlo y pagar el resto. El apartado no es reembolsable; si no pasas a tiempo, tu dinero queda como saldo a favor por ${DIAS_SALDO_FAVOR} días.` },
+];
 const mxn = (n: number) => `$${Math.round(n).toLocaleString('es-MX')}`;
 
 export default function PagoGon({ items, total, onVolver }: { items: CartItem[]; total: number; onVolver: () => void }) {
@@ -24,6 +31,9 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
   const [acepto, setAcepto] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
+  const soloArmazon = items.length > 0 && items.every(it => it.solo_armazon);
+  const opciones = soloArmazon ? OPCIONES_ARMAZON : OPCIONES;
+  const lo = soloArmazon ? (items.length > 1 ? 'los' : 'lo') : 'los';
 
   const rango = useMemo(() => modo ? rangoPago(modo, total) : null, [modo, total]);
   const montoNum = modo === 'liquidar' ? Math.round(total) : Math.round(Number(monto) || 0);
@@ -55,7 +65,7 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
     <div className="pg">
       <button className="pg-volver" onClick={onVolver}>← Volver al carrito</button>
 
-      <p className="pg-l">1. ¿Dónde los recoges?</p>
+      <p className="pg-l">1. ¿Dónde {lo} recoges?</p>
       <div className="pg-suc">
         {SUCURSALES_PAGO.map(s => (
           <button key={s.k} className={sucursal === s.k ? 'on' : ''} onClick={() => setSucursal(s.k)}>
@@ -66,7 +76,7 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
 
       <p className="pg-l">2. ¿Cómo quieres pagar?</p>
       <div className="pg-op">
-        {OPCIONES.map(o => (
+        {opciones.map(o => (
           <div key={o.k} className={`pg-o ${modo === o.k ? 'on' : ''}`}>
             <button className="pg-o-main" onClick={() => elegir(o.k)}>
               <span className="pg-o-top"><b>{o.titulo}</b><em>{o.k === 'liquidar' ? mxn(total) : `desde ${mxn(rangoPago(o.k, total).min)}`}</em></span>
@@ -101,7 +111,7 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
           {modo === 'apartar' && (
             <label className="pg-acepto">
               <input type="checkbox" checked={acepto} onChange={e => setAcepto(e.target.checked)} />
-              <span>Entiendo que el apartado no es reembolsable y que tengo {DIAS_APARTADO} días para pasar a dejar mi anticipo; si no, queda como saldo a favor por {DIAS_SALDO_FAVOR} días.</span>
+              <span>Entiendo que el apartado no es reembolsable y que tengo {DIAS_APARTADO} días para {soloArmazon ? 'pasar a recogerlo y pagar el resto' : 'pasar a dejar mi anticipo'}; si no, queda como saldo a favor por {DIAS_SALDO_FAVOR} días.</span>
             </label>
           )}
         </>
@@ -112,7 +122,7 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
       )}
       {error && <p className="pg-err">{error}</p>}
       <button className="pg-pagar" disabled={!listo || enviando} onClick={pagar}>
-        {enviando ? 'Procesando…' : listo ? `Pagar ${mxn(montoNum)} →` : !sucursal ? 'Elige dónde los recoges' : 'Revisa tu pago'}
+        {enviando ? 'Procesando…' : listo ? `Pagar ${mxn(montoNum)} →` : !sucursal ? `Elige dónde ${lo} recoges` : 'Revisa tu pago'}
       </button>
       <p className="pg-seg">🔒 Pago seguro con Stripe</p>
 

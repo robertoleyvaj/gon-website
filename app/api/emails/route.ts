@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       case 'listo':
         // GON: listos para recoger en la sucursal que eligió
         await supabase.from('pedidos').update({ estado: 'listo' }).eq('id', order_id);
-        await correoListoGon(order_id, cliente_email, cliente_nombre, pedido.configuracion?.pago ?? null);
+        await correoListoGon(order_id, cliente_email, cliente_nombre, pedido.configuracion?.pago ?? null, !!pedido.configuracion?.solo_armazon);
         break;
 
       default:

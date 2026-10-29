@@ -779,7 +779,9 @@ export default function DetalleArmazon() {
 
   const elegirManual = () => { setGonModal(false); setDrawerEstado('config'); setPaso(1); };
 
-  const handleAddToCart = () => {
+  // forzarSolo=true: botón "Llevar solo el armazón" (sin pasar por el configurador)
+  const handleAddToCart = (forzarSolo?: unknown) => {
+    const solo = forzarSolo === true || soloArmazon;
     if (esRegalo && items.some(i => i.es_regalo)) {
       alert(t('Ya tienes un par de lentes de sol gratis en tu carrito.', 'You already have a free pair of sunglasses in your cart.'));
       return;
@@ -801,22 +803,22 @@ export default function DetalleArmazon() {
       armazon_imagen: armazon!.imagen_url,
       armazon_precio: precioArmazonUSD,
       es_regalo: esRegalo,
-      solo_armazon: soloArmazon,
-      lentes: soloArmazon ? undefined : {
+      solo_armazon: solo,
+      lentes: solo ? undefined : {
         vision, vision_nombre: visionOpts.find(v => v.id === vision)?.nombre_en || vision, vision_precio: precioVision,
         material, material_nombre: materialOpts.find(m => m.id === material)?.nombre_en || material, material_precio: precioMaterial,
         filtros, filtros_nombres: filtrosSeleccionados.map(f => f.nombre_en), filtros_precio: precioFiltros,
       },
-      receta: soloArmazon ? undefined : {
+      receta: solo ? undefined : {
         metodo: recetaEstado === 'guardada' ? 'manual' as const : recetaEstado === 'foto' ? 'foto' as const : recetaEstado === 'sin_graduacion' ? 'sin_graduacion' as const : 'despues' as const,
         datos: recetaEstado === 'guardada' ? receta : undefined,
         foto_url: recetaEstado === 'foto' ? fotoReceta : undefined,
       },
       paciente: paciente.trim() || undefined,
-      precio_total: totalMXN,
+      precio_total: solo ? precioArmazonMXN : totalMXN,
     };
     addItem(item);
-    fbTrack('AddToCart', { content_ids: [String(armazon!.id)], content_type: 'product_group', content_name: armazon!.nombre, value: totalMXN, currency: 'MXN' });
+    fbTrack('AddToCart', { content_ids: [String(armazon!.id)], content_type: 'product_group', content_name: armazon!.nombre, value: solo ? precioArmazonMXN : totalMXN, currency: 'MXN' });
     setDrawerOpen(false);
     setPaso(1); setVision(''); setMaterial(''); setFiltros([]);
     setPaciente(''); setReutilizarReceta(null);
@@ -1458,6 +1460,11 @@ export default function DetalleArmazon() {
               {esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar mis micas', 'Customize my lenses')}
             </button>
           )}
+          {!esSolar && !esRegalo && (
+            <button onClick={() => { handleAddToCart(true); setPagoAbierto(true); }} className="va-solo">
+              {t('Llevar solo el armazón', 'Frame only')} · {pxMXN(precioArmazonMXN)}
+            </button>
+          )}
           <a href={linkApartar()} target="_blank" rel="noopener noreferrer" className="va-cta va-cta-wa" onClick={apartar} data-armazon={armazon.id} data-color={colorActivo?.sku || undefined}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.31-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.89-5.34 11.89-11.89S18.6 0 12.05 0z"/></svg>
             {t('Apartar por WhatsApp', 'Reserve on WhatsApp')}
@@ -1590,6 +1597,8 @@ export default function DetalleArmazon() {
           .va-rel-g{grid-template-columns:1fr 1fr;gap:12px}
         }
 
+        .va-solo{display:block;width:100%;background:#fff;color:var(--sage);border:1.5px solid var(--sage);border-radius:999px;padding:12px;font-size:13.5px;font-weight:500;cursor:pointer;font-family:var(--font-sans);margin:0 0 12px}
+        .va-solo:hover{background:rgba(27,47,94,.05)}
         .va-cta-wa{display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:var(--charcoal);border:1.5px solid #25D366;text-decoration:none;margin-top:0}
         .va-cta-wa:hover{background:#f3fbf6}
         .va-examen{display:block;text-align:center;font-size:13.5px;font-weight:500;color:var(--sage);text-decoration:none;margin:4px 0 16px}
