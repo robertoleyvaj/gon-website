@@ -5,6 +5,8 @@
 }
 
 :root {
+  --font-dm: 'Inter';
+  --font-cormorant: 'Fraunces';
   --cream: #FFFFFF;
   --cream-dark: #F5F5F5;
   --sage: #1B2F5E;

@@ -1,6 +1,5 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { LangProvider } from "./components/LanguageContext";
@@ -10,18 +9,8 @@ import StructuredData from "./components/StructuredData";
 import FooterGon from "./components/FooterGon";
 import WhatsAppCodigo from "./components/WhatsAppCodigo";
 
-const fraunces = Fraunces({
-  variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
-
-const inter = Inter({
-  variable: "--font-dm",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
+// Tipografías: se cargan directo de Google Fonts con <link> (next/font/google fallaba en el build de Vercel)
+const FUENTES = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gonmx.com"),
@@ -90,9 +79,13 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${fraunces.variable} ${inter.variable}`}
       style={{ height: "100%" }}
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href={FUENTES} />
+      </head>
       <body style={{
         minHeight: "100%",
         display: "flex",
