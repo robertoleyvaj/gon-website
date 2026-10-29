@@ -107,6 +107,9 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
         </>
       )}
 
+      {items.some(it => !it.solo_armazon && !!it.lentes?.vision && (!it.receta || it.receta.metodo === 'despues')) && (
+        <p className="pg-nota">👓 Tu examen de la vista es gratis. Si tu graduación necesita otro material, te avisamos la diferencia antes de hacer tus lentes.</p>
+      )}
       {error && <p className="pg-err">{error}</p>}
       <button className="pg-pagar" disabled={!listo || enviando} onClick={pagar}>
         {enviando ? 'Procesando…' : listo ? `Pagar ${mxn(montoNum)} →` : !sucursal ? 'Elige dónde los recoges' : 'Revisa tu pago'}
@@ -135,6 +138,7 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
         .pg-monto small{font-size:11.5px;color:#8a8a8a;width:100%}
         .pg-fijo{font-size:20px;font-weight:600;margin:0}
         .pg-err{color:#c0392b;font-size:12px;margin:6px 0 0}
+        .pg-nota{font-size:12px;line-height:1.5;color:#555;background:#fff8e6;border-radius:6px;padding:10px 12px;margin:14px 0 0}
         .pg-res{background:var(--cream-dark);border-radius:8px;padding:10px 12px;margin:14px 0 0}
         .pg-res div{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
         .pg-res span{color:#666}

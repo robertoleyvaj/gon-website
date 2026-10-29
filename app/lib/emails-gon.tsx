@@ -68,9 +68,11 @@ const sucursalHtml = (k: string) => {
 };
 
 // 1. Pago recibido (una sola vez por compra; se manda con el id del primer pedido)
-export async function correoCompraGon(order_id: number, to: string, nombre: string, detalle: string[], pago: PagoGon) {
+export async function correoCompraGon(order_id: number, to: string, nombre: string, detalle: string[], pago: PagoGon, faltaExamen = false) {
   const titulo = pago.modo === 'apartar' ? '¡Apartamos tus lentes!' : '¡Recibimos tu pedido!';
-  const explica = pago.modo === 'apartar'
+  // Sin graduación: el siguiente paso es el examen (todavía no se pueden mandar a hacer)
+  const explicaExamen = `${pago.modo === 'apartar' ? 'Tu apartado está confirmado' : 'Tu pedido está pagado'}. El siguiente paso es tu <b>examen de la vista gratis</b>: en cuanto tengamos tu graduación mandamos a hacer tus lentes. Si tu graduación necesita otro material, te avisamos la diferencia antes de hacerlos.${pago.modo === 'apartar' && pago.apartado_vence ? ` Recuerda que tu apartado vale hasta el <b>${fechaLarga(pago.apartado_vence)}</b>.` : ''}`;
+  const explica = faltaExamen ? explicaExamen : pago.modo === 'apartar'
     ? `Tu apartado está confirmado. Tienes hasta el <b>${pago.apartado_vence ? fechaLarga(pago.apartado_vence) : '10 días'}</b> para pasar a la óptica a completar tu anticipo (35% o más) y mandamos a hacer tus lentes. El apartado no es reembolsable; si no se completa a tiempo, tu dinero queda como saldo a favor por 30 días.`
     : pago.modo === 'anticipo'
       ? 'Recibimos tu anticipo y ya mandamos a hacer tus lentes. Te avisamos en cuanto estén listos; el resto lo pagas al recogerlos.'
@@ -86,7 +88,8 @@ export async function correoCompraGon(order_id: number, to: string, nombre: stri
       <p class="l">Pagaste</p><p class="v">${mxn(pago.pagado)}</p>
       <p class="l">Pendiente al recoger</p><p class="v" style="margin:0">${mxn(pago.saldo)}</p>
     </div>
-    ${sucursalHtml(pago.sucursal)}`);
+    ${sucursalHtml(pago.sucursal)}
+    ${faltaExamen ? `<p style="margin:16px 0 0"><a class="btn" href="${WA}?text=${encodeURIComponent(`¡Hola GON! 👋 Ya hice mi pedido ${codigoPedido(order_id)} en línea y quiero agendar mi examen de la vista.`)}">Agendar mi examen por WhatsApp</a></p>` : ''}`);
   await enviar(order_id, 'compra', to, `${titulo} · ${codigoPedido(order_id)}`, html);
 }
 

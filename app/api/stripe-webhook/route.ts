@@ -84,6 +84,9 @@ async function procesarPagoGon(session: Stripe.Checkout.Session, csId: string) {
   };
   const detalle: string[] = [];
   let primerPedido: number | null = null;
+  // Pares con micas pero sin graduación: hay que hacer el examen antes de mandarlos a hacer
+  const sinGraduacion = (it: any) => !it.solo_armazon && !!it.lentes?.vision && (!it.receta || it.receta.metodo === 'despues');
+  const faltaExamen = items.some(sinGraduacion);
 
   for (const item of items) {
     const l = item.lentes;
@@ -108,6 +111,7 @@ async function procesarPagoGon(session: Stripe.Checkout.Session, csId: string) {
       tipo: item.tipo,
       armazon_ref: item.armazon_ref || null,
       pago,                       // modo, total, pagado, saldo, sucursal, apartado_vence (de toda la compra)
+      falta_examen: sinGraduacion(item),
       telefono: telefono || null,
     };
 
@@ -146,6 +150,6 @@ async function procesarPagoGon(session: Stripe.Checkout.Session, csId: string) {
   }
 
   // Correo en español (una vez por compra). Nunca debe tumbar el webhook.
-  try { if (primerPedido && email) await correoCompraGon(primerPedido, email, nombre, detalle, pago); }
+  try { if (primerPedido && email) await correoCompraGon(primerPedido, email, nombre, detalle, pago, faltaExamen); }
   catch (e) { console.error('Correo compra GON:', e); }
 }
