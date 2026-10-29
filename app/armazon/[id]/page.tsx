@@ -876,6 +876,38 @@ export default function DetalleArmazon() {
     if (!armazon) return;
     fbTrack('Lead', { content_ids: [String(armazon.id)], content_type: 'product_group', content_name: armazon.nombre, value: precioArmazonMXN, currency: 'MXN' });
   };
+  // Mensaje de WhatsApp con TODO lo que armó (el código web lo agrega WhatsAppCodigo)
+  const fmtG = (n: number | null) => n == null ? '—' : (n > 0 ? '+' : '') + n.toFixed(2);
+  const textoPedidoWA = () => {
+    const nomV = visionOpts.find(v => v.id === vision)?.nombre || '';
+    const nomM = materialOpts.find(m => m.id === material)?.nombre || '';
+    const fs = filtroOpts.filter(f => filtros.includes(f.id)).map(f => {
+      if (f.id === 'foto') return `${f.nombre} (${COLORES_FOTO.find(c => c.id === colorFoto)?.nombre_es || colorFoto})`;
+      if (f.id === 'pol') return `${f.nombre} (${COLORES_POLARIZADO.find(c => c.id === colorPolarizado)?.nombre_es || colorPolarizado})`;
+      if (f.id === 'tinte') return `${f.nombre} (${COLORES_TINTE.find(c => c.id === colorTinte)?.nombre_es || colorTinte})`;
+      return f.nombre;
+    });
+    const color = colorActivo?.color ? ` en color ${nombreColor(colorActivo.color, 'es')}` : '';
+    const r = receta;
+    const grad = recetaEstado === 'guardada'
+      ? `Mi graduación: OD ${fmtG(r.sph_od)} ${fmtG(r.cyl_od)} x ${r.axis_od ?? '—'} · OI ${fmtG(r.sph_os)} ${fmtG(r.cyl_os)} x ${r.axis_os ?? '—'}${r.add ? ` · ADD ${fmtG(r.add)}` : ''}${r.dp ? ` · DP ${r.dp}` : ''}`
+      : recetaEstado === 'foto' ? 'Tengo foto de mi receta, se las mando por aquí.'
+      : recetaEstado === 'sin_graduacion' ? 'Sin graduación.'
+      : 'Todavía no tengo mi graduación (quiero agendar examen).';
+    const lineas = [
+      `Hola, quiero estos lentes${paciente.trim() ? ` para ${paciente.trim()}` : ''}:`,
+      `• Armazón ${armazon?.nombre || armazon?.modelo || ''}${color}`,
+      ...(soloArmazon ? ['• Solo el armazón'] : [
+        nomV && `• Mica ${nomV}${nomM ? ` · ${nomM}` : ''}`,
+        fs.length ? `• Filtros: ${fs.join(', ')}` : '',
+      ]),
+      `Total web: $${totalMXN.toLocaleString('es-MX')} MXN`,
+      soloArmazon ? '' : grad,
+      `gonmx.com/armazon/${armazon?.id}`,
+    ].filter(Boolean);
+    return lineas.join('\n');
+  };
+
   const abrirDrawer = () => { setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
 
   const resumenReceta = () => {
@@ -1265,14 +1297,22 @@ export default function DetalleArmazon() {
                           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#d97706', flexShrink: 0 }}/>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: '12px', fontWeight: 500, color: '#92400e' }}>{t('Graduación pendiente', 'Prescription pending')}</div>
-                            <div style={{ fontSize: '11px', color: '#a16207' }}>{t('Se pedirá antes de finalizar el pago', 'Will be requested before payment')}</div>
+                            <div style={{ fontSize: '11px', color: '#a16207' }}>{t('Puedes mandarla por WhatsApp o hacerte el examen gratis en la óptica', 'Send it on WhatsApp or get a free eye exam in store')}</div>
                           </div>
                           <button onClick={() => setDrawerEstado('inicio')} style={{ background: 'var(--charcoal)', border: 'none', borderRadius: '3px', padding: '5px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', color: 'white', fontFamily: 'var(--font-sans)' }}>{t('Agregar', 'Add')}</button>
                         </div>
                       )}
-                      {/* DRAWER ACTION → TURQUESA */}
-                      <button onClick={handleAddToCart} style={{ width: '100%', background: TURQUESA, color: 'white', border: 'none', borderRadius: '6px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s' }} onMouseEnter={e => (e.currentTarget.style.background = TURQUESA_DARK)} onMouseLeave={e => (e.currentTarget.style.background = TURQUESA)}>
-                        {t('Agregar al carrito →', 'Add to cart →')}
+                      {/* Acción principal: apartar por WhatsApp con todo lo que armó + código web */}
+                      <a href={waGon(textoPedidoWA())} target="_blank" rel="noopener noreferrer" onClick={apartar}
+                        data-armazon={armazon?.id} data-color={colorActivo?.sku || undefined}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', boxSizing: 'border-box', background: '#25D366', color: 'white', borderRadius: '6px', padding: '16px', fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', textDecoration: 'none', marginBottom: '10px' }}>
+                        {t('Apartar por WhatsApp', 'Reserve on WhatsApp')} →
+                      </a>
+                      <p style={{ fontSize: '11.5px', color: 'var(--warm-gray)', textAlign: 'center', margin: '0 0 12px', lineHeight: 1.5 }}>
+                        {t('Te mandamos tu código web: con él te respetamos este precio en cualquiera de nuestras ópticas.', 'You get a web code: we honor this price at any of our stores.')}
+                      </p>
+                      <button onClick={handleAddToCart} style={{ width: '100%', background: 'white', color: 'var(--charcoal)', border: '1px solid var(--border)', borderRadius: '6px', padding: '13px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                        {t('Agregar a mi lista (para varios pares)', 'Add to my list (multiple pairs)')}
                       </button>
                     </div>
                   )}
@@ -1396,7 +1436,7 @@ export default function DetalleArmazon() {
             <svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.31-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.89-5.34 11.89-11.89S18.6 0 12.05 0z"/></svg>
             {t('Apartar por WhatsApp', 'Reserve on WhatsApp')}
           </a>
-          <a href="/examen" className="va-examen">{t('Agenda tu examen de la vista gratis', 'Book your free eye exam')} →</a>
+          <a href={`/examen?armazon=${armazon.id}&nombre=${encodeURIComponent(armazon.nombre || armazon.modelo || '')}&color=${encodeURIComponent(colorActivo?.color ? nombreColor(colorActivo.color, 'es') : '')}`} className="va-examen">{t('Agenda tu examen de la vista gratis', 'Book your free eye exam')} →</a>
 
           <div className="va-incluye">
             <p>{t('Lo apartamos y pasas a cualquiera de nuestras ópticas en Rosarito.', 'We hold it for you at any of our Rosarito stores.')}</p>

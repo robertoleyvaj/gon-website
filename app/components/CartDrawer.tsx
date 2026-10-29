@@ -4,6 +4,14 @@ import { useState } from 'react';
 import { useCart, CartItem } from '../context/CartContext';
 import { useLang } from './LanguageContext';
 import Link from 'next/link';
+import { waGon } from '../lib/precio-gon';
+
+// Nombres en español para el mensaje de WhatsApp
+const NOM: Record<string, string> = {
+  mono: 'Monofocal', bi: 'Bifocal', prog: 'Progresivo',
+  cr39: 'Essential', hd: 'Slim HD', poly: 'Poly Plus', hi: 'Ultra Slim', shi: 'Ultra Slim Pro',
+  ar: 'Antirreflejo', blue: 'Blue Light', foto: 'Fotocromático', pol: 'Polarizado', tinte: 'Tinte',
+};
 
 function ItemCard({ item, onRemove }: { item: CartItem; onRemove: () => void }) {
   const { t } = useLang() as any;
@@ -131,6 +139,20 @@ export default function CartDrawer() {
 
   const quitarCupon = () => { setCuponAplicado(null); setCuponError(''); };
 
+  // Mensaje con todos los pares de la lista
+  const textoListaWA = () => {
+    const pares = items.map((it, n) => {
+      const l = it.lentes;
+      const partes = [
+        `${n + 1}. ${it.armazon_nombre}${it.paciente?.trim() ? ` (para ${it.paciente.trim()})` : ''}`,
+        it.solo_armazon || !l ? '   Solo armazón' : `   Mica ${NOM[l.vision] || l.vision || ''}${l.material ? ` · ${NOM[l.material] || l.material}` : ''}${l.filtros?.length ? ` · ${l.filtros.map(f => NOM[f] || f).join(', ')}` : ''}`,
+        `   $${Math.round(it.precio_total).toLocaleString('es-MX')} MXN`,
+      ];
+      return partes.join('\n');
+    });
+    return [`Hola, quiero apartar estos lentes de gonmx.com:`, ...pares, `Total web: $${Math.round(totalPrecio).toLocaleString('es-MX')} MXN`].join('\n');
+  };
+
   const handleCheckout = async () => {
     const sinNombre = items.filter(i => !i.paciente?.trim());
     if (sinNombre.length > 0) {
@@ -234,8 +256,8 @@ export default function CartDrawer() {
               </div>
             )}
 
-            {/* Input cupón */}
-            {!cuponAplicado && (
+            {/* Input cupón: oculto mientras el pago en línea está apagado (lo reemplaza el código web) */}
+            {false && !cuponAplicado && (
               <div style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', gap: '6px' }}>
                   <input
@@ -269,14 +291,13 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            {/* Checkout */}
-            <button onClick={handleCheckout} disabled={loadingCheckout} style={{ width: '100%', background: loadingCheckout ? '#9a9a9a' : '#1d1d1d', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, cursor: loadingCheckout ? 'not-allowed' : 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', transition: 'background 0.2s', marginBottom: '10px' }}
-              onMouseEnter={e => !loadingCheckout && (e.currentTarget.style.background = 'var(--sage)')}
-              onMouseLeave={e => !loadingCheckout && (e.currentTarget.style.background = '#1d1d1d')}
-            >
-              {loadingCheckout ? t('Procesando...', 'Processing...') : t('Pagar con tarjeta →', 'Checkout →')}
-            </button>
-            <p style={{ textAlign: 'center', fontSize: '11px', color: '#9a9a9a', margin: 0 }}>🔒 {t('Pago seguro con Stripe', 'Secure payment with Stripe')}</p>
+            {/* Apartar todo por WhatsApp (el pago en línea llega en la Fase 2). El código web lo agrega WhatsAppCodigo */}
+            <a href={waGon(textoListaWA())} target="_blank" rel="noopener noreferrer"
+              data-armazon={items[0]?.armazon_id || undefined}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', boxSizing: 'border-box', background: '#25D366', color: 'white', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', textDecoration: 'none', marginBottom: '8px' }}>
+              {t('Apartar por WhatsApp →', 'Reserve on WhatsApp →')}
+            </a>
+            <p style={{ textAlign: 'center', fontSize: '11px', color: '#9a9a9a', margin: 0, lineHeight: 1.5 }}>{t('Te mandamos tu código web: con él te respetamos estos precios en cualquiera de nuestras ópticas.', 'You get a web code: we honor these prices at any of our stores.')}</p>
           </div>
         )}
       </div>

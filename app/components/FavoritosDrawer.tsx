@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useFavoritos } from '../context/FavoritosContext';
 import { useLang } from './LanguageContext';
+import { waGon } from '../lib/precio-gon';
 
 export default function FavoritosDrawer() {
   const { favoritos, toggleFavorito, favoritosOpen, setFavoritosOpen } = useFavoritos();
@@ -116,8 +117,16 @@ export default function FavoritosDrawer() {
         {/* Footer con CTA si hay favoritos */}
         {favoritos.length > 0 && (
           <div style={{ padding: '1.25rem', borderTop: '1px solid var(--border)', background: 'var(--cream)' }}>
-            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.72rem', color: 'var(--warm-gray)', margin: '0 0 0.75rem', textAlign: 'center' }}>
-              {t('¿Listo para decidirte?', 'Ready to decide?')}
+            {/* Mándame mis favoritos por WhatsApp (el código web lo agrega WhatsAppCodigo) */}
+            <a
+              href={waGon(['Hola, me gustaron estos armazones de gonmx.com:', ...favoritos.map(f => `• ${f.nombre} ($${Number(f.precio || 0).toLocaleString('es-MX')}): gonmx.com/armazon/${f.id}`), '¿Me ayudan a elegir?'].join('\n'))}
+              target="_blank" rel="noopener noreferrer" data-armazon={favoritos[0]?.id || undefined}
+              style={{ display: 'block', textAlign: 'center', background: '#25D366', color: 'white', padding: '13px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', textDecoration: 'none', marginBottom: '8px' }}
+            >
+              {t('Mándame mis favoritos por WhatsApp', 'Send my favorites on WhatsApp')}
+            </a>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: '0.7rem', color: 'var(--warm-gray)', margin: '0 0 0.75rem', textAlign: 'center', lineHeight: 1.5 }}>
+              {t('Te ayudamos a elegir y te damos tu código web para el precio en óptica.', 'We help you choose and send your web code for in-store pricing.')}
             </p>
             <Link
               href="/Tienda"

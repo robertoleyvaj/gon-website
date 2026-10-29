@@ -14,11 +14,15 @@ const SUCURSALES = [
   { id: 'laureles',  nombre: 'Óptica Rosarito Plaza Laureles', direccion: 'C. José María Morelos 118, Plaza Laureles, Rosarito, B.C.', maps: 'https://maps.google.com/?q=Plaza+Laureles+Jose+Maria+Morelos+118+Rosarito+BC' },
 ];
 
-function msgWA(sucursal: string, tipo: 'solo_cita' | 'con_pedido', pedido?: string) {
-  if (tipo === 'con_pedido') {
-    return encodeURIComponent(`Hola, quiero agendar mi examen de la vista en ${sucursal}. Ya hice mi pedido en línea (${pedido || 'pendiente'}), solo necesito la graduación. ¿Qué horarios tienen disponibles?`);
-  }
-  return encodeURIComponent(`Hola, me gustaría agendar una cita para examen de la vista en ${sucursal}. ¿Qué horarios tienen disponibles?`);
+type ArmazonRef = { id: string; nombre: string; color: string } | null;
+
+// El código web lo agrega solo components/WhatsAppCodigo al dar clic
+function msgWA(sucursal: string, tipo: 'solo_cita' | 'con_pedido', arm: ArmazonRef) {
+  const base = tipo === 'con_pedido'
+    ? `Hola, quiero agendar mi examen de la vista en ${sucursal}. Ya sé qué lentes quiero, solo necesito la graduación.`
+    : `Hola, me gustaría agendar una cita para examen de la vista en ${sucursal}.`;
+  const lente = arm ? ` Me gustó el armazón ${arm.nombre}${arm.color ? ` en color ${arm.color}` : ''}: gonmx.com/armazon/${arm.id}` : '';
+  return encodeURIComponent(`${base}${lente}`);
 }
 
 export default function ExamenPage() {
@@ -26,6 +30,16 @@ export default function ExamenPage() {
   const [esMobil, setEsMobil] = useState(false);
   const [flujo, setFlujo] = useState<'inicio' | 'explorador' | 'sin_graduacion'>('inicio');
   const [sucursalSel, setSucursalSel] = useState<string | null>(null);
+  // Si viene de un armazón (/examen?armazon=ID&nombre=…&color=…), el mensaje lo incluye
+  const [armazonRef, setArmazonRef] = useState<ArmazonRef>(null);
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const id = q.get('armazon');
+    if (id && /^\d+$/.test(id)) {
+      setArmazonRef({ id, nombre: (q.get('nombre') || '').slice(0, 80), color: (q.get('color') || '').slice(0, 40) });
+      setFlujo('sin_graduacion');
+    }
+  }, []);
 
   useEffect(() => {
     const check = () => setEsMobil(window.innerWidth <= 768);
@@ -98,7 +112,7 @@ export default function ExamenPage() {
                   {t('Ya tengo mi graduación', 'I already have my prescription')}
                 </h3>
                 <p style={{ fontSize: '0.82rem', color: 'var(--warm-gray)', lineHeight: 1.7, margin: '0 0 1.5rem' }}>
-                  {t('Compra tus lentes en línea, sube tu receta y recógelos en la sucursal que prefieras.', 'Order your glasses online, upload your prescription, and pick them up at your preferred location.')}
+                  {t('Arma tus lentes en línea con tu receta, apártalos por WhatsApp con tu código web y recógelos en la sucursal que prefieras.', 'Build your glasses online with your prescription, reserve them on WhatsApp with your web code, and pick them up at your preferred location.')}
                 </p>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)' }}>
                   {t('Ver armazones', 'Shop frames')} →
@@ -123,7 +137,7 @@ export default function ExamenPage() {
                 {t('Sé qué quiero, pero no tengo graduación', "I know what I want, but don't have a prescription")}
               </h3>
               <p style={{ fontSize: '0.82rem', color: 'var(--warm-gray)', lineHeight: 1.7, margin: '0 0 1.5rem' }}>
-                {t('Arma tu pedido en línea y agenda tu examen. Cuando llegues solo tomamos tu graduación y completamos el pedido.', 'Build your order online and schedule your exam. When you arrive we just take your prescription and complete the order.')}
+                {t('Elige tu armazón en línea y agenda tu examen. Cuando llegues solo tomamos tu graduación y completamos tu pedido con tu precio web.', 'Pick your frame online and schedule your exam. When you arrive we just take your prescription and complete your order at your online price.')}
               </p>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)' }}>
                 {t('Agendar examen', 'Schedule exam')} →
@@ -164,6 +178,13 @@ export default function ExamenPage() {
           <button onClick={() => { setFlujo('inicio'); setSucursalSel(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 500, color: 'var(--warm-gray)', letterSpacing: '0.08em', padding: '0', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '6px', fontFamily: 'var(--font-sans)' }}>
             ← {t('Volver', 'Back')}
           </button>
+
+          {armazonRef && (
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'white', border: '1px solid var(--border)', borderRadius: '999px', padding: '8px 16px', fontSize: '0.82rem', margin: '0 0 1.5rem' }}>
+              <span style={{ color: 'var(--warm-gray)' }}>{t('Armazón que te gustó:', 'Frame you liked:')}</span>
+              <b>{armazonRef.nombre}{armazonRef.color ? ` · ${armazonRef.color}` : ''}</b>
+            </div>
+          )}
 
           <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 0.75rem' }}>
             {t('ELIGE TU SUCURSAL', 'CHOOSE YOUR LOCATION')}
@@ -212,7 +233,8 @@ export default function ExamenPage() {
 
           {sucursalSel && (
             <a
-              href={`${WHATSAPP}?text=${msgWA(SUCURSALES.find(s => s.id === sucursalSel)!.nombre, flujo === 'sin_graduacion' ? 'con_pedido' : 'solo_cita')}`}
+              href={`${WHATSAPP}?text=${msgWA(SUCURSALES.find(s => s.id === sucursalSel)!.nombre, flujo === 'sin_graduacion' ? 'con_pedido' : 'solo_cita', armazonRef)}`}
+              data-armazon={armazonRef?.id || undefined}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => fbTrack('Schedule', { content_name: SUCURSALES.find(s => s.id === sucursalSel)?.nombre })}
