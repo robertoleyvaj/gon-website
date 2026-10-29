@@ -54,12 +54,15 @@ const marco = (contenido: string) => `<!DOCTYPE html><html><head><meta charset="
   <p style="margin:10px 0 0"><a class="btn" href="${WA}">WhatsApp 664 834 3018</a></p></div>
   <div class="f">GON Ópticas · Playas de Rosarito, B.C.</div></div></div></body></html>`;
 
-async function enviar(order_id: number, tipo: string, to: string, subject: string, html: string) {
-  if (!to || await yaEnviado(order_id, tipo)) return;
+// Regresa el error (o null si salió). forzar=true: reenvía aunque ya se haya mandado
+async function enviar(order_id: number, tipo: string, to: string, subject: string, html: string, forzar = false): Promise<string | null> {
+  if (!to) return 'Sin correo de destino';
+  if (!forzar && await yaEnviado(order_id, tipo)) return null;
   try {
     const { data, error } = await resend.emails.send({ from: FROM, to, subject, html });
     await log(order_id, tipo, data?.id || null, !error, error?.message);
-  } catch (e: any) { await log(order_id, tipo, null, false, e?.message); }
+    return error ? error.message : null;
+  } catch (e: any) { await log(order_id, tipo, null, false, e?.message); return e?.message || 'error'; }
 }
 
 const sucursalHtml = (k: string) => {
@@ -68,7 +71,7 @@ const sucursalHtml = (k: string) => {
 };
 
 // 1. Pago recibido (una sola vez por compra; se manda con el id del primer pedido)
-export async function correoCompraGon(order_id: number, to: string, nombre: string, detalle: string[], pago: PagoGon, faltaExamen = false, soloArmazon = false) {
+export async function correoCompraGon(order_id: number, to: string, nombre: string, detalle: string[], pago: PagoGon, faltaExamen = false, soloArmazon = false, forzar = false) {
   const titulo = pago.modo === 'apartar' ? (soloArmazon ? '¡Apartamos tu armazón!' : '¡Apartamos tus lentes!') : '¡Recibimos tu pedido!';
   // Sin graduación: el siguiente paso es el examen (todavía no se pueden mandar a hacer)
   const explicaExamen = `${pago.modo === 'apartar' ? 'Tu apartado está confirmado' : 'Tu pedido está pagado'}. El siguiente paso es tu <b>examen de la vista gratis</b>: en cuanto tengamos tu graduación mandamos a hacer tus lentes. Si tu graduación necesita otro material, te avisamos la diferencia antes de hacerlos.${pago.modo === 'apartar' && pago.apartado_vence ? ` Recuerda que tu apartado vale hasta el <b>${fechaLarga(pago.apartado_vence)}</b>.` : ''}`;
@@ -94,11 +97,11 @@ export async function correoCompraGon(order_id: number, to: string, nombre: stri
     </div>
     ${sucursalHtml(pago.sucursal)}
     ${faltaExamen ? `<p style="margin:16px 0 0"><a class="btn" href="${WA}?text=${encodeURIComponent(`¡Hola GON! 👋 Ya hice mi pedido ${codigoPedido(order_id)} en línea y quiero agendar mi examen de la vista.`)}">Agendar mi examen por WhatsApp</a></p>` : ''}`);
-  await enviar(order_id, 'compra', to, `${titulo} · ${codigoPedido(order_id)}`, html);
+  return enviar(order_id, 'compra', to, `${titulo} · ${codigoPedido(order_id)}`, html, forzar);
 }
 
 // Aviso interno: cada compra en línea le llega a GON (AVISO_PEDIDOS_EMAIL o, si no existe, ADMIN_EMAIL)
-export async function correoAvisoGon(order_id: number, cliente: { nombre: string; email: string; telefono: string }, detalle: string[], pago: PagoGon, faltaExamen = false) {
+export async function correoAvisoGon(order_id: number, cliente: { nombre: string; email: string; telefono: string }, detalle: string[], pago: PagoGon, faltaExamen = false, forzar = false) {
   const to = process.env.AVISO_PEDIDOS_EMAIL || process.env.ADMIN_EMAIL || '';
   const modo = pago.modo === 'apartar' ? 'Apartado' : pago.modo === 'anticipo' ? 'Anticipo' : 'Pagado completo';
   const suc = SUCURSALES_GON[pago.sucursal]?.nombre || pago.sucursal;
@@ -115,7 +118,7 @@ export async function correoAvisoGon(order_id: number, cliente: { nombre: string
     </div>
     <p class="l">Recoge en</p><p class="v">${suc}${pago.apartado_vence ? ` · apartado hasta ${pago.apartado_vence}` : ''}</p>
     ${tel ? `<p style="margin:12px 0 0"><a class="btn" href="https://wa.me/${tel}">Escribirle por WhatsApp</a></p>` : ''}`);
-  await enviar(order_id, 'aviso_admin', to, `🛒 ${modo} ${mxn(pago.pagado)} · ${codigoPedido(order_id)} · ${cliente.nombre || cliente.email}`, html);
+  return enviar(order_id, 'aviso_admin', to, `🛒 ${modo} ${mxn(pago.pagado)} · ${codigoPedido(order_id)} · ${cliente.nombre || cliente.email}`, html, forzar);
 }
 
 // 2. En proceso (se mandó a hacer)

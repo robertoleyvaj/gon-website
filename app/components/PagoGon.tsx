@@ -1,9 +1,9 @@
 'use client';
 // Pago en línea de GON: elige sucursal, cómo pagar (Apartar / Anticipo / Liquidar) y cuánto.
 // Las reglas viven en lib/pago-gon.ts y el servidor las vuelve a revisar.
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { CartItem } from '../context/CartContext';
-import { rangoPago, validarPago, SUCURSALES_PAGO, DIAS_APARTADO, DIAS_SALDO_FAVOR, type ModoPago } from '../lib/pago-gon';
+import { rangoPago, validarPago, SUCURSALES_PAGO, distanciaKm, textoDistancia, DIAS_APARTADO, DIAS_SALDO_FAVOR, type ModoPago } from '../lib/pago-gon';
 
 // Textos pensados para el cliente: beneficio primero; las reglas solo en el "?"
 const OPCIONES: { k: ModoPago; titulo: string; corto: string; ayuda: string }[] = [
@@ -31,6 +31,14 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
   const [acepto, setAcepto] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState('');
+  // Ubicación del cliente (si da permiso): solo para mostrar a cuántos km queda cada sucursal
+  const [yo, setYo] = useState<{ lat: number; lng: number } | null>(null);
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      p => setYo({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      () => {}, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
+  }, []);
   const soloArmazon = items.length > 0 && items.every(it => it.solo_armazon);
   const opciones = soloArmazon ? OPCIONES_ARMAZON : OPCIONES;
   const lo = soloArmazon ? (items.length > 1 ? 'los' : 'lo') : 'los';
@@ -69,7 +77,7 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
       <div className="pg-suc">
         {SUCURSALES_PAGO.map(s => (
           <button key={s.k} className={sucursal === s.k ? 'on' : ''} onClick={() => setSucursal(s.k)}>
-            <b>{s.nombre}</b><span>{s.dir}</span>
+            <b>{s.nombre}</b><span>{s.dir}{yo ? ` · ${textoDistancia(distanciaKm(yo, s))}` : ''}</span>
           </button>
         ))}
       </div>

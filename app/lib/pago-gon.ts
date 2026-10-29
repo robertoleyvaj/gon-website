@@ -12,10 +12,19 @@ export const DIAS_APARTADO = 10;
 export const DIAS_SALDO_FAVOR = 30;
 
 export const SUCURSALES_PAGO = [
-  { k: 'baja',  nombre: 'Óptica Baja Visión',            dir: 'Blvd. Benito Juárez 79B, Centro' },
-  { k: 'mayo',  nombre: 'Óptica Rosarito 5 de Mayo',     dir: 'C. 5 de Mayo 200, Local 1' },
-  { k: 'plaza', nombre: 'Óptica Rosarito Plaza Laureles', dir: 'C. José María Morelos 118' },
+  { k: 'baja',  nombre: 'Óptica Baja Visión',            dir: 'Blvd. Benito Juárez 79B, Centro', lat: 32.3514861, lng: -117.059602 },
+  { k: 'mayo',  nombre: 'Óptica Rosarito 5 de Mayo',     dir: 'C. 5 de Mayo 200, Local 1',       lat: 32.3506259, lng: -117.057464 },
+  { k: 'plaza', nombre: 'Óptica Rosarito Plaza Laureles', dir: 'C. José María Morelos 118',       lat: 32.3426328, lng: -117.0513124 },
 ] as const;
+
+// Distancia en línea recta (km) entre dos puntos
+export function distanciaKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const R = 6371, rad = (x: number) => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+export const textoDistancia = (km: number) => km < 1 ? `a ${Math.max(100, Math.round(km * 10) * 100)} m` : `a ${km < 10 ? km.toFixed(1) : Math.round(km).toLocaleString('es-MX')} km`;
 
 export function rangoPago(modo: ModoPago, total: number): { min: number; max: number } {
   const t = Math.round(total);

@@ -4,7 +4,7 @@ import {
   enviarEmailEnviado,
 } from '../../lib/emails';
 import { createClient } from '@supabase/supabase-js';
-import { correoProcesoGon, correoListoGon, correoEntregadoGon } from '../../lib/emails-gon';
+import { correoProcesoGon, correoListoGon, correoEntregadoGon, correoCompraGon, correoAvisoGon } from '../../lib/emails-gon';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -59,6 +59,25 @@ export async function POST(req: NextRequest) {
         await supabase.from('pedidos').update({ estado: 'entregado', delivered_at: new Date().toISOString() }).eq('id', order_id);
         await correoEntregadoGon(order_id, cliente_email, cliente_nombre);
         break;
+
+      case 'compra': {
+        // Reenvía el correo de compra (todos los pares del mismo pago) y el aviso interno
+        const { data: hermanos } = pedido.stripe_session_id
+          ? await supabase.from('pedidos').select('id, notas_cliente, configuracion').eq('stripe_session_id', pedido.stripe_session_id).order('id')
+          : { data: null };
+        const lista: any[] = hermanos?.length ? hermanos : [pedido];
+        const primero = lista[0];
+        const pago = primero.configuracion?.pago;
+        if (!pago) return NextResponse.json({ error: 'Este pedido no tiene pago en línea' }, { status: 400 });
+        const detalle = lista.map(p => p.notas_cliente || '');
+        const faltaExamen = lista.some(p => p.configuracion?.falta_examen);
+        const solo = lista.every(p => p.configuracion?.solo_armazon);
+        const err = await correoCompraGon(primero.id, cliente_email, cliente_nombre, detalle, pago, faltaExamen, solo, true);
+        if (err) return NextResponse.json({ error: err }, { status: 502 });
+        const errAviso = await correoAvisoGon(primero.id, { nombre: cliente_nombre, email: cliente_email, telefono: primero.configuracion?.telefono || '' }, detalle, pago, faltaExamen, true);
+        if (errAviso) return NextResponse.json({ error: 'Al cliente sí salió; el aviso para ti no: ' + errAviso }, { status: 502 });
+        break;
+      }
 
       case 'listo':
         // GON: listos para recoger en la sucursal que eligió
