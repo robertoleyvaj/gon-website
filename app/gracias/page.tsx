@@ -4,13 +4,18 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
+import { useCart } from '../context/CartContext';
 
 export default function Gracias() {
   const { t, lang } = useLang() as any;
   const [visible, setVisible] = useState(false);
 
+  const { clearCart } = useCart();
   useEffect(() => {
     setTimeout(() => setVisible(true), 100);
+    // Llegó de Stripe con pago confirmado: se vacía el carrito
+    if (new URLSearchParams(window.location.search).get('session_id')) clearCart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -117,7 +122,7 @@ export default function Gracias() {
               num: '01',
               es: 'Revisión de receta',
               en: 'Prescription review',
-              desc_es: 'Verificamos tu graduación antes de fabricar.',
+              desc_es: 'Verificamos tu graduación antes de fabricar. Si apartaste, pasa a la óptica a completar tu anticipo.',
               desc_en: 'We verify your prescription before manufacturing.',
             },
             {
@@ -129,10 +134,10 @@ export default function Gracias() {
             },
             {
               num: '03',
-              es: 'Envío',
-              en: 'Shipping',
-              desc_es: 'Recibirás tu número de rastreo por correo.',
-              desc_en: "You'll receive your tracking number by email.",
+              es: 'Recoges en tu óptica',
+              en: 'Pick up in store',
+              desc_es: 'Te avisamos por correo y WhatsApp cuando estén listos en la sucursal que elegiste.',
+              desc_en: "We'll let you know by email and WhatsApp when they're ready at your store.",
             },
           ].map((s, i) => (
             <div key={i} style={{

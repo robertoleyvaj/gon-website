@@ -1,11 +1,10 @@
 // app/api/emails/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  enviarEmailFabricacion,
   enviarEmailEnviado,
-  enviarEmailEntregado,
 } from '../../lib/emails';
 import { createClient } from '@supabase/supabase-js';
+import { correoProcesoGon, correoListoGon, correoEntregadoGon } from '../../lib/emails-gon';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -47,7 +46,7 @@ export async function POST(req: NextRequest) {
     switch (tipo) {
       case 'fabricacion':
         await supabase.from('pedidos').update({ estado: 'en proceso' }).eq('id', order_id);
-        await enviarEmailFabricacion(order_id, cliente_email, cliente_nombre);
+        await correoProcesoGon(order_id, cliente_email, cliente_nombre);
         break;
 
       case 'enviado':
@@ -58,7 +57,13 @@ export async function POST(req: NextRequest) {
 
       case 'entregado':
         await supabase.from('pedidos').update({ estado: 'entregado', delivered_at: new Date().toISOString() }).eq('id', order_id);
-        await enviarEmailEntregado(order_id, cliente_email, cliente_nombre);
+        await correoEntregadoGon(order_id, cliente_email, cliente_nombre);
+        break;
+
+      case 'listo':
+        // GON: listos para recoger en la sucursal que eligió
+        await supabase.from('pedidos').update({ estado: 'listo' }).eq('id', order_id);
+        await correoListoGon(order_id, cliente_email, cliente_nombre, pedido.configuracion?.pago ?? null);
         break;
 
       default:

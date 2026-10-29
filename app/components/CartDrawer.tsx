@@ -5,6 +5,7 @@ import { useCart, CartItem } from '../context/CartContext';
 import { useLang } from './LanguageContext';
 import Link from 'next/link';
 import { waGon } from '../lib/precio-gon';
+import PagoGon from './PagoGon';
 
 // Nombres en español para el mensaje de WhatsApp
 const NOM: Record<string, string> = {
@@ -103,6 +104,7 @@ export default function CartDrawer() {
   const { t, lang } = useLang() as any;
   const { items, removeItem, totalPrecio, totalItems, cartOpen, setCartOpen } = useCart();
   const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [pagando, setPagando] = useState(false);   // panel de pago en línea
 
   // Cupón
   const [cuponInput, setCuponInput] = useState('');
@@ -197,7 +199,9 @@ export default function CartDrawer() {
 
         {/* Contenido */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '0 1.5rem' }}>
-          {items.length === 0 ? (
+          {pagando && items.length > 0 ? (
+            <PagoGon items={items} total={Math.round(totalPrecio)} onVolver={() => setPagando(false)} />
+          ) : items.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
               <div style={{ marginBottom: '1rem', opacity: 0.3 }}>
                 <svg width="48" height="28" viewBox="0 0 160 90" fill="none"><rect x="4" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/><rect x="92" y="12" width="64" height="66" rx="14" stroke="#1d1d1d" strokeWidth="3"/><path d="M68 38 C72 32, 88 32, 92 38" stroke="#1d1d1d" strokeWidth="2.5" fill="none" strokeLinecap="round"/></svg>
@@ -225,7 +229,7 @@ export default function CartDrawer() {
         </div>
 
         {/* Footer */}
-        {items.length > 0 && (
+        {items.length > 0 && !pagando && (
           <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid var(--border)', background: 'white', flexShrink: 0 }}>
 
             {/* Desglose */}
@@ -291,7 +295,13 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            {/* Apartar todo por WhatsApp (el pago en línea llega en la Fase 2). El código web lo agrega WhatsAppCodigo */}
+            {/* Pago en línea: apartar, anticipo o liquidar, y recoger en sucursal */}
+            <button onClick={() => setPagando(true)}
+              style={{ width: '100%', background: 'var(--sage)', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'var(--font-sans)', marginBottom: '8px' }}>
+              {t('Pagar en línea →', 'Pay online →')}
+            </button>
+            <p style={{ textAlign: 'center', fontSize: '11px', color: '#9a9a9a', margin: '0 0 12px', lineHeight: 1.5 }}>{t('Aparta desde $100, deja anticipo o liquida, y recoge en tu óptica.', 'Reserve from $100, leave a deposit or pay in full, and pick up in store.')}</p>
+            {/* O apartar por WhatsApp. El código web lo agrega WhatsAppCodigo */}
             <a href={waGon(textoListaWA())} target="_blank" rel="noopener noreferrer"
               data-armazon={items[0]?.armazon_id || undefined}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', boxSizing: 'border-box', background: '#25D366', color: 'white', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', textDecoration: 'none', marginBottom: '8px' }}>

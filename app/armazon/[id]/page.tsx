@@ -1334,7 +1334,7 @@ export default function DetalleArmazon() {
                         {t('Te respondemos por WhatsApp y te los guardamos 48 horas con tu precio web.', 'We reply on WhatsApp and hold them for 48 hours at your online price.')}
                       </p>
                       <button onClick={handleAddToCart} style={{ width: '100%', background: 'white', color: 'var(--charcoal)', border: '1px solid var(--border)', borderRadius: '6px', padding: '13px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
-                        {t('Agregar a mi lista (para varios pares)', 'Add to my list (multiple pairs)')}
+                        {t('Pagar en línea · aparta desde $100', 'Pay online · reserve from $100')}
                       </button>
                     </div>
                   )}
