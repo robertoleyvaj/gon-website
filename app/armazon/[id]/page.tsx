@@ -20,7 +20,7 @@ type Armazon = {
   imagen_url?: string; imagen2_url?: string; imagen3_url?: string;
   imagen4_url?: string; imagen5_url?: string; tipo?: string;
   material?: string; medidas?: string; talla?: string; descuento?: number;
-  color1?: string; color2?: string; color3?: string; modelo?: string;
+  color1?: string; color2?: string; color3?: string; modelo?: string; marca?: string; sku?: string;
 };
 
 type PaqueteGON = {
@@ -797,6 +797,7 @@ export default function DetalleArmazon() {
       tipo: esSolar ? 'solar' as const : 'optico' as const,
       armazon_id: armazon!.id,
       armazon_nombre: armazon!.nombre,
+      armazon_ref: refArmazon(),
       armazon_imagen: armazon!.imagen_url,
       armazon_precio: precioArmazonUSD,
       es_regalo: esRegalo,
@@ -869,8 +870,23 @@ export default function DetalleArmazon() {
 
   // Apartar por WhatsApp (para quien llega de un anuncio y prefiere ir a la óptica)
   // El código web lo agrega solo components/WhatsAppCodigo al dar clic (aplica a todos los botones de WhatsApp)
-  const textoApartar = () =>
-    `Hola, quiero apartar el armazón ${armazon?.nombre || armazon?.modelo || ''}${colorActivo?.color ? ` en color ${nombreColor(colorActivo.color, 'es')}` : ''}: gonmx.com/armazon/${armazon?.id}`;
+  // "SWAN · Ray-Ban RB5154 · Negro (VRL-1485-01)": apodo web + marca/modelo + color + SKU, para ubicarlo en la óptica
+  const refArmazon = () => {
+    const mm = [armazon?.marca, armazon?.modelo].filter(Boolean).join(' ');
+    const col = colorActivo?.color ? nombreColor(colorActivo.color, 'es') : '';
+    const sku = colorActivo?.sku || armazon?.sku || '';
+    return [armazon?.nombre, mm && mm !== armazon?.nombre ? mm : '', col].filter(Boolean).join(' · ') + (sku ? ` (${sku})` : '');
+  };
+  // El código web lo pone WhatsAppCodigo en [[CODIGO]]
+  const textoApartar = () => [
+    '¡Hola GON! 👋 ¡Me encantó este armazón! ¿Me lo pueden guardar?',
+    '',
+    `👓 ${refArmazon()}`,
+    precioArmazonMXN > 0 ? `💰 Precio web: $${precioArmazonMXN.toLocaleString('es-MX')}` : '',
+    '',
+    '[[CODIGO]]',
+    `gonmx.com/armazon/${armazon?.id}`,
+  ].join('\n').replace(/\n{3,}/g, '\n\n').trim();
   const linkApartar = () => waGon(textoApartar());
   const apartar = () => {
     if (!armazon) return;
@@ -894,18 +910,24 @@ export default function DetalleArmazon() {
       : recetaEstado === 'foto' ? 'Tengo foto de mi receta, se las mando por aquí.'
       : recetaEstado === 'sin_graduacion' ? 'Sin graduación.'
       : 'Todavía no tengo mi graduación (quiero agendar examen).';
+    void color;
     const lineas = [
-      `Hola, quiero estos lentes${paciente.trim() ? ` para ${paciente.trim()}` : ''}:`,
-      `• Armazón ${armazon?.nombre || armazon?.modelo || ''}${color}`,
-      ...(soloArmazon ? ['• Solo el armazón'] : [
-        nomV && `• Mica ${nomV}${nomM ? ` · ${nomM}` : ''}`,
-        fs.length ? `• Filtros: ${fs.join(', ')}` : '',
+      `¡Hola GON! 👋 Armé mis lentes en su página${paciente.trim() ? ` (para ${paciente.trim()})` : ''}, ¿me los pueden guardar?`,
+      '',
+      `👓 Armazón: ${refArmazon()}`,
+      ...(soloArmazon ? ['🕶️ Solo el armazón'] : [
+        nomV ? `🔍 Micas: ${nomV}${nomM ? ` ${nomM}` : ''}` : '',
+        fs.length ? `✨ Extras: ${fs.join(', ')}` : '',
       ]),
-      `Total web: $${totalMXN.toLocaleString('es-MX')} MXN`,
-      soloArmazon ? '' : grad,
+      `💰 Mi precio web: $${totalMXN.toLocaleString('es-MX')}`,
+      '',
+      soloArmazon ? '' : `📋 ${grad}`,
+      '[[CODIGO]]',
+      '',
+      '¿Me confirman para pasar por ellos?',
       `gonmx.com/armazon/${armazon?.id}`,
-    ].filter(Boolean);
-    return lineas.join('\n');
+    ];
+    return lineas.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   };
 
   const abrirDrawer = () => { setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
@@ -1309,7 +1331,7 @@ export default function DetalleArmazon() {
                         {t('Apartar por WhatsApp', 'Reserve on WhatsApp')} →
                       </a>
                       <p style={{ fontSize: '11.5px', color: 'var(--warm-gray)', textAlign: 'center', margin: '0 0 12px', lineHeight: 1.5 }}>
-                        {t('Te mandamos tu código web: con él te respetamos este precio en cualquiera de nuestras ópticas.', 'You get a web code: we honor this price at any of our stores.')}
+                        {t('Te respondemos por WhatsApp y te los guardamos 48 horas con tu precio web.', 'We reply on WhatsApp and hold them for 48 hours at your online price.')}
                       </p>
                       <button onClick={handleAddToCart} style={{ width: '100%', background: 'white', color: 'var(--charcoal)', border: '1px solid var(--border)', borderRadius: '6px', padding: '13px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
                         {t('Agregar a mi lista (para varios pares)', 'Add to my list (multiple pairs)')}
@@ -1436,7 +1458,8 @@ export default function DetalleArmazon() {
             <svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.31-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.89-5.34 11.89-11.89S18.6 0 12.05 0z"/></svg>
             {t('Apartar por WhatsApp', 'Reserve on WhatsApp')}
           </a>
-          <a href={`/examen?armazon=${armazon.id}&nombre=${encodeURIComponent(armazon.nombre || armazon.modelo || '')}&color=${encodeURIComponent(colorActivo?.color ? nombreColor(colorActivo.color, 'es') : '')}`} className="va-examen">{t('Agenda tu examen de la vista gratis', 'Book your free eye exam')} →</a>
+          <p className="va-guarda">{t('Te respondemos por WhatsApp y te lo guardamos 48 horas con tu precio web.', 'We reply on WhatsApp and hold it for 48 hours at your online price.')}</p>
+          <a href={`/examen?armazon=${armazon.id}&nombre=${encodeURIComponent(armazon.nombre || armazon.modelo || '')}&color=${encodeURIComponent(colorActivo?.color ? nombreColor(colorActivo.color, 'es') : '')}&ref=${encodeURIComponent(refArmazon())}`} className="va-examen">{t('Agenda tu examen de la vista gratis', 'Book your free eye exam')} →</a>
 
           <div className="va-incluye">
             <p>{t('Lo apartamos y pasas a cualquiera de nuestras ópticas en Rosarito.', 'We hold it for you at any of our Rosarito stores.')}</p>
@@ -1517,6 +1540,7 @@ export default function DetalleArmazon() {
         .va-precio s{font-size:15px;color:var(--warm-gray);margin-left:10px;font-weight:400}
         .va-pweb{font-size:12.5px;line-height:1.5;color:var(--warm-gray);margin:-8px 0 14px}
         .va-pweb b{color:var(--sage);font-weight:600}
+        .va-guarda{font-size:12px;color:var(--warm-gray);text-align:center;margin:-4px 0 12px;line-height:1.5}
         .va-desc{font-size:14.5px;line-height:1.65;color:#4a463f;margin:0 0 18px;max-width:440px}
         .va-bloque{border-top:1px solid var(--border);padding:16px 0}
         .va-lbl{font-size:13px;color:var(--warm-gray);margin:0 0 10px}

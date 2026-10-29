@@ -119,7 +119,7 @@ export default function FavoritosDrawer() {
           <div style={{ padding: '1.25rem', borderTop: '1px solid var(--border)', background: 'var(--cream)' }}>
             {/* Mándame mis favoritos por WhatsApp (el código web lo agrega WhatsAppCodigo) */}
             <a
-              href={waGon(['Hola, me gustaron estos armazones de gonmx.com:', ...favoritos.map(f => `• ${f.nombre} ($${Number(f.precio || 0).toLocaleString('es-MX')}): gonmx.com/armazon/${f.id}`), '¿Me ayudan a elegir?'].join('\n'))}
+              href={waGon(['¡Hola GON! 👋 Estos armazones me gustaron, ¿me ayudan a elegir?', '', ...favoritos.map(f => `👓 ${f.nombre}${f.ref && f.ref !== f.nombre ? ` · ${f.ref}` : ''} · $${Number(f.precio || 0).toLocaleString('es-MX')}\n   gonmx.com/armazon/${f.id}`), '', '[[CODIGO]]'].join('\n'))}
               target="_blank" rel="noopener noreferrer" data-armazon={favoritos[0]?.id || undefined}
               style={{ display: 'block', textAlign: 'center', background: '#25D366', color: 'white', padding: '13px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', textDecoration: 'none', marginBottom: '8px' }}
             >

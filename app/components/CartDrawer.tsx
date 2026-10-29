@@ -144,13 +144,13 @@ export default function CartDrawer() {
     const pares = items.map((it, n) => {
       const l = it.lentes;
       const partes = [
-        `${n + 1}. ${it.armazon_nombre}${it.paciente?.trim() ? ` (para ${it.paciente.trim()})` : ''}`,
-        it.solo_armazon || !l ? '   Solo armazón' : `   Mica ${NOM[l.vision] || l.vision || ''}${l.material ? ` · ${NOM[l.material] || l.material}` : ''}${l.filtros?.length ? ` · ${l.filtros.map(f => NOM[f] || f).join(', ')}` : ''}`,
-        `   $${Math.round(it.precio_total).toLocaleString('es-MX')} MXN`,
+        `👓 ${it.armazon_ref || it.armazon_nombre}${it.paciente?.trim() ? ` — para ${it.paciente.trim()}` : ''}`,
+        it.solo_armazon || !l ? '   Solo el armazón' : `   🔍 ${NOM[l.vision] || l.vision || ''}${l.material ? ` ${NOM[l.material] || l.material}` : ''}${l.filtros?.length ? ` · ✨ ${l.filtros.map(f => NOM[f] || f).join(', ')}` : ''}`,
+        `   💰 $${Math.round(it.precio_total).toLocaleString('es-MX')}`,
       ];
       return partes.join('\n');
     });
-    return [`Hola, quiero apartar estos lentes de gonmx.com:`, ...pares, `Total web: $${Math.round(totalPrecio).toLocaleString('es-MX')} MXN`].join('\n');
+    return ['¡Hola GON! 👋 Armé estos lentes en su página, ¿me los pueden guardar?', '', ...pares, '', `💰 Total web: $${Math.round(totalPrecio).toLocaleString('es-MX')}`, '', '[[CODIGO]]', '', '¿Me confirman para pasar por ellos?'].join('\n');
   };
 
   const handleCheckout = async () => {
@@ -297,7 +297,7 @@ export default function CartDrawer() {
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', boxSizing: 'border-box', background: '#25D366', color: 'white', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', textDecoration: 'none', marginBottom: '8px' }}>
               {t('Apartar por WhatsApp →', 'Reserve on WhatsApp →')}
             </a>
-            <p style={{ textAlign: 'center', fontSize: '11px', color: '#9a9a9a', margin: 0, lineHeight: 1.5 }}>{t('Te mandamos tu código web: con él te respetamos estos precios en cualquiera de nuestras ópticas.', 'You get a web code: we honor these prices at any of our stores.')}</p>
+            <p style={{ textAlign: 'center', fontSize: '11px', color: '#9a9a9a', margin: 0, lineHeight: 1.5 }}>{t('Te respondemos por WhatsApp y te los guardamos 48 horas con tu precio web.', 'We reply on WhatsApp and hold them for 48 hours at your online price.')}</p>
           </div>
         )}
       </div>

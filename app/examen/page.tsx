@@ -14,15 +14,18 @@ const SUCURSALES = [
   { id: 'laureles',  nombre: 'Óptica Rosarito Plaza Laureles', direccion: 'C. José María Morelos 118, Plaza Laureles, Rosarito, B.C.', maps: 'https://maps.google.com/?q=Plaza+Laureles+Jose+Maria+Morelos+118+Rosarito+BC' },
 ];
 
-type ArmazonRef = { id: string; nombre: string; color: string } | null;
+type ArmazonRef = { id: string; nombre: string; color: string; ref: string } | null;
 
 // El código web lo agrega solo components/WhatsAppCodigo al dar clic
 function msgWA(sucursal: string, tipo: 'solo_cita' | 'con_pedido', arm: ArmazonRef) {
-  const base = tipo === 'con_pedido'
-    ? `Hola, quiero agendar mi examen de la vista en ${sucursal}. Ya sé qué lentes quiero, solo necesito la graduación.`
-    : `Hola, me gustaría agendar una cita para examen de la vista en ${sucursal}.`;
-  const lente = arm ? ` Me gustó el armazón ${arm.nombre}${arm.color ? ` en color ${arm.color}` : ''}: gonmx.com/armazon/${arm.id}` : '';
-  return encodeURIComponent(`${base}${lente}`);
+  const lineas = [
+    `¡Hola GON! 👋 Quiero agendar mi examen de la vista gratis en ${sucursal}.`,
+    tipo === 'con_pedido' && !arm ? 'Ya sé qué lentes quiero, solo necesito mi graduación.' : '',
+    ...(arm ? ['', 'Ya elegí mi armazón:', `👓 ${arm.ref || `${arm.nombre}${arm.color ? ` · ${arm.color}` : ''}`}`, `gonmx.com/armazon/${arm.id}`] : []),
+    '',
+    '[[CODIGO]]',
+  ];
+  return encodeURIComponent(lineas.join('\n').replace(/\n{3,}/g, '\n\n').trim());
 }
 
 export default function ExamenPage() {
@@ -36,7 +39,7 @@ export default function ExamenPage() {
     const q = new URLSearchParams(window.location.search);
     const id = q.get('armazon');
     if (id && /^\d+$/.test(id)) {
-      setArmazonRef({ id, nombre: (q.get('nombre') || '').slice(0, 80), color: (q.get('color') || '').slice(0, 40) });
+      setArmazonRef({ id, nombre: (q.get('nombre') || '').slice(0, 80), color: (q.get('color') || '').slice(0, 40), ref: (q.get('ref') || '').slice(0, 160) });
       setFlujo('sin_graduacion');
     }
   }, []);

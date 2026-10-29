@@ -24,8 +24,8 @@ export default function WhatsAppCodigo() {
       // La ventana se abre antes de pedir el código para que el navegador no la bloquee
       const w = window.open('', '_blank');
       const url = new URL(a.href);
-      const texto = url.searchParams.get('text') || 'Hola';
-      let final = texto;
+      const texto = url.searchParams.get('text') || '¡Hola GON! 👋';
+      let final = texto.replace(/\n*\[\[CODIGO\]\]/, '');
       try {
         const armazon = Number(a.dataset.armazon) || null;
         const j = await fetch('/api/codigo-web', {
@@ -33,7 +33,8 @@ export default function WhatsAppCodigo() {
           body: JSON.stringify({ armazon_id: armazon, color_sku: a.dataset.color || null }),
         }).then(r => r.json());
         if (j?.ok && j.codigo) {
-          final = `${texto}\n\nMi código web: ${j.codigo}`;
+          const linea = `🎟️ Mi código web: ${j.codigo}`;
+          final = texto.includes('[[CODIGO]]') ? texto.replace('[[CODIGO]]', linea) : `${texto}\n\n${linea}`;
           setAviso(j.codigo);
         }
       } catch { /* si falla, se manda el mensaje sin código */ }

@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 type Favorito = {
   id: number;
   nombre: string;
+  ref?: string;   // marca y modelo, para el mensaje de WhatsApp
   imagen_url?: string;
   precio: number;
   forma?: string;

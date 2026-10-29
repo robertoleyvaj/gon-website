@@ -19,6 +19,7 @@ export type CartItem = {
   tipo: 'optico' | 'solar';
   armazon_id: number;
   armazon_nombre: string;
+  armazon_ref?: string;   // apodo · marca modelo · color (SKU) para el mensaje de WhatsApp
   armazon_imagen?: string;
   armazon_precio: number;
   lentes?: CartLentes;

@@ -179,16 +179,15 @@ export default function Navbar() {
         boxShadow: "0 1px 0 var(--border)",
       }}>
         {/* Banda de precio web: lleva a WhatsApp y ahí recibe su código (WhatsAppCodigo) */}
-        <a className="gon-banda" href={waGon(lang === 'es' ? 'Hola, quiero mi código web para el precio en óptica.' : 'Hi, I want my web code for in-store pricing.')} target="_blank" rel="noopener noreferrer">
-          <span className="gb-l">{lang === 'es' ? 'Precio web: armazones −60% y micas −15%.' : 'Online price: frames −60% and lenses −15%.'}</span>
-          <span className="gb-c"> {lang === 'es' ? 'Pide tu código por WhatsApp y úsalo en cualquiera de nuestras ópticas →' : 'Get your code on WhatsApp and use it at any of our stores →'}</span>
-          <span className="gb-m"> {lang === 'es' ? 'Pide tu código →' : 'Get your code →'}</span>
+        <a className="gon-banda" href={waGon(lang === 'es' ? '¡Hola GON! 👋 Quiero mi código de precio web 🎟️' : 'Hi GON! 👋 I want my online price code 🎟️')} target="_blank" rel="noopener noreferrer">
+          <span className="gb-c"><b>{lang === 'es' ? 'Compra en línea y paga hasta 60% menos en tus lentes.' : 'Shop online and pay up to 60% less on your glasses.'}</b> {lang === 'es' ? 'Pide tu código web →' : 'Get your web code →'}</span>
+          <span className="gb-m"><b>{lang === 'es' ? 'Hasta 60% menos en línea' : 'Up to 60% off online'}</b> · {lang === 'es' ? 'Pide tu código →' : 'Get your code →'}</span>
         </a>
         <style>{`
           body{padding-top:30px}
           .gon-banda{display:flex;align-items:center;justify-content:center;height:30px;padding:0 12px;background:var(--sage);color:#fff;text-decoration:none;font-size:12.5px;font-family:var(--font-sans);white-space:nowrap;overflow:hidden}
-          .gon-banda .gb-l{font-weight:600}
-          .gon-banda .gb-m{display:none;text-decoration:underline}
+          .gon-banda b{font-weight:600}
+          .gon-banda .gb-m{display:none}
           @media (max-width:720px){.gon-banda{font-size:11.5px}.gon-banda .gb-c{display:none}.gon-banda .gb-m{display:inline}}
         `}</style>
         <div style={{
