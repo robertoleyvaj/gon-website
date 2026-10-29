@@ -656,7 +656,7 @@ export default function DetalleArmazon() {
   const searchParams = useSearchParams();
   const esRegalo = searchParams.get('promo') === 'regalo';
   const { t, lang } = useLang() as any;
-  const { addItem, recetasSesion, items } = useCart();
+  const { addItem, recetasSesion, items, setPagoAbierto } = useCart();
   const [armazon, setArmazon] = useState<Armazon | null>(null);
   const [relacionados, setRelacionados] = useState<Armazon[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1324,18 +1324,19 @@ export default function DetalleArmazon() {
                           <button onClick={() => setDrawerEstado('inicio')} style={{ background: 'var(--charcoal)', border: 'none', borderRadius: '3px', padding: '5px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', color: 'white', fontFamily: 'var(--font-sans)' }}>{t('Agregar', 'Add')}</button>
                         </div>
                       )}
-                      {/* Acción principal: apartar por WhatsApp con todo lo que armó + código web */}
+                      {/* Acción principal: ordenar (pagar todo, anticipo o apartar) */}
+                      <button onClick={() => { handleAddToCart(); setPagoAbierto(true); }} style={{ width: '100%', background: '#1B2F5E', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
+                        {t('Ordenar mis lentes', 'Order my glasses')} →
+                      </button>
+                      <p style={{ fontSize: '12.5px', color: 'var(--warm-gray)', textAlign: 'center', margin: '8px 0 12px', lineHeight: 1.5 }}>
+                        {t('Empieza desde $100 y el resto al recoger', 'Start from $100 and pay the rest at pickup')}
+                      </p>
+                      {/* Secundario: WhatsApp con todo lo que armó + código web */}
                       <a href={waGon(textoPedidoWA())} target="_blank" rel="noopener noreferrer" onClick={apartar}
                         data-armazon={armazon?.id} data-color={colorActivo?.sku || undefined}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', boxSizing: 'border-box', background: '#25D366', color: 'white', borderRadius: '6px', padding: '16px', fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', textDecoration: 'none', marginBottom: '10px' }}>
-                        {t('Apartar por WhatsApp', 'Reserve on WhatsApp')} →
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', boxSizing: 'border-box', background: 'white', color: '#128C4A', border: '1px solid #25D366', borderRadius: '8px', padding: '12px', fontSize: '13px', fontWeight: 500, fontFamily: 'var(--font-sans)', textDecoration: 'none' }}>
+                        {t('¿Dudas? Escríbenos por WhatsApp', 'Questions? Message us on WhatsApp')}
                       </a>
-                      <p style={{ fontSize: '11.5px', color: 'var(--warm-gray)', textAlign: 'center', margin: '0 0 12px', lineHeight: 1.5 }}>
-                        {t('Te respondemos por WhatsApp y te los guardamos 48 horas con tu precio web.', 'We reply on WhatsApp and hold them for 48 hours at your online price.')}
-                      </p>
-                      <button onClick={handleAddToCart} style={{ width: '100%', background: 'white', color: 'var(--charcoal)', border: '1px solid var(--border)', borderRadius: '6px', padding: '13px', fontSize: '12px', fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-sans)' }}>
-                        {t('Pagar en línea · aparta desde $100', 'Pay online · reserve from $100')}
-                      </button>
                     </div>
                   )}
                 </div>

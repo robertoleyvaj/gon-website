@@ -5,20 +5,21 @@ import { useState, useMemo } from 'react';
 import type { CartItem } from '../context/CartContext';
 import { rangoPago, validarPago, SUCURSALES_PAGO, DIAS_APARTADO, DIAS_SALDO_FAVOR, type ModoPago } from '../lib/pago-gon';
 
+// Textos pensados para el cliente: beneficio primero; las reglas solo en el "?"
 const OPCIONES: { k: ModoPago; titulo: string; corto: string; ayuda: string }[] = [
-  { k: 'apartar', titulo: 'Apartar', corto: 'Deja de $100 a $300',
-    ayuda: `Aseguras tus lentes y tu precio web dejando de $100 a $300. Tienes ${DIAS_APARTADO} días para pasar a la óptica a completar tu anticipo (35% o más); hasta entonces no los mandamos a hacer. El apartado no es reembolsable: si no lo completas a tiempo, tu dinero queda como saldo a favor por ${DIAS_SALDO_FAVOR} días.` },
-  { k: 'anticipo', titulo: 'Anticipo', corto: 'Deja del 35% al 60%',
-    ayuda: 'Dejas entre el 35% y el 60% del total y mandamos a hacer tus lentes de inmediato. El resto lo pagas al recogerlos en la óptica.' },
-  { k: 'liquidar', titulo: 'Liquidar', corto: 'Paga el 100%',
+  { k: 'liquidar', titulo: 'Pagar todo', corto: 'Los mandamos a hacer hoy mismo',
     ayuda: 'Pagas el total en línea y mandamos a hacer tus lentes de inmediato. Solo pasas a recogerlos.' },
+  { k: 'anticipo', titulo: 'Dejar un anticipo', corto: 'Empezamos tus lentes y pagas el resto al recoger',
+    ayuda: 'Dejas una parte (del 35% al 60% del total) y mandamos a hacer tus lentes de inmediato. El resto lo pagas al recogerlos en la óptica.' },
+  { k: 'apartar', titulo: 'Solo apartarlos', corto: `Te guardamos tus lentes y tu precio web ${DIAS_APARTADO} días`,
+    ayuda: `Dejas de $100 a $300 y te guardamos tus lentes con tu precio web. Tienes ${DIAS_APARTADO} días para pasar a la óptica a dejar tu anticipo y los mandamos a hacer. El apartado no es reembolsable; si no pasas a tiempo, tu dinero queda como saldo a favor por ${DIAS_SALDO_FAVOR} días.` },
 ];
 const mxn = (n: number) => `$${Math.round(n).toLocaleString('es-MX')}`;
 
 export default function PagoGon({ items, total, onVolver }: { items: CartItem[]; total: number; onVolver: () => void }) {
   const [sucursal, setSucursal] = useState('');
-  const [modo, setModo] = useState<ModoPago | ''>('');
-  const [monto, setMonto] = useState('');
+  const [modo, setModo] = useState<ModoPago | ''>('liquidar');
+  const [monto, setMonto] = useState(String(Math.round(total)));
   const [ayuda, setAyuda] = useState<ModoPago | null>(null);
   const [acepto, setAcepto] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -68,7 +69,8 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
         {OPCIONES.map(o => (
           <div key={o.k} className={`pg-o ${modo === o.k ? 'on' : ''}`}>
             <button className="pg-o-main" onClick={() => elegir(o.k)}>
-              <b>{o.titulo}</b><span>{o.corto}</span>
+              <span className="pg-o-top"><b>{o.titulo}</b><em>{o.k === 'liquidar' ? mxn(total) : `desde ${mxn(rangoPago(o.k, total).min)}`}</em></span>
+              <span>{o.corto}</span>
             </button>
             <button className="pg-q" aria-label={`¿Qué es ${o.titulo}?`} onClick={() => setAyuda(ayuda === o.k ? null : o.k)}>?</button>
             {ayuda === o.k && <p className="pg-ayuda">{o.ayuda}</p>}
@@ -78,18 +80,17 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
 
       {modo && rango && (
         <>
-          <p className="pg-l">3. ¿Cuánto pagas hoy?</p>
-          {modo === 'liquidar' ? (
-            <p className="pg-fijo">{mxn(total)}</p>
-          ) : (
-            <div className="pg-monto">
-              <span>$</span>
-              <input type="number" inputMode="numeric" min={rango.min} max={rango.max} value={monto}
-                onChange={e => setMonto(e.target.value.replace(/[^\d]/g, ''))} />
-              <small>De {mxn(rango.min)} a {mxn(rango.max)}</small>
-            </div>
+          {modo !== 'liquidar' && (
+            <>
+              <p className="pg-l">¿Cuánto quieres dejar hoy?</p>
+              <div className="pg-monto">
+                <span>$</span>
+                <input type="number" inputMode="numeric" min={rango.min} max={rango.max} value={monto}
+                  onChange={e => setMonto(e.target.value.replace(/[^\d]/g, ''))} />
+              </div>
+              {errMonto && <p className="pg-err">{errMonto}</p>}
+            </>
           )}
-          {errMonto && <p className="pg-err">{errMonto}</p>}
 
           <div className="pg-res">
             <div><span>Total web</span><b>{mxn(total)}</b></div>
@@ -100,7 +101,7 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
           {modo === 'apartar' && (
             <label className="pg-acepto">
               <input type="checkbox" checked={acepto} onChange={e => setAcepto(e.target.checked)} />
-              <span>Entiendo que el apartado no es reembolsable y que tengo {DIAS_APARTADO} días para completar mi anticipo en la óptica; si no, queda como saldo a favor por {DIAS_SALDO_FAVOR} días.</span>
+              <span>Entiendo que el apartado no es reembolsable y que tengo {DIAS_APARTADO} días para pasar a dejar mi anticipo; si no, queda como saldo a favor por {DIAS_SALDO_FAVOR} días.</span>
             </label>
           )}
         </>
@@ -108,7 +109,7 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
 
       {error && <p className="pg-err">{error}</p>}
       <button className="pg-pagar" disabled={!listo || enviando} onClick={pagar}>
-        {enviando ? 'Procesando…' : listo ? `Pagar ${mxn(montoNum)} →` : 'Completa los pasos para pagar'}
+        {enviando ? 'Procesando…' : listo ? `Pagar ${mxn(montoNum)} →` : !sucursal ? 'Elige dónde los recoges' : 'Revisa tu pago'}
       </button>
       <p className="pg-seg">🔒 Pago seguro con Stripe</p>
 
@@ -119,6 +120,8 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
         .pg-suc{display:flex;flex-direction:column;gap:6px}
         .pg-suc button,.pg-o-main{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;font-family:var(--font-sans)}
         .pg-suc button b,.pg-o-main b{font-size:13.5px;color:#1d1d1d}
+        .pg-o-top{display:flex;justify-content:space-between;width:100%;padding-right:30px}
+        .pg-o-top em{font-style:normal;font-size:13px;color:#1d1d1d}
         .pg-suc button span,.pg-o-main span{font-size:11.5px;color:#8a8a8a}
         .pg-suc button.on{border:1.5px solid var(--sage);background:rgba(27,47,94,.05)}
         .pg-op{display:flex;flex-direction:column;gap:6px}

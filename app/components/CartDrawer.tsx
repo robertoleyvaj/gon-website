@@ -102,9 +102,8 @@ function ItemCard({ item, onRemove }: { item: CartItem; onRemove: () => void }) 
 
 export default function CartDrawer() {
   const { t, lang } = useLang() as any;
-  const { items, removeItem, totalPrecio, totalItems, cartOpen, setCartOpen } = useCart();
+  const { items, removeItem, totalPrecio, totalItems, cartOpen, setCartOpen, pagoAbierto: pagando, setPagoAbierto: setPagando } = useCart();
   const [loadingCheckout, setLoadingCheckout] = useState(false);
-  const [pagando, setPagando] = useState(false);   // panel de pago en línea
 
   // Cupón
   const [cuponInput, setCuponInput] = useState('');
@@ -184,7 +183,7 @@ export default function CartDrawer() {
 
   return (
     <>
-      {cartOpen && <div onClick={() => setCartOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 300, backdropFilter: 'blur(2px)' }}/>}
+      {cartOpen && <div onClick={() => { setCartOpen(false); setPagando(false); }} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 300, backdropFilter: 'blur(2px)' }}/>}
 
       <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: '420px', maxWidth: '100vw', background: 'white', zIndex: 301, boxShadow: '-2px 0 40px rgba(0,0,0,0.08)', transform: cartOpen ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)', display: 'flex', flexDirection: 'column' }}>
 
@@ -194,7 +193,7 @@ export default function CartDrawer() {
             <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 400, margin: 0, color: '#1d1d1d' }}>{t('Tu carrito', 'Your cart')}</h3>
             {totalItems > 0 && <span style={{ background: 'var(--sage)', color: 'white', borderRadius: '20px', padding: '2px 8px', fontSize: '11px', fontWeight: 600 }}>{totalItems}</span>}
           </div>
-          <button onClick={() => setCartOpen(false)} style={{ background: 'var(--cream-dark)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '18px', color: '#6f6a63', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
+          <button onClick={() => { setCartOpen(false); setPagando(false); }} style={{ background: 'var(--cream-dark)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', fontSize: '18px', color: '#6f6a63', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
         </div>
 
         {/* Contenido */}
@@ -208,7 +207,7 @@ export default function CartDrawer() {
               </div>
               <p style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, color: '#1d1d1d', marginBottom: '0.5rem' }}>{t('Tu carrito está vacío', 'Your cart is empty')}</p>
               <p style={{ fontSize: '13px', color: '#9a9a9a', marginBottom: '1.5rem' }}>{t('Agrega un par de lentes para comenzar.', 'Add a pair of glasses to get started.')}</p>
-              <Link href="/Tienda" onClick={() => setCartOpen(false)} style={{ display: 'inline-block', background: 'var(--sage)', color: 'white', padding: '12px 24px', borderRadius: '3px', fontSize: '12px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none', fontFamily: 'var(--font-sans)' }}>
+              <Link href="/Tienda" onClick={() => { setCartOpen(false); setPagando(false); }} style={{ display: 'inline-block', background: 'var(--sage)', color: 'white', padding: '12px 24px', borderRadius: '3px', fontSize: '12px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none', fontFamily: 'var(--font-sans)' }}>
                 {t('Ver colección', 'Browse frames')}
               </Link>
             </div>
@@ -295,19 +294,19 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            {/* Pago en línea: apartar, anticipo o liquidar, y recoger en sucursal */}
+            {/* Ordenar: pagar todo, anticipo o apartar, y recoger en sucursal */}
             <button onClick={() => setPagando(true)}
-              style={{ width: '100%', background: 'var(--sage)', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', cursor: 'pointer', fontFamily: 'var(--font-sans)', marginBottom: '8px' }}>
-              {t('Pagar en línea →', 'Pay online →')}
+              style={{ width: '100%', background: 'var(--sage)', color: 'white', border: 'none', borderRadius: '8px', padding: '16px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-sans)', marginBottom: '8px' }}>
+              {t('Ordenar mis lentes →', 'Order my glasses →')}
             </button>
-            <p style={{ textAlign: 'center', fontSize: '11px', color: '#9a9a9a', margin: '0 0 12px', lineHeight: 1.5 }}>{t('Aparta desde $100, deja anticipo o liquida, y recoge en tu óptica.', 'Reserve from $100, leave a deposit or pay in full, and pick up in store.')}</p>
+            <p style={{ textAlign: 'center', fontSize: '12px', color: '#7a7a7a', margin: '0 0 12px', lineHeight: 1.5 }}>{t('Empieza desde $100 y el resto al recoger', 'Start from $100 and pay the rest at pickup')}</p>
             {/* O apartar por WhatsApp. El código web lo agrega WhatsAppCodigo */}
             <a href={waGon(textoListaWA())} target="_blank" rel="noopener noreferrer"
               data-armazon={items[0]?.armazon_id || undefined}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', boxSizing: 'border-box', background: '#25D366', color: 'white', borderRadius: '8px', padding: '16px', fontSize: '13px', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', fontFamily: 'var(--font-sans)', textDecoration: 'none', marginBottom: '8px' }}>
-              {t('Apartar por WhatsApp →', 'Reserve on WhatsApp →')}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', boxSizing: 'border-box', background: 'white', color: '#128C4A', border: '1px solid #25D366', borderRadius: '8px', padding: '12px', fontSize: '13px', fontWeight: 500, textDecoration: 'none', fontFamily: 'var(--font-sans)', marginBottom: '8px' }}>
+              {t('¿Dudas? Escríbenos por WhatsApp', 'Questions? Message us on WhatsApp')}
             </a>
-            <p style={{ textAlign: 'center', fontSize: '11px', color: '#9a9a9a', margin: 0, lineHeight: 1.5 }}>{t('Te respondemos por WhatsApp y te los guardamos 48 horas con tu precio web.', 'We reply on WhatsApp and hold them for 48 hours at your online price.')}</p>
+            <p style={{ textAlign: 'center', fontSize: '11px', color: '#9a9a9a', margin: 0, lineHeight: 1.5 }}>{t('Te respondemos y te guardamos tu precio web.', 'We reply and hold your online price.')}</p>
           </div>
         )}
       </div>

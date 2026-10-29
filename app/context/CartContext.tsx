@@ -42,6 +42,8 @@ type CartContextType = {
   reclamarPromoSolar: () => void;
   cartOpen: boolean;
   setCartOpen: (v: boolean) => void;
+  pagoAbierto: boolean;                 // el carrito abre directo en la pantalla de pago
+  setPagoAbierto: (v: boolean) => void;
   recetasSesion: { paciente: string; receta: CartReceta }[];
 };
 
@@ -51,6 +53,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [promoSolarReclamada, setPromoSolarReclamada] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [pagoAbierto, setPagoAbierto] = useState(false);
 
   // Cargar desde localStorage al montar
   useEffect(() => {
@@ -113,6 +116,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       totalItems, totalPrecio,
       promoSolarDisponible, promoSolarReclamada, reclamarPromoSolar,
       cartOpen, setCartOpen,
+      pagoAbierto, setPagoAbierto,
       recetasSesion,
     }}>
       {children}
