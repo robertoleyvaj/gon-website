@@ -1276,9 +1276,11 @@ export default function DetalleArmazon() {
                   {paso === 4 && (
                     <div>
                       <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 300, marginBottom: '1.25rem', color: 'var(--charcoal)' }}>{t('Resumen de tu pedido', 'Order summary')}</h4>
+                      {/* "¿Para quién son?" solo cuando ya hay otro par en el carrito (para distinguir graduaciones) */}
+                      {items.length > 0 && (
                       <div style={{ marginBottom: '1.25rem', background: 'var(--cream)', borderRadius: '8px', padding: '1rem', border: '1px solid var(--border)' }}>
-                        <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: 'var(--charcoal)', margin: '0 0 4px' }}>{t('¿Para quién son?', 'Who are these for?')}</h4>
-                        <p style={{ fontSize: '12px', color: 'var(--warm-gray)', margin: '0 0 0.75rem' }}>{t('Opcional — útil si compras para varias personas.', 'Optional — helpful if buying for multiple people.')}</p>
+                        <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1rem', fontWeight: 400, color: 'var(--charcoal)', margin: '0 0 4px' }}>{t('¿Para quién es este par?', 'Who is this pair for?')}</h4>
+                        <p style={{ fontSize: '12px', color: 'var(--warm-gray)', margin: '0 0 0.75rem' }}>{t('Opcional — ya tienes otro par en tu carrito.', 'Optional — you already have another pair in your cart.')}</p>
                         {recetasSesion.length > 0 && (
                           <div style={{ marginBottom: '0.75rem' }}>
                             <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--warm-gray)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '6px' }}>{t('Reutilizar receta de', 'Reuse prescription from')}</p>
@@ -1291,6 +1293,7 @@ export default function DetalleArmazon() {
                         )}
                         <input type="text" placeholder={t('Ej: Rob, Mom, Para mí...', 'e.g. Rob, Mom, For me...')} value={paciente} onChange={e => { setPaciente(e.target.value); setReutilizarReceta(null); }} style={{ width: '100%', padding: '10px 14px', borderRadius: '6px', border: '1px solid var(--border)', fontSize: '13px', fontFamily: 'var(--font-sans)', color: 'var(--charcoal)', outline: 'none', boxSizing: 'border-box', transition: 'border-color 0.15s' }} onFocus={e => (e.currentTarget.style.borderColor = 'var(--sage)')} onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}/>
                       </div>
+                      )}
                       <div style={{ background: 'var(--cream)', borderRadius: '8px', padding: '1.1rem', marginBottom: '1.25rem', border: '1px solid var(--border)' }}>
                         {[
                           { label: t('Armazón', 'Frame'), value: esRegalo ? `~~${pxMXN(redondearMXN(armazon?.precio || PRECIO_ARMAZON, tipoCambio))}~~ $0 🎁` : pxMXN(precioArmazonMXN) },
