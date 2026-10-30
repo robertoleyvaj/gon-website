@@ -660,7 +660,7 @@ export default function DetalleArmazon() {
   const [armazon, setArmazon] = useState<Armazon | null>(null);
   const [relacionados, setRelacionados] = useState<Armazon[]>([]);
   const [loading, setLoading] = useState(true);
-  type ColorPub = { id?: number; color: string; sku?: string | null; hex?: string | null; imagen_url?: string | null; imagen2_url?: string | null; imagen3_url?: string | null; imagen4_url?: string | null; portada_url?: string | null; precio?: number | null };
+  type ColorPub = { id?: number; color: string; bodega?: number | null; stock_baja?: number | null; stock_mayo?: number | null; stock_plaza?: number | null; sku?: string | null; hex?: string | null; imagen_url?: string | null; imagen2_url?: string | null; imagen3_url?: string | null; imagen4_url?: string | null; portada_url?: string | null; precio?: number | null };
   type RelInfo = { id: number; nombre: string; precio: number; foto: string; colores: { color: string; hex?: string | null }[] };
   const [relInfo, setRelInfo] = useState<RelInfo[]>([]);
   const [colores, setColores] = useState<ColorPub[]>([]);
@@ -781,6 +781,7 @@ export default function DetalleArmazon() {
 
   // forzarSolo=true: botón "Llevar solo el armazón" (sin pasar por el configurador)
   const handleAddToCart = (forzarSolo?: unknown) => {
+    if (colorAgotado) return;
     const solo = forzarSolo === true || soloArmazon;
     if (esRegalo && items.some(i => i.es_regalo)) {
       alert(t('Ya tienes un par de lentes de sol gratis en tu carrito.', 'You already have a free pair of sunglasses in your cart.'));
@@ -844,6 +845,11 @@ export default function DetalleArmazon() {
         const pedido = searchParams.get('color');
         const idx = pedido ? (cols || []).findIndex((c: { sku?: string | null }) => c.sku === pedido) : -1;
         if (idx >= 0) setColorSel(idx);
+        else if (/^VRL-1\d{3}$/.test(String(data.sku ?? ''))) {
+          // Si el primer color está agotado, empezar en el primero que sí tenga piezas
+          const conPiezas = (cols || []).findIndex((c: any) => ['bodega', 'stock_baja', 'stock_mayo', 'stock_plaza'].reduce((s, k) => s + (Number(c[k]) || 0), 0) > 0);
+          if (conPiezas > 0) setColorSel(conPiezas);
+        }
         // Recomendados: con foto (del modelo o de algún color), precio en pesos
         const relIds = (rel || []).map((a: any) => a.id);
         if (relIds.length) {
@@ -934,7 +940,7 @@ export default function DetalleArmazon() {
     return lineas.join('\n').replace(/\n{3,}/g, '\n\n').trim();
   };
 
-  const abrirDrawer = () => { setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
+  const abrirDrawer = () => { if (colorAgotado) return; setDrawerOpen(true); setDrawerEstado(esSolar ? 'inicio_solar' : 'inicio'); setSoloArmazon(false); };
 
   const resumenReceta = () => {
     if (recetaEstado === 'sin_graduacion') return t('Sin graduación', 'No prescription');
@@ -947,6 +953,11 @@ export default function DetalleArmazon() {
   const coloresDisponibles = getColoresDisponibles(vision, material);
   const filtrosActivos = esSolar ? filtroOptsSolar : filtroOpts;
   const colorActivo = colores[colorSel] || null;
+  // Agotado solo aplica al inventario nuevo (SKU VRL-1xxx), igual que en Verly
+  const inventarioNuevo = /^VRL-1\d{3}$/.test(String((armazon as any)?.sku ?? ''));
+  const piezasColor = (c: ColorPub) => ['bodega', 'stock_baja', 'stock_mayo', 'stock_plaza'].reduce((s, k) => s + (Number((c as any)[k]) || 0), 0);
+  const agotado = (c: ColorPub | null) => !!c && inventarioNuevo && piezasColor(c) <= 0;
+  const colorAgotado = agotado(colorActivo);
   const ambiente = colorActivo?.portada_url || null;
   const fotosColor = colorActivo ? [colorActivo.imagen_url, colorActivo.imagen2_url, colorActivo.imagen3_url, colorActivo.imagen4_url, ambiente].filter(Boolean) as string[] : [];
   const fotos = (fotosColor.length > 0
@@ -1441,12 +1452,18 @@ export default function DetalleArmazon() {
             <div className="va-bloque">
               <p className="va-lbl">{t('Color', 'Color')}: <b>{nombreColor(colorActivo?.color, lang)}</b></p>
               <div className="va-sws">
-                {colores.map((c, i) => (
-                  <button key={i} onClick={() => { setColorSel(i); setFotoActiva(0); }} title={nombreColor(c.color, lang)}
-                    aria-label={nombreColor(c.color, lang)} className={i === colorSel ? 'on' : ''}
-                    style={{ background: swatchLib(c.color, c.hex) }} />
-                ))}
+                {colores.map((c, i) => {
+                  const ag = agotado(c);
+                  return (
+                    <button key={i} onClick={() => { setColorSel(i); setFotoActiva(0); }} title={nombreColor(c.color, lang) + (ag ? ` — ${t('Agotado', 'Sold out')}` : '')}
+                      aria-label={nombreColor(c.color, lang)} className={i === colorSel ? 'on' : ''}
+                      style={{ background: swatchLib(c.color, c.hex), opacity: ag ? 0.4 : 1 }}>
+                      {ag && <span className="va-tache" />}
+                    </button>
+                  );
+                })}
               </div>
+              {colorAgotado && <p className="va-agotado">{t('Este color está agotado, elige otro.', 'This color is sold out, please choose another.')}</p>}
             </div>
           )}
 
@@ -1458,20 +1475,22 @@ export default function DetalleArmazon() {
 
           {/* Botones propios de GON */}
           {!esMobil && (
-            <button onClick={abrirDrawer} className="va-cta">
+            <button onClick={abrirDrawer} className="va-cta" disabled={colorAgotado}>
               {esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar mis micas', 'Customize my lenses')}
             </button>
           )}
-          {!esSolar && !esRegalo && (
+          {!esSolar && !esRegalo && !colorAgotado && (
             <button onClick={() => { handleAddToCart(true); setPagoAbierto(true); }} className="va-solo">
               {t('Llevar solo el armazón', 'Frame only')} · {pxMXN(precioArmazonMXN)}
             </button>
           )}
+          {!colorAgotado && <>
           <a href={linkApartar()} target="_blank" rel="noopener noreferrer" className="va-cta va-cta-wa" onClick={apartar} data-armazon={armazon.id} data-color={colorActivo?.sku || undefined}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.31-1.65a11.88 11.88 0 0 0 5.68 1.45c6.55 0 11.89-5.34 11.89-11.89S18.6 0 12.05 0z"/></svg>
             {t('Apartar por WhatsApp', 'Reserve on WhatsApp')}
           </a>
           <p className="va-guarda">{t('Te respondemos por WhatsApp y te lo guardamos 48 horas con tu precio web.', 'We reply on WhatsApp and hold it for 48 hours at your online price.')}</p>
+          </>}
           <a href={`/examen?armazon=${armazon.id}&nombre=${encodeURIComponent(armazon.nombre || armazon.modelo || '')}&color=${encodeURIComponent(colorActivo?.color ? nombreColor(colorActivo.color, 'es') : '')}&ref=${encodeURIComponent(refArmazon())}`} className="va-examen">{t('Agenda tu examen de la vista gratis', 'Book your free eye exam')} →</a>
 
           <div className="va-incluye">
@@ -1520,8 +1539,8 @@ export default function DetalleArmazon() {
       {/* ── BARRA FIJA EN CELULAR: personalizar + WhatsApp ── */}
       {esMobil && (
         <div className="va-sticky">
-          <button onClick={abrirDrawer}>{esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar micas', 'Customize lenses')}</button>
-          <a href={linkApartar()} target="_blank" rel="noopener noreferrer" onClick={apartar} data-armazon={armazon.id} data-color={colorActivo?.sku || undefined}>{t('Apartar', 'Reserve')}</a>
+          <button onClick={abrirDrawer} disabled={colorAgotado} style={colorAgotado ? { opacity: .45 } : undefined}>{colorAgotado ? t('Color agotado', 'Sold out') : esSolar ? t('Configurar mis lentes', 'Configure my lenses') : t('Personalizar micas', 'Customize lenses')}</button>
+          {!colorAgotado && <a href={linkApartar()} target="_blank" rel="noopener noreferrer" onClick={apartar} data-armazon={armazon.id} data-color={colorActivo?.sku || undefined}>{t('Apartar', 'Reserve')}</a>}
         </div>
       )}
 
@@ -1561,6 +1580,8 @@ export default function DetalleArmazon() {
         .va-sws{display:flex;flex-wrap:wrap;gap:10px}
         .va-sws button{position:relative;width:30px;height:30px;border-radius:50%;border:1px solid rgba(0,0,0,.12);cursor:pointer;padding:0;overflow:hidden}
         .va-sws button.on{outline:1.5px solid var(--charcoal);outline-offset:3px}
+        .va-tache{position:absolute;left:50%;top:-2px;width:1.5px;height:calc(100% + 4px);background:#555;transform:translateX(-50%) rotate(45deg)}
+        .va-agotado{font-size:12.5px;color:#a33;margin:10px 0 0}
         .va-tache{position:absolute;left:50%;top:-4px;bottom:-4px;width:1.5px;background:var(--charcoal);transform:rotate(45deg)}
         .va-agotado{font-size:12.5px;color:#a33;margin:10px 0 0}
         .va-cta{display:block;width:100%;background:var(--sage);color:#fff;border:0;border-radius:999px;padding:17px;font-size:15px;font-weight:500;cursor:pointer;font-family:var(--font-sans);margin:6px 0 14px;transition:background .2s}

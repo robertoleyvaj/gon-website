@@ -19,7 +19,7 @@ type Armazon = {
   color1?: string; descuento?: number; descuento_gon?: number; precio_gon?: number;
 };
 
-type ColorCard = { armazon_id: number; sku: string | null; color: string; hex?: string | null; imagen_url?: string | null; portada_url?: string | null };
+type ColorCard = { armazon_id: number; sku: string | null; color: string; bodega?: number | null; stock_baja?: number | null; stock_mayo?: number | null; stock_plaza?: number | null; hex?: string | null; imagen_url?: string | null; portada_url?: string | null };
 
 // ── CARD ────────────────────────────────────────────────
 function ArmazonCard({
@@ -176,7 +176,14 @@ function TiendaContent() {
   }, []);
 
   // Datos de cada armazón ya normalizados (sirve para nuevos de OptiOS y viejos)
-  const info = useMemo(() => armazones.map(a => {
+  // Inventario nuevo (SKU VRL-1xxx): si ningún color tiene piezas, el modelo no se muestra
+  const piezas = (c: ColorCard) => (Number(c.bodega) || 0) + (Number(c.stock_baja) || 0) + (Number(c.stock_mayo) || 0) + (Number(c.stock_plaza) || 0);
+  const agotadoModelo = (a: Armazon) => {
+    if (!/^VRL-1\d{3}$/.test(String((a as { sku?: string | null }).sku ?? ''))) return false;
+    const cols = coloresPorModelo[a.id];
+    return !!cols && cols.length > 0 && cols.every(c => piezas(c) <= 0);
+  };
+  const info = useMemo(() => armazones.filter(a => !agotadoModelo(a)).map(a => {
     const cols = coloresPorModelo[a.id] ?? [];
     const nombresColor = cols.length ? cols.map(c => c.color) : [a.color1 || a.color || ''];
     return {
