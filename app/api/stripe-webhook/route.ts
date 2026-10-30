@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
-import { correoCompraGon, correoAvisoGon, type PagoGon } from '../../lib/emails-gon';
+import { correoCompraGon, correoAvisoGon, codigoPedido, type PagoGon } from '../../lib/emails-gon';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const supabase = createClient(
@@ -41,6 +41,42 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ received: true });
+}
+
+// ── Apartar el armazón en el inventario al pagar ──
+// Primero de la sucursal donde recoge; si ahí no hay, de bodega y luego de otra óptica (y hay que pedir traspaso).
+const COL_UBIC: Record<string, string> = { bodega: 'bodega', baja: 'stock_baja', mayo: 'stock_mayo', plaza: 'stock_plaza' };
+const NOM_UBIC: Record<string, string> = { bodega: 'Bodega', baja: 'Baja Visión', mayo: '5 de Mayo', plaza: 'Plaza Laureles' };
+type InvApartado = { ok: boolean; color_id?: number; sku?: string; ubicacion?: string; traspaso?: boolean; aviso: string };
+
+async function apartarInventario(item: any, sucursal: string, referencia: string): Promise<InvApartado> {
+  try {
+    let colorId: number | null = item.color_id ?? null;
+    let sku: string | null = item.color_sku ?? null;
+    if (!colorId && !sku) {
+      // Pedidos viejos o sin color: si el armazón tiene un solo color publicado, se usa ese
+      const { data: cols } = await supabase.from('armazon_colores').select('id').eq('armazon_id', item.armazon_id).eq('publicar_gon', true);
+      if (cols?.length === 1) colorId = cols[0].id;
+      else return { ok: false, aviso: '⚠ Inventario: el pedido no trae color, apártalo a mano.' };
+    }
+    const q = supabase.from('armazon_colores').select('id, sku, bodega, stock_baja, stock_mayo, stock_plaza');
+    const { data: c } = colorId ? await q.eq('id', colorId).maybeSingle() : await q.eq('sku', String(sku).toUpperCase()).maybeSingle();
+    if (!c) return { ok: false, aviso: `⚠ Inventario: no encontré el color ${sku ?? colorId}, apártalo a mano.` };
+    const fila = c as Record<string, any>;
+    const orden = [sucursal, 'bodega', ...['baja', 'mayo', 'plaza'].filter(u => u !== sucursal)].filter(u => COL_UBIC[u]);
+    const ub = orden.find(u => Number(fila[COL_UBIC[u]] ?? 0) > 0);
+    if (!ub) return { ok: false, color_id: fila.id, sku: fila.sku, aviso: `⚠ Inventario: ${fila.sku} no tiene piezas en ninguna ubicación, revísalo.` };
+    const { error } = await supabase.rpc('inv_mover', {
+      p_color_id: fila.id, p_ubicacion: ub, p_cantidad: -1, p_tipo: 'venta',
+      p_referencia: referencia, p_usuario: 'GON (web)', p_notas: `Apartado por compra en gonmx.com (${referencia}); falta pasar a venta`,
+    });
+    if (error) return { ok: false, color_id: fila.id, sku: fila.sku, aviso: `⚠ Inventario: no se pudo apartar ${fila.sku} (${error.message}).` };
+    const traspaso = ub !== sucursal;
+    return { ok: true, color_id: fila.id, sku: fila.sku, ubicacion: ub, traspaso,
+      aviso: `Inventario: apartado ${fila.sku} de ${NOM_UBIC[ub]}${traspaso ? ` — pedir traspaso a ${NOM_UBIC[sucursal] ?? sucursal}` : ''}.` };
+  } catch (e: any) {
+    return { ok: false, aviso: `⚠ Inventario: error al apartar (${e?.message ?? 'desconocido'}).` };
+  }
 }
 
 // Crea los pedidos de GON (uno por par) cuando el pago se confirma
@@ -131,6 +167,12 @@ async function procesarPagoGon(session: Stripe.Checkout.Session, csId: string) {
     }).select().single();
     if (!pedido) continue;
     if (!primerPedido) primerPedido = pedido.id;
+
+    // Apartar el armazón en el inventario (el regalo no lleva pieza propia). Nunca debe tumbar el webhook.
+    if (!item.es_regalo) {
+      const inventario = await apartarInventario(item, pago.sucursal, codigoPedido(pedido.id));
+      await supabase.from('pedidos').update({ configuracion: { ...configuracion, inventario }, notas_admin: inventario.aviso }).eq('id', pedido.id);
+    }
 
     if (!item.solo_armazon && item.receta) {
       const recetaData: any = { pedido_id: pedido.id, metodo: item.receta.metodo, imagen_url: item.receta.foto_url || null, notas: item.paciente || null };

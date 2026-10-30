@@ -20,6 +20,8 @@ export type CartItem = {
   armazon_id: number;
   armazon_nombre: string;
   armazon_ref?: string;   // apodo · marca modelo · color (SKU) para el mensaje de WhatsApp
+  color_id?: number;      // armazon_colores.id (para apartar en inventario al pagar)
+  color_sku?: string;
   armazon_imagen?: string;
   armazon_precio: number;
   lentes?: CartLentes;

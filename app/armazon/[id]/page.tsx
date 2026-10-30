@@ -660,7 +660,7 @@ export default function DetalleArmazon() {
   const [armazon, setArmazon] = useState<Armazon | null>(null);
   const [relacionados, setRelacionados] = useState<Armazon[]>([]);
   const [loading, setLoading] = useState(true);
-  type ColorPub = { color: string; sku?: string | null; hex?: string | null; imagen_url?: string | null; imagen2_url?: string | null; imagen3_url?: string | null; imagen4_url?: string | null; portada_url?: string | null; precio?: number | null };
+  type ColorPub = { id?: number; color: string; sku?: string | null; hex?: string | null; imagen_url?: string | null; imagen2_url?: string | null; imagen3_url?: string | null; imagen4_url?: string | null; portada_url?: string | null; precio?: number | null };
   type RelInfo = { id: number; nombre: string; precio: number; foto: string; colores: { color: string; hex?: string | null }[] };
   const [relInfo, setRelInfo] = useState<RelInfo[]>([]);
   const [colores, setColores] = useState<ColorPub[]>([]);
@@ -800,6 +800,8 @@ export default function DetalleArmazon() {
       armazon_id: armazon!.id,
       armazon_nombre: armazon!.nombre,
       armazon_ref: refArmazon(),
+      color_id: colorActivo?.id ?? undefined,
+      color_sku: colorActivo?.sku || undefined,
       armazon_imagen: armazon!.imagen_url,
       armazon_precio: precioArmazonUSD,
       es_regalo: esRegalo,
