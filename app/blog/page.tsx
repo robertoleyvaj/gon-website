@@ -37,7 +37,7 @@ export default function BlogPage() {
       <div style={{ paddingTop: '100px', background: 'var(--sage)', color: 'white' }}>
         <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '4rem 2rem', textAlign: 'center' }}>
           <p style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1rem' }}>
-            GON ÓPTICA
+            GON ÓPTICAS
           </p>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 500, letterSpacing: '-0.03em', marginBottom: '1rem', lineHeight: 1 }}>
             {es ? 'Blog de Salud Visual' : 'Eye Health Blog'}

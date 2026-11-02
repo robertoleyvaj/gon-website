@@ -165,7 +165,7 @@ export default function Lenses() {
         <div style={{ maxWidth: '1360px', margin: '0 auto', padding: esMobil ? '0 1.5rem' : '0 5rem', display: 'grid', gridTemplateColumns: esMobil ? '1fr' : '1fr 1fr', gap: esMobil ? '2rem' : '6rem', alignItems: 'end' }}>
           <div>
             <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--warm-gray)', margin: '0 0 0.75rem' }}>
-              GON ÓPTICA — LENTES
+              GON ÓPTICAS — LENTES
             </p>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '3rem' : '5rem', fontWeight: 500, letterSpacing: '-0.03em', margin: '0 0 1rem', lineHeight: 1.0, color: 'var(--charcoal)' }}>
               {lang === 'es' ? 'Tus micas,\na tu medida.' : 'Your lenses,\nyour way.'}
@@ -190,7 +190,7 @@ export default function Lenses() {
           {!esMobil && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1px', background: 'var(--border)' }}>
               {[
-                { paso: '01', label: lang === 'es' ? 'Elige el armazón' : 'Choose the frame', sub: lang === 'es' ? 'Desde $230 MXN' : 'From $13 USD' },
+                { paso: '01', label: lang === 'es' ? 'Elige el armazón' : 'Choose the frame', sub: lang === 'es' ? 'Hasta 60% menos en línea' : 'Up to 60% off online' },
                 { paso: '02', label: lang === 'es' ? 'Tipo de visión' : 'Vision type', sub: lang === 'es' ? 'Monofocal / Bifocal / Progresivo' : 'Single / Bifocal / Progressive' },
                 { paso: '03', label: lang === 'es' ? 'Material de la mica' : 'Lens material', sub: lang === 'es' ? '5 opciones de grosor' : '5 thickness options' },
                 { paso: '04', label: lang === 'es' ? 'Filtro y coating' : 'Filter & coating', sub: lang === 'es' ? 'Luz azul, polarizado y más' : 'Blue light, polarized & more' },
@@ -385,7 +385,7 @@ export default function Lenses() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ background: 'var(--sage)', borderRadius: '6px', padding: '2.5rem' }}>
-              <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.6rem' }}>GON Óptica</p>
+              <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', margin: '0 0 0.6rem' }}>GON Ópticas</p>
               <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '1.6rem' : '2rem', fontWeight: 500, color: 'white', margin: '0 0 1rem', lineHeight: 1.2, letterSpacing: '-0.03em' }}>
                 {lang === 'es' ? '¿No sabes qué elegir?' : "Not sure what to pick?"}
               </h3>

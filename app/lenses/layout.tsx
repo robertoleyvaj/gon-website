@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { preciosDesde, pesos } from "../lib/precios-desde";
 
-export const metadata: Metadata = {
-  title: "Tipos de Lentes y Micas Graduadas en Rosarito | GON Óptica",
+export const revalidate = 3600;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const d = await preciosDesde();
+  return {
+  title: "Tipos de Lentes y Micas Graduadas en Rosarito | GON Ópticas",
   description:
-    "Monofocal, bifocal, progresivo, luz azul, fotocromático y más. Lentes graduados con micas de calidad Essilor y Zeiss en Rosarito, B.C. Sin seguro, desde $230 MXN.",
+    `Monofocal, bifocal, progresivo, luz azul, fotocromático y más. Micas graduadas${d.mono ? ` desde ${pesos(d.mono)}` : ""} con precio web en Rosarito, B.C. Sin seguro y con examen de la vista gratis.`,
   keywords: [
     "lentes monofocales Rosarito",
     "lentes progresivos Rosarito",
@@ -15,17 +20,18 @@ export const metadata: Metadata = {
     "lentes delgados Rosarito",
   ],
   openGraph: {
-    title: "Micas y Lentes Graduados | GON Óptica Rosarito",
+    title: "Micas y Lentes Graduados | GON Ópticas Rosarito",
     description:
       "Elige entre monofocal, bifocal o progresivo. 5 materiales, 7 filtros. Recoge en cualquiera de nuestras 3 ópticas en Rosarito.",
-    url: "https://gonmx.com/lenses",
+    url: "https://www.gonmx.com/lenses",
   },
   alternates: {
-    canonical: "https://gonmx.com/lenses",
+    canonical: "https://www.gonmx.com/lenses",
   },
-};
+  };
+}
 
-const faqSchema = {
+const armarFaq = (d: Awaited<ReturnType<typeof preciosDesde>>) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
@@ -34,7 +40,7 @@ const faqSchema = {
       name: "¿Cuánto cuestan los lentes graduados en Rosarito?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "En GON Óptica los lentes graduados monofocales comienzan desde $749 MXN. Los bifocales desde $1,149 MXN y los progresivos desde $1,899 MXN. El precio final incluye el armazón y puede variar según el material de la mica y los filtros que elijas.",
+        text: `Con precio web en GON Ópticas, las micas monofocales empiezan en ${pesos(d.mono)}, las bifocales en ${pesos(d.bi)} y las progresivas en ${pesos(d.prog)}${d.armazon ? `, y los armazones desde ${pesos(d.armazon)}` : ""}. El total depende del armazón, del material de la mica y de los filtros que elijas.`,
       },
     },
     {
@@ -55,10 +61,10 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      name: "¿Puedo subir mi receta después de comprar?",
+      name: "¿Puedo comprar si todavía no tengo mi graduación?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Sí. Puedes completar tu pedido y subir tu receta antes de que lo procesemos. También puedes traer tu receta impresa directamente a cualquiera de nuestras 3 ópticas en Rosarito.",
+        text: "Sí. Compra o aparta tus lentes en línea y ven por tu examen de la vista gratis a cualquiera de nuestras 3 ópticas en Rosarito. En cuanto tengamos tu graduación mandamos a hacer tus lentes.",
       },
     },
     {
@@ -66,7 +72,7 @@ const faqSchema = {
       name: "¿Cuánto tarda un pedido con lentes graduados?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Si solo compras el armazón, el tiempo es de 5 a 7 días. Con micas graduadas, se agregan hasta 10 días adicionales para la fabricación. Si recoges en óptica en Rosarito, te avisamos en cuanto esté listo.",
+        text: "Depende de la mica que elijas. Te avisamos por correo en cuanto tus lentes estén listos para recoger en la óptica que elegiste.",
       },
     },
     {
@@ -86,14 +92,14 @@ const faqSchema = {
       },
     },
   ],
-};
+});
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(armarFaq(await preciosDesde())) }}
       />
       {children}
     </>

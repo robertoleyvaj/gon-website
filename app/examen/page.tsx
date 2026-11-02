@@ -61,7 +61,7 @@ export default function ExamenPage() {
       <div style={{ paddingTop: esMobil ? '100px' : '120px', paddingBottom: esMobil ? '3rem' : '5rem', borderBottom: '1px solid var(--border)' }}>
         <div style={{ maxWidth: '1360px', margin: '0 auto', padding: esMobil ? '0 1.5rem' : '0 5rem' }}>
           <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--accent)', margin: '0 0 1rem' }}>
-            {t('GON ÓPTICA — EXAMEN DE LA VISTA', 'GON ÓPTICA — EYE EXAM')}
+            {t('GON ÓPTICAS — EXAMEN DE LA VISTA', 'GON ÓPTICAS — EYE EXAM')}
           </p>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '3rem' : '5rem', fontWeight: 500, letterSpacing: '-0.03em', margin: '0 0 1.5rem', lineHeight: 1.0, color: 'var(--charcoal)', maxWidth: '700px' }}>
             {t('Ve con claridad.\nSiempre.', 'See clearly.\nAlways.')}
@@ -74,7 +74,7 @@ export default function ExamenPage() {
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             {[
               { icono: '✓', label: t('Sin costo', 'Free of charge') },
-              { icono: '✓', label: t('Con cita previa', 'By appointment') },
+              { icono: '✓', label: t('Con o sin cita', 'Walk-ins or appointments') },
               { icono: '✓', label: t('Optometristas certificados', 'Certified optometrists') },
               { icono: '✓', label: t('3 sucursales en Rosarito', '3 locations in Rosarito') },
             ].map((b, i) => (
@@ -115,7 +115,7 @@ export default function ExamenPage() {
                   {t('Ya tengo mi graduación', 'I already have my prescription')}
                 </h3>
                 <p style={{ fontSize: '0.82rem', color: 'var(--warm-gray)', lineHeight: 1.7, margin: '0 0 1.5rem' }}>
-                  {t('Arma tus lentes en línea con tu receta, apártalos por WhatsApp con tu código web y recógelos en la sucursal que prefieras.', 'Build your glasses online with your prescription, reserve them on WhatsApp with your web code, and pick them up at your preferred location.')}
+                  {t('Arma tus lentes en línea con tu receta, págalos o apártalos desde $100 con tu precio web y recógelos en la óptica que prefieras.', 'Build your glasses online with your prescription, pay or reserve them from $100 MXN at your online price, and pick them up at your preferred store.')}
                 </p>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--sage)' }}>
                   {t('Ver armazones', 'Shop frames')} →

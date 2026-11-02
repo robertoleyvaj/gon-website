@@ -47,7 +47,7 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
   const pages = Math.ceil(total / visibles);
   const currentPage = Math.floor(reviewStart / visibles);
 
-  const avg = (s.resenas.reduce((a, r) => a + r.estrellas, 0) / total).toFixed(1);
+  const avg = total ? (s.resenas.reduce((a, r) => a + r.estrellas, 0) / total).toFixed(1) : '';
 
   const t = (a: string, b: string) => es ? a : b;
 
@@ -65,13 +65,13 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
             {s.nombre_largo}
           </h1>
           <p style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)' }}>{s.direccion}</p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1rem' }}>
+          {total > 0 && <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1rem' }}>
             <Stars n={5} />
             <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{avg}</span>
             <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.55)' }}>
               {total} {t('reseñas en Google', 'Google reviews')}
             </span>
-          </div>
+          </div>}
         </div>
       </div>
 
@@ -117,7 +117,7 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.4rem' }}>
             {[
               t('✓ Examen de la vista gratis', '✓ Free eye exam'),
-              t('✓ Sin cita previa', '✓ Walk-ins welcome'),
+              t('✓ Con o sin cita', '✓ Walk-ins or appointments'),
               t('✓ Optometristas certificados', '✓ Certified optometrists'),
               t('✓ Monofocal, bifocal y progresivo', '✓ Single vision, bifocal & progressive'),
               t('✓ Más de 100 modelos de armazones', '✓ 100+ frame styles'),
@@ -128,7 +128,18 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
           </div>
         </div>
 
-        {/* ── Reseñas ── */}
+        {/* ── Reseñas: solo reseñas reales. Mientras no haya, se manda a verlas directo en Google ── */}
+        {total === 0 ? (
+          <div style={{ marginTop: '3rem', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.5rem', background: 'white', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+            <div>
+              <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', fontWeight: 500, color: 'var(--charcoal)', marginBottom: '0.3rem' }}>{t('Lo que dicen nuestros pacientes', 'What our patients say')}</h2>
+              <p style={{ fontSize: '0.85rem', color: 'var(--warm-gray)' }}>{t('Lee las reseñas de esta óptica directamente en Google.', 'Read this store\'s reviews directly on Google.')}</p>
+            </div>
+            <a href={s.googleUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 16px', background: 'white', border: '1.5px solid var(--border)', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--charcoal)', textDecoration: 'none' }}>
+              <GoogleLogo /> {t('Ver reseñas en Google', 'See Google reviews')}
+            </a>
+          </div>
+        ) : (
         <div style={{ marginTop: '3rem' }}>
           {/* Header reseñas */}
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
@@ -198,6 +209,7 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
             </div>
           )}
         </div>
+        )}
 
         {/* ── CTA ── */}
         <div style={{ marginTop: '3rem', background: 'var(--sage)', borderRadius: '16px', padding: '2.5rem', textAlign: 'center', color: 'white' }}>
@@ -205,7 +217,7 @@ export default function SucursalPage({ params }: { params: Promise<{ slug: strin
             {t('¿Listo para visitarnos?', 'Ready to visit us?')}
           </h3>
           <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
-            {t('No necesitas cita previa. Llega, haz tu examen gratis y elige tus lentes.', 'No appointment needed. Walk in, get your free eye exam, and choose your glasses.')}
+            {t('Llega sin cita o agenda tu examen gratis, y elige tus lentes.', 'Walk in or book your free eye exam, and choose your glasses.')}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem' }}>
             <a href={`tel:${s.telefono}`} style={{ background: 'white', color: 'var(--sage)', padding: '10px 24px', borderRadius: '999px', fontFamily: 'var(--font-sans)', fontSize: '0.88rem', fontWeight: 500, textDecoration: 'none' }}>

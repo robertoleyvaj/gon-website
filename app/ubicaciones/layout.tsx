@@ -13,13 +13,13 @@ export const metadata: Metadata = {
     "lentes Rosarito dirección",
   ],
   openGraph: {
-    title: "Nuestras Ubicaciones — GON Óptica Rosarito",
+    title: "Nuestras Ubicaciones — GON Ópticas Rosarito",
     description:
-      "3 ópticas en Rosarito, B.C. Lun–Dom 10–18 hrs. Atención fuera de horario con cita previa.",
-    url: "https://gonmx.com/ubicaciones",
+      "3 ópticas en Rosarito, B.C. de 10 a 18 hrs (5 de Mayo cierra domingos). Examen de la vista gratis, con o sin cita.",
+    url: "https://www.gonmx.com/ubicaciones",
   },
   alternates: {
-    canonical: "https://gonmx.com/ubicaciones",
+    canonical: "https://www.gonmx.com/ubicaciones",
   },
 };
 

@@ -49,7 +49,7 @@ export default function BlogPost({ params }: { params: Promise<{ slug: string }>
           </h1>
           <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.55)', fontFamily: 'var(--font-sans)' }}>
             {new Date(post.fecha).toLocaleDateString(es ? 'es-MX' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            {' · '}GON Óptica Rosarito
+            {' · '}GON Ópticas Rosarito
           </p>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function BlogPost({ params }: { params: Promise<{ slug: string }>
           </h3>
           <p style={{ fontSize: '0.85rem', color: 'var(--warm-gray)', marginBottom: '1.25rem', lineHeight: 1.7 }}>
             {es
-              ? 'Visítanos en cualquiera de nuestras 3 sucursales en Rosarito. Examen de la vista gratis, sin cita.'
+              ? 'Visítanos en cualquiera de nuestras 3 sucursales en Rosarito. Examen de la vista gratis, con o sin cita.'
               : 'Visit any of our 3 locations in Rosarito. Free eye exam, no appointment needed.'}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>

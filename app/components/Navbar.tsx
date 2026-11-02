@@ -204,7 +204,7 @@ export default function Navbar() {
           <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", flexShrink: 0 }}>
             <img
               src="/logo-gon.png"
-              alt="GON — Grupo Óptico del Noroeste"
+              alt="GON Ópticas"
               style={{ height: "40px", width: "auto", objectFit: "contain" }}
             />
           </Link>
@@ -321,7 +321,7 @@ export default function Navbar() {
           fontFamily: "var(--font-sans)", fontSize: "0.62rem",
           letterSpacing: "0.16em", textTransform: "uppercase", color: "var(--warm-gray)",
         }}>
-          Grupo Óptico del Noroeste
+          GON Ópticas
         </p>
       </div>
 

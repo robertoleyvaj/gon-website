@@ -24,15 +24,15 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Óptica en Rosarito — Todo lo que necesitas saber',
     titulo_en: 'Optical Store in Rosarito, Mexico — Your Complete Guide',
-    descripcion_es: 'Encuentra la mejor óptica en Playas de Rosarito. GON Óptica ofrece lentes graduados, examen de la vista gratis y 3 sucursales. Precios en pesos, sin seguro.',
+    descripcion_es: 'Encuentra la mejor óptica en Playas de Rosarito. GON Ópticas ofrece lentes graduados, examen de la vista gratis y 3 sucursales. Precios en pesos, sin seguro.',
     descripcion_en: 'Looking for an optical store in Rosarito, Mexico? GON Optica offers prescription glasses, free eye exams, and 3 locations in Playas de Rosarito. No insurance needed.',
     keywords_es: ['óptica Rosarito', 'óptica Playas de Rosarito', 'lentes Rosarito', 'optometrista Rosarito', 'óptica cerca de mí Rosarito'],
     keywords_en: ['optical store Rosarito Mexico', 'glasses Rosarito', 'optometrist Rosarito', 'eye doctor Rosarito Mexico', 'prescription glasses Rosarito'],
     contenido_es: `
 <h2>La óptica más completa de Rosarito</h2>
-<p>Si estás buscando una óptica en Rosarito, Baja California, GON — Grupo Óptico del Noroeste — es la opción con más experiencia y más sucursales en la zona. Con más de 12 años atendiendo a familias de Rosarito y visitantes de toda la región fronteriza, somos la óptica de confianza del noroeste.</p>
+<p>Si estás buscando una óptica en Rosarito, Baja California, GON Ópticas es la opción con más experiencia y más sucursales en la zona. Con más de 12 años atendiendo a familias de Rosarito y visitantes de toda la región fronteriza, somos la óptica de confianza del noroeste.</p>
 
-<h2>¿Qué ofrecemos en GON Óptica Rosarito?</h2>
+<h2>¿Qué ofrecemos en GON Ópticas Rosarito?</h2>
 <ul>
 <li><strong>Examen de la vista gratis</strong> con optometristas certificados por la Universidad Xochicalco</li>
 <li><strong>Lentes graduados</strong> monofocales, bifocales y progresivos</li>
@@ -60,7 +60,7 @@ export const posts: BlogPost[] = [
     `,
     contenido_en: `
 <h2>The Most Complete Optical Store in Rosarito</h2>
-<p>If you're looking for an optical store in Rosarito, Baja California, GON — Grupo Óptico del Noroeste — is the most experienced option in the area. With over 12 years serving families from Rosarito and visitors from across the border region, we're the trusted optical store of northwestern Mexico.</p>
+<p>If you're looking for an optical store in Rosarito, Baja California, GON Ópticas is the most experienced option in the area. With over 12 years serving families from Rosarito and visitors from across the border region, we're the trusted optical store of northwestern Mexico.</p>
 
 <h2>What We Offer at GON Optica Rosarito</h2>
 <ul>
@@ -98,13 +98,13 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Lentes graduados en Rosarito desde San Diego — La guía completa',
     titulo_en: 'Getting Prescription Glasses in Rosarito from San Diego — Complete Guide',
-    descripcion_es: 'Cruza la frontera y ahorra hasta 60% en lentes graduados de calidad en Rosarito. GON Óptica ofrece examen gratis, lentes monofocales desde $700 MXN y recoge el mismo día.',
+    descripcion_es: 'Cruza la frontera y ahorra hasta 60% en lentes graduados de calidad en Rosarito. GON Ópticas ofrece examen gratis, lentes monofocales desde $700 MXN y recoge el mismo día.',
     descripcion_en: 'Cross the border and save up to 60% on quality prescription glasses in Rosarito, Mexico. GON Optica offers free eye exams, single-vision lenses from $700 MXN, and same-day pickup.',
     keywords_es: ['lentes graduados frontera Rosarito', 'óptica Rosarito San Diego', 'lentes baratos Rosarito', 'turismo médico Rosarito'],
     keywords_en: ['prescription glasses Rosarito Mexico', 'cheap glasses Rosarito', 'glasses San Diego border', 'prescription eyeglasses Tijuana Rosarito', 'affordable glasses Mexico border', 'eye care Rosarito Mexico'],
     contenido_es: `
 <h2>¿Vale la pena cruzar la frontera por lentes?</h2>
-<p>Sí, y mucho. Los lentes graduados en Estados Unidos pueden costar entre $300 y $800 USD, especialmente si incluyen micas progresivas o filtros especiales. En GON Óptica Rosarito, los mismos lentes de calidad cuestan entre 3 y 5 veces menos — sin sacrificar calidad ni atención profesional.</p>
+<p>Sí, y mucho. Los lentes graduados en Estados Unidos pueden costar entre $300 y $800 USD, especialmente si incluyen micas progresivas o filtros especiales. En GON Ópticas Rosarito, los mismos lentes de calidad cuestan entre 3 y 5 veces menos — sin sacrificar calidad ni atención profesional.</p>
 
 <h2>¿Cuánto me ahorro exactamente?</h2>
 <p>Un par de lentes monofocales con armazón en GON comienza en aproximadamente $700 MXN en micas más el precio del armazón. En dólares, eso equivale a menos de $45 USD al tipo de cambio actual. En una óptica de San Diego, el mismo servicio raramente baja de $150–200 USD.</p>
@@ -410,7 +410,7 @@ export const posts: BlogPost[] = [
     keywords_en: ['cheap glasses rosarito','affordable glasses rosarito mexico','inexpensive prescription glasses rosarito'],
     contenido_es: `
 <h2>¿Cuánto cuestan los lentes en Rosarito?</h2>
-<p>En GON Óptica los precios son directos — sin seguros, sin intermediarios. Los lentes monofocales más sencillos comienzan desde <strong>$700 MXN</strong> en micas, más el armazón que elijas. La mayoría de nuestros armazones están entre $300 y $1,200 MXN.</p>
+<p>En GON Ópticas los precios son directos — sin seguros, sin intermediarios. Los lentes monofocales más sencillos comienzan desde <strong>$700 MXN</strong> en micas, más el armazón que elijas. La mayoría de nuestros armazones están entre $300 y $1,200 MXN.</p>
 <h2>¿Por qué son tan baratos comparado con Estados Unidos?</h2>
 <p>Los lentes en México cuestan entre 3 y 5 veces menos que en EE.UU. porque no hay intermediarios de seguros, los costos operativos son menores y el peso mexicano hace que los precios sean muy accesibles para quien gana en dólares.</p>
 <h2>¿La calidad es buena aunque sean baratos?</h2>
@@ -488,13 +488,13 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Examen de la vista gratis en Rosarito — sin cita, sin seguro',
     titulo_en: 'Free Eye Exam in Rosarito — No Appointment, No Insurance',
-    descripcion_es: 'GON Óptica ofrece examen de la vista gratuito en sus 3 sucursales en Rosarito. Sin cita previa, sin seguro médico. Optometristas certificados.',
+    descripcion_es: 'GON Ópticas ofrece examen de la vista gratuito en sus 3 sucursales en Rosarito. Sin cita previa, sin seguro médico. Optometristas certificados.',
     descripcion_en: 'GON Optica offers free eye exams at all 3 Rosarito locations. No appointment needed, no insurance required. Certified optometrists on staff.',
     keywords_es: ['examen de la vista gratis rosarito','graduacion gratis rosarito','optometrista gratis rosarito','revision de la vista rosarito'],
     keywords_en: ['free eye exam rosarito','free eye exam rosarito mexico','no cost eye exam rosarito'],
     contenido_es: `
 <h2>¿El examen de la vista es realmente gratis?</h2>
-<p>Sí, completamente gratis. En GON Óptica el examen de la vista no tiene costo en ninguna de nuestras 3 sucursales en Rosarito. No necesitas seguro médico, cita previa ni comprar nada.</p>
+<p>Sí, completamente gratis. En GON Ópticas el examen de la vista no tiene costo en ninguna de nuestras 3 sucursales en Rosarito. No necesitas seguro médico, cita previa ni comprar nada.</p>
 <h2>¿Qué incluye el examen?</h2>
 <ul>
 <li>Evaluación de agudeza visual (lejos y cerca)</li>
@@ -539,7 +539,7 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Optometrista en Rosarito — certificados, sin cita, examen gratis',
     titulo_en: 'Optometrist in Rosarito, Mexico — Certified, Walk-In, Free Exam',
-    descripcion_es: 'Encuentra optometristas certificados en Rosarito, B.C. GON Óptica tiene 3 sucursales con examen de la vista gratis. Sin cita, sin seguro.',
+    descripcion_es: 'Encuentra optometristas certificados en Rosarito, B.C. GON Ópticas tiene 3 sucursales con examen de la vista gratis. Sin cita, sin seguro.',
     descripcion_en: 'Find certified optometrists in Rosarito, BC. GON Optica has 3 locations with free eye exams. Walk-ins welcome, no insurance needed.',
     keywords_es: ['optometrista rosarito','optometrista playas de rosarito','doctor ojos rosarito','revision ojos rosarito'],
     keywords_en: ['optometrist rosarito mexico','eye doctor rosarito','optometrist playas de rosarito'],
@@ -568,7 +568,7 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Lentes baratos en Rosarito México — la guía para cruzar la frontera',
     titulo_en: 'Cheap Glasses in Rosarito Mexico — Everything You Need to Know',
-    descripcion_es: 'Ahorra hasta 70% en lentes graduados cruzando a Rosarito, México. GON Óptica: examen gratis, lentes desde $700 MXN, 3 sucursales, atención en inglés.',
+    descripcion_es: 'Ahorra hasta 70% en lentes graduados cruzando a Rosarito, México. GON Ópticas: examen gratis, lentes desde $700 MXN, 3 sucursales, atención en inglés.',
     descripcion_en: 'Save up to 70% on prescription glasses by crossing to Rosarito, Mexico. GON Optica: free eye exam, lenses from $700 MXN, 3 locations, English-speaking staff.',
     keywords_es: ['lentes baratos rosarito mexico','lentes economicos cruzar frontera','optica frontera rosarito'],
     keywords_en: ['cheap glasses rosarito mexico','affordable eyeglasses rosarito','cheap prescription glasses mexico border','glasses mexico border san diego'],
@@ -597,7 +597,7 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Examen de la vista en Rosarito México — gratis con o sin compra',
     titulo_en: 'Eye Exam in Rosarito Mexico — Free With or Without Purchase',
-    descripcion_es: 'Examen de la vista gratuito en Rosarito, México. Sin cita, sin seguro, en inglés. GON Óptica: 3 sucursales en Playas de Rosarito.',
+    descripcion_es: 'Examen de la vista gratuito en Rosarito, México. Sin cita, sin seguro, en inglés. GON Ópticas: 3 sucursales en Playas de Rosarito.',
     descripcion_en: 'Free eye exam in Rosarito, Mexico. No appointment, no insurance, English-speaking staff. GON Optica has 3 locations in Playas de Rosarito.',
     keywords_es: ['examen vista rosarito mexico','examen ojos rosarito','revision vision rosarito'],
     keywords_en: ['eye exam rosarito mexico','free eye exam rosarito','eye examination rosarito baja california','vision test rosarito mexico'],
@@ -622,7 +622,7 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Lentes graduados en Tijuana y Rosarito — precios y opciones',
     titulo_en: 'Prescription Glasses in Tijuana and Rosarito — Prices and Options',
-    descripcion_es: 'Compara opciones de lentes graduados en Tijuana y Rosarito. GON Óptica en Rosarito: más cerca de la frontera, examen gratis, precios desde $700 MXN.',
+    descripcion_es: 'Compara opciones de lentes graduados en Tijuana y Rosarito. GON Ópticas en Rosarito: más cerca de la frontera, examen gratis, precios desde $700 MXN.',
     descripcion_en: 'Compare prescription glasses in Tijuana vs Rosarito. GON Optica in Rosarito: closer to the border, free exam, prices from $700 MXN.',
     keywords_es: ['lentes graduados tijuana','optica tijuana rosarito','lentes tijuana precio'],
     keywords_en: ['prescription glasses tijuana','glasses tijuana mexico','eyeglasses tijuana','prescription glasses near tijuana border'],
@@ -647,7 +647,7 @@ export const posts: BlogPost[] = [
     categoria: 'salud-visual',
     titulo_es: 'Lentes para astigmatismo en Rosarito — qué son y cuánto cuestan',
     titulo_en: 'Glasses for Astigmatism in Rosarito — What They Are and What They Cost',
-    descripcion_es: 'El astigmatismo se corrige fácilmente con lentes graduados. Conoce los tipos de micas para astigmatismo y sus precios en GON Óptica Rosarito.',
+    descripcion_es: 'El astigmatismo se corrige fácilmente con lentes graduados. Conoce los tipos de micas para astigmatismo y sus precios en GON Ópticas Rosarito.',
     descripcion_en: 'Astigmatism is easily corrected with prescription glasses. Learn about lens options for astigmatism and prices at GON Optica Rosarito.',
     keywords_es: ['lentes astigmatismo rosarito','lentes para astigmatismo rosarito','astigmatismo lentes rosarito','graduacion astigmatismo rosarito'],
     keywords_en: ['glasses for astigmatism rosarito','astigmatism glasses rosarito mexico','toric lenses rosarito'],
@@ -676,7 +676,7 @@ export const posts: BlogPost[] = [
     categoria: 'salud-visual',
     titulo_es: 'Vista cansada en Rosarito — lentes para presbicia desde $1,074 MXN',
     titulo_en: 'Tired Eyes in Rosarito — Reading Glasses and Progressives from $1,074 MXN',
-    descripcion_es: 'La vista cansada o presbicia se corrige con lentes bifocales o progresivos. Precios desde $1,074 MXN en GON Óptica Rosarito. Examen gratis.',
+    descripcion_es: 'La vista cansada o presbicia se corrige con lentes bifocales o progresivos. Precios desde $1,074 MXN en GON Ópticas Rosarito. Examen gratis.',
     descripcion_en: 'Presbyopia (tired eyes) is corrected with bifocal or progressive lenses. Prices from $1,074 MXN at GON Optica Rosarito. Free eye exam.',
     keywords_es: ['vista cansada lentes rosarito','presbicia lentes rosarito','lentes lectura rosarito','lentes para ver de cerca rosarito'],
     keywords_en: ['reading glasses rosarito','presbyopia glasses rosarito mexico','tired eyes glasses rosarito'],
@@ -882,7 +882,7 @@ export const posts: BlogPost[] = [
     categoria: 'salud-visual',
     titulo_es: 'Lentes de contacto en Rosarito — dónde conseguirlos y qué necesitas',
     titulo_en: 'Contact Lenses in Rosarito — Where to Get Them and What You Need',
-    descripcion_es: 'Encuentra lentes de contacto en Rosarito con receta médica. GON Óptica ofrece asesoría y graduación para lentes de contacto blandos y para astigmatismo.',
+    descripcion_es: 'Encuentra lentes de contacto en Rosarito con receta médica. GON Ópticas ofrece asesoría y graduación para lentes de contacto blandos y para astigmatismo.',
     descripcion_en: 'Find contact lenses in Rosarito with a prescription. GON Optica offers guidance and fitting for soft contact lenses including for astigmatism.',
     keywords_es: ['lentes de contacto rosarito','lentes contacto rosarito','pupilentes rosarito','lentes blandos rosarito'],
     keywords_en: ['contact lenses rosarito','contacts rosarito mexico','soft contact lenses rosarito'],
@@ -1121,7 +1121,7 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Lentes baratos en Tijuana — o mejor en Rosarito, a 30 minutos',
     titulo_en: 'Cheap Glasses Near Tijuana — Try Rosarito, Just 30 Minutes Away',
-    descripcion_es: 'Buscas lentes baratos en Tijuana. Rosarito queda a 30 minutos y GON Óptica ofrece mejores precios y menos tráfico. Desde $700 MXN, examen gratis.',
+    descripcion_es: 'Buscas lentes baratos en Tijuana. Rosarito queda a 30 minutos y GON Ópticas ofrece mejores precios y menos tráfico. Desde $700 MXN, examen gratis.',
     descripcion_en: 'Looking for cheap glasses near Tijuana? Rosarito is just 30 minutes away and GON Optica offers better prices with less traffic. From $700 MXN, free exam.',
     keywords_es: ['lentes baratos tijuana','optica economica tijuana','lentes graduados tijuana baratos','optica buenos precios tijuana'],
     keywords_en: ['cheap glasses tijuana','affordable glasses near tijuana','glasses tijuana mexico price','inexpensive glasses tijuana border'],
@@ -1144,7 +1144,7 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Lentes bifocales en Rosarito — precio, ventajas y a quién le convienen',
     titulo_en: 'Bifocal Glasses in Rosarito — Price, Benefits, and Who Should Get Them',
-    descripcion_es: 'Lentes bifocales en Rosarito desde $1,074 MXN. GON Óptica tiene 3 sucursales. Descubre si los bifocales son mejor opción que los progresivos para ti.',
+    descripcion_es: 'Lentes bifocales en Rosarito desde $1,074 MXN. GON Ópticas tiene 3 sucursales. Descubre si los bifocales son mejor opción que los progresivos para ti.',
     descripcion_en: 'Bifocal glasses in Rosarito from $1,074 MXN. GON Optica has 3 locations. Find out if bifocals are better than progressives for your needs.',
     keywords_es: ['lentes bifocales rosarito','bifocales precio rosarito','lentes dos distancias rosarito'],
     keywords_en: ['bifocal glasses rosarito','bifocals rosarito mexico','bifocal lenses price rosarito'],
@@ -1212,7 +1212,7 @@ export const posts: BlogPost[] = [
     keywords_en: ['optical store playas de rosarito','glasses playas de rosarito','best optical rosarito baja california'],
     contenido_es: `
 <h2>¿Por qué GON es la óptica de referencia en Playas de Rosarito?</h2>
-<p>Con más de 12 años en la ciudad y 3 sucursales activas, GON — Grupo Óptico del Noroeste — es la óptica con mayor presencia en Playas de Rosarito. Atendemos a familias locales, visitantes de fin de semana y clientes que cruzan desde el lado americano.</p>
+<p>Con más de 12 años en la ciudad y 3 sucursales activas, GON Ópticas es la óptica con mayor presencia en Playas de Rosarito. Atendemos a familias locales, visitantes de fin de semana y clientes que cruzan desde el lado americano.</p>
 <h2>¿Qué nos diferencia de otras ópticas en Rosarito?</h2>
 <ul>
 <li>3 sucursales en puntos estratégicos de la ciudad</li>
@@ -1224,7 +1224,7 @@ export const posts: BlogPost[] = [
 </ul>`,
     contenido_en: `
 <h2>Why Is GON the Go-To Optical Store in Playas de Rosarito?</h2>
-<p>With over 12 years in the city and 3 active locations, GON — Grupo Óptico del Noroeste — is the optical store with the largest presence in Playas de Rosarito. We serve local families, weekend visitors, and customers crossing from the US side.</p>
+<p>With over 12 years in the city and 3 active locations, GON Ópticas is the optical store with the largest presence in Playas de Rosarito. We serve local families, weekend visitors, and customers crossing from the US side.</p>
 <h2>What Sets Us Apart?</h2>
 <ul>
 <li>3 locations at strategic points in the city</li>
@@ -1272,7 +1272,7 @@ export const posts: BlogPost[] = [
     categoria: 'frontera',
     titulo_es: 'Optometrista en Rosarito México — certificado, en inglés, sin cita',
     titulo_en: 'Optometrist in Rosarito Mexico — Certified, English-Speaking, Walk-In',
-    descripcion_es: 'GON Óptica Rosarito tiene optometristas certificados que atienden en inglés. Examen de la vista gratis. 3 sucursales, sin cita previa.',
+    descripcion_es: 'GON Ópticas Rosarito tiene optometristas certificados que atienden en inglés. Examen de la vista gratis. 3 sucursales, sin cita previa.',
     descripcion_en: 'GON Optica Rosarito has certified optometrists who speak English. Free eye exam. 3 locations, no appointment needed.',
     keywords_es: ['optometrista rosarito mexico','oculista rosarito','doctor de la vista rosarito mexico'],
     keywords_en: ['optometrist rosarito mexico','english speaking optometrist rosarito','eye doctor rosarito mexico english','vision care rosarito mexico'],
@@ -1296,7 +1296,7 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Armazones económicos en Rosarito — estilos para todos los presupuestos',
     titulo_en: 'Affordable Frames in Rosarito — Styles for Every Budget',
-    descripcion_es: 'GON Óptica tiene armazones económicos en Rosarito desde $300 MXN. Acetato, metal, hombre, mujer y niños. Más de 100 modelos en tienda.',
+    descripcion_es: 'GON Ópticas tiene armazones económicos en Rosarito desde $300 MXN. Acetato, metal, hombre, mujer y niños. Más de 100 modelos en tienda.',
     descripcion_en: 'GON Optica has affordable frames in Rosarito from $300 MXN. Acetate, metal, men\'s, women\'s and kids. 100+ styles in store.',
     keywords_es: ['armazones economicos rosarito','marcos lentes baratos rosarito','armazones baratos rosarito','donde comprar armazones rosarito'],
     keywords_en: ['affordable frames rosarito','cheap eyeglass frames rosarito mexico','frames rosarito price'],
@@ -1403,7 +1403,7 @@ export const posts: BlogPost[] = [
     categoria: 'local',
     titulo_es: 'Lentes económicos en Baja California — la mejor opción en Rosarito',
     titulo_en: 'Affordable Glasses in Baja California — Best Option in Rosarito',
-    descripcion_es: 'Busca lentes económicos en Baja California. GON Óptica Rosarito ofrece los mejores precios de la región: desde $700 MXN con examen de la vista gratis.',
+    descripcion_es: 'Busca lentes económicos en Baja California. GON Ópticas Rosarito ofrece los mejores precios de la región: desde $700 MXN con examen de la vista gratis.',
     descripcion_en: 'Looking for affordable glasses in Baja California? GON Optica Rosarito offers the best prices in the region: from $700 MXN with free eye exam.',
     keywords_es: ['lentes economicos baja california','optica baja california precio','lentes baratos bc','lentes graduados baja california'],
     keywords_en: ['affordable glasses baja california','cheap glasses baja california mexico','eyeglasses baja california price'],

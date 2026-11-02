@@ -1,5 +1,5 @@
 // Feed de productos de GON para el Catálogo de Meta (y Google si se quiere). Precios en pesos.
-// URL: https://gonmx.com/feed/productos
+// URL: https://www.gonmx.com/feed/productos
 // Una entrada por COLOR publicado en GON; item_group_id = id del armazón.
 import { supabaseServidor } from '../../lib/supabase-server';
 import { precioGon } from '../../lib/precio-gon';
@@ -9,7 +9,7 @@ import { FORMAS, normForma, tallaDeMedidas } from '../../lib/armazon-web';
 
 export const revalidate = 3600; // se regenera cada hora
 
-const BASE = 'https://gonmx.com';
+const BASE = 'https://www.gonmx.com';
 const esc = (s: unknown) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // Existencia de las ópticas físicas + bodega (GON no vende del inventario online de Verly)
 const STOCK = ['stock_baja', 'stock_mayo', 'stock_plaza', 'bodega'];
@@ -73,7 +73,7 @@ ${color ? `      <g:color>${esc(color)}</g:color>\n` : ''}${material ? `      <g
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
-    <title>GON — Grupo Óptico del Noroeste</title>
+    <title>GON Ópticas</title>
     <link>${BASE}</link>
     <description>Armazones disponibles en nuestras ópticas de Playas de Rosarito</description>
 ${items.join('\n')}

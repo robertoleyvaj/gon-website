@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'GON — Grupo Óptico del Noroeste';
+export const alt = 'GON Ópticas';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -35,7 +35,7 @@ export default async function Image() {
           </div>
           {/* Subtítulo */}
           <div style={{ fontSize: 13, fontWeight: 400, color: '#2DBFB8', letterSpacing: '3px', textTransform: 'uppercase', marginTop: 14 }}>
-            Grupo Óptico del Noroeste
+            GON Ópticas
           </div>
           {/* Línea decorativa */}
           <div style={{ width: 48, height: 2, background: '#2DBFB8', marginTop: 36 }} />
@@ -68,7 +68,7 @@ export default async function Image() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://gonmx.com/hero-man.jpg"
+            src="https://www.gonmx.com/hero-man.jpg"
             alt=""
             style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 10%' }}
           />

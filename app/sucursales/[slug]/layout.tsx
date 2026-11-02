@@ -12,7 +12,7 @@ export async function generateMetadata(
   const s = sucursales.find(s => s.slug === slug);
   if (!s) return { title: 'Óptica Rosarito | GON' };
 
-  const url = `https://gonmx.com/sucursales/${s.slug}`;
+  const url = `https://www.gonmx.com/sucursales/${s.slug}`;
   const title = `${s.nombre_largo} | Lentes Graduados Rosarito`;
   const description = `${s.descripcion_es} Examen de la vista gratis. ${s.horario_es}. ${s.direccion}.`;
 
@@ -40,8 +40,8 @@ function LocalBusinessSchema({ slug }: { slug: string }) {
     '@context': 'https://schema.org',
     '@type': 'Optician',
     name: s.nombre_largo,
-    image: `https://gonmx.com/sucursales/${s.slug}/og.jpg`,
-    url: `https://gonmx.com/sucursales/${s.slug}`,
+    image: `https://www.gonmx.com/sucursales/${s.slug}/og.jpg`,
+    url: `https://www.gonmx.com/sucursales/${s.slug}`,
     telephone: s.telefono,
     address: {
       '@type': 'PostalAddress',
@@ -66,8 +66,8 @@ function LocalBusinessSchema({ slug }: { slug: string }) {
     sameAs: [s.googleUrl],
     parentOrganization: {
       '@type': 'Organization',
-      name: 'GON — Grupo Óptico del Noroeste',
-      url: 'https://gonmx.com',
+      name: 'GON Ópticas',
+      url: 'https://www.gonmx.com',
     },
   };
 

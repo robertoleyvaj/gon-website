@@ -67,14 +67,14 @@ export default function Home() {
 
   const pasos = [
     { es: 'Elige tu armazón', en: 'Choose your frame', des: 'Filtra por forma, color y talla. Todos los modelos están en nuestras ópticas.', den: 'Filter by shape, color and size. Every model is in our stores.' },
-    { es: 'Apártalo o cómpralo', en: 'Reserve or buy it', des: 'Apártalo por WhatsApp o cómpralo en línea con tus micas.', den: 'Reserve it on WhatsApp or buy it online with your lenses.' },
+    { es: 'Apártalo o cómpralo', en: 'Reserve or buy it', des: 'Paga todo, deja un anticipo o apártalo desde $100, con hasta 60% menos que en óptica.', den: 'Pay in full, leave a deposit or reserve it from $100 MXN, up to 60% less than in store.' },
     { es: 'Examen de la vista gratis', en: 'Free eye exam', des: 'Te revisamos la vista sin costo en cualquiera de nuestras ópticas.', den: 'We check your eyes for free at any of our stores.' },
     { es: 'Recoge tus lentes', en: 'Pick up your glasses', des: 'Te avisamos cuando estén listos para que pases por ellos.', den: 'We let you know when they are ready to pick up.' },
   ];
 
   const faqs = [
     { q: ['¿El examen de la vista es gratis?', 'Is the eye exam free?'], a: ['Sí. Te hacemos el examen sin costo en cualquiera de nuestras ópticas en Rosarito.', 'Yes. We give you a free eye exam at any of our stores in Rosarito.'] },
-    { q: ['¿Puedo apartar un armazón?', 'Can I reserve a frame?'], a: ['Sí. En cada armazón hay un botón para apartarlo por WhatsApp y lo tenemos listo para cuando vengas.', 'Yes. Every frame has a button to reserve it on WhatsApp and we hold it for your visit.'] },
+    { q: ['¿Puedo apartar un armazón?', 'Can I reserve a frame?'], a: ['Sí. Puedes apartarlo en línea desde $100 y te lo guardamos 10 días con tu precio web, o pedir por WhatsApp que te lo guardemos 48 horas sin pagar nada.', 'Yes. Reserve it online from $100 MXN and we hold it for 10 days at your online price, or ask us on WhatsApp to hold it for 48 hours at no cost.'] },
     { q: ['¿Atienden en inglés?', 'Do you speak English?'], a: ['Sí, te atendemos en español y en inglés.', 'Yes, we help you in English and Spanish.'] },
     { q: ['¿Dónde están sus ópticas?', 'Where are your stores?'], a: ['Tenemos ópticas en Playas de Rosarito, Baja California. Revisa direcciones y horarios en Ubicaciones.', 'We have stores in Playas de Rosarito, Baja California. See addresses and hours under Locations.'] },
   ];
@@ -193,7 +193,7 @@ export default function Home() {
         <h2>{t('Ópticas de confianza en Rosarito', 'Trusted optical stores in Rosarito')}</h2>
         <div className="vh-comp">
           {[
-            { n: t('Gratis', 'Free'), u: '', h: t('Examen de la vista', 'Eye exam'), p: t('En cualquiera de nuestras ópticas, sin cita.', 'At any of our stores.'), href: '/examen' },
+            { n: t('Gratis', 'Free'), u: '', h: t('Examen de la vista', 'Eye exam'), p: t('En cualquiera de nuestras ópticas, con o sin cita.', 'At any of our stores, walk in or book.'), href: '/examen' },
             { n: 'ES · EN', u: '', h: t('Atención bilingüe', 'Bilingual service'), p: t('Te atendemos en español y en inglés.', 'We help you in English and Spanish.'), href: '/ubicaciones' },
             { n: t('Apártalo', 'Reserve'), u: '', h: t('Por WhatsApp', 'On WhatsApp'), p: t('Apartamos tu armazón para cuando vengas.', 'We hold your frame for your visit.'), href: waGon(t('Hola, quiero apartar un armazón', 'Hi, I want to reserve a frame')) },
           ].map(c => (

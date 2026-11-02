@@ -13,10 +13,10 @@ import WhatsAppCodigo from "./components/WhatsAppCodigo";
 const FUENTES = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gonmx.com"),
+  metadataBase: new URL("https://www.gonmx.com"),
   title: {
-    default: "GON — Grupo Óptico del Noroeste | Rosarito, B.C.",
-    template: "%s | GON Óptica",
+    default: "GON Ópticas | Rosarito, B.C.",
+    template: "%s",  // cada página ya trae la marca en su título
   },
   description:
     "Armazones modernos, lentes de calidad y examen de la vista profesional en Playas de Rosarito. Compra en línea y recoge en cualquiera de nuestras ópticas.",
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_MX",
-    url: "https://gonmx.com",
-    siteName: "GON — Grupo Óptico del Noroeste",
-    title: "GON — Grupo Óptico del Noroeste | Rosarito, B.C.",
+    url: "https://www.gonmx.com",
+    siteName: "GON Ópticas",
+    title: "GON Ópticas | Rosarito, B.C.",
     description:
       "Armazones modernos, lentes de calidad y examen de la vista profesional en Rosarito.",
     images: [
@@ -46,13 +46,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "GON — Grupo Óptico del Noroeste",
+        alt: "GON Ópticas",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "GON — Grupo Óptico del Noroeste",
+    title: "GON Ópticas",
     description: "Lentes de calidad en Rosarito, B.C. Compra en línea y recoge en óptica.",
     images: ["/opengraph-image"],
   },
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://gonmx.com",
+    canonical: "https://www.gonmx.com",
   },
 };
 

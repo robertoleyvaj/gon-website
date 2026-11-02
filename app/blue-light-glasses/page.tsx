@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import CollectionPage from "@/app/components/CollectionPage";
 
 export const metadata: Metadata = {
-  title: "Blue Light Glasses — Prescription Eyewear | GON Óptica",
+  title: "Blue Light Glasses — Prescription Eyewear | GON Ópticas",
   description:
     "Shop blue light blocking glasses with prescription lenses. Protect your eyes from screen fatigue. Complete pairs from $28 with Essential AR or Blue Light filter.",
   keywords: ["blue light glasses", "blue light blocking glasses", "prescription blue light glasses", "computer glasses"],
   openGraph: {
-    title: "Blue Light Glasses | GON Óptica",
+    title: "Blue Light Glasses | GON Ópticas",
     description: "Prescription blue light glasses from $28. Reduce eye strain from screens.",
-    url: "https://gonmx.com/blue-light-glasses",
-    siteName: "GON Óptica",
+    url: "https://www.gonmx.com/blue-light-glasses",
+    siteName: "GON Ópticas",
     type: "website",
   },
-  alternates: { canonical: "https://gonmx.com/blue-light-glasses" },
+  alternates: { canonical: "https://www.gonmx.com/blue-light-glasses" },
 };
 
 export default function BlueLightGlassesPage() {

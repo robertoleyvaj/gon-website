@@ -12,12 +12,12 @@ export async function generateMetadata(
   const { slug } = await params;
   const post = posts.find(p => p.slug === slug);
 
-  if (!post) return { title: 'Blog | GON Óptica' };
+  if (!post) return { title: 'Blog | GON Ópticas' };
 
-  const url = `https://gonmx.com/blog/${post.slug}`;
+  const url = `https://www.gonmx.com/blog/${post.slug}`;
 
   return {
-    title: `${post.titulo_es} | GON Óptica Rosarito`,
+    title: `${post.titulo_es} | GON Ópticas Rosarito`,
     description: post.descripcion_es,
     keywords: [...post.keywords_es, ...post.keywords_en],
     alternates: {
@@ -33,7 +33,7 @@ export async function generateMetadata(
       url,
       type: 'article',
       publishedTime: post.fecha,
-      authors: ['GON Óptica'],
+      authors: ['GON Ópticas'],
       locale: 'es_MX',
       alternateLocale: ['en_US'],
     },

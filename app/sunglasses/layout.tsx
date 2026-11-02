@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { preciosDesde, pesos } from "../lib/precios-desde";
 
-export const metadata: Metadata = {
-  title: "Lentes de Sol Graduables en Rosarito — UV400 | GON Óptica",
+export const revalidate = 3600;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const d = await preciosDesde();
+  return {
+  title: "Lentes de Sol Graduables en Rosarito — UV400 | GON Ópticas",
   description:
-    "Lentes de sol con protección UV400, todos graduables. Modelos para hombre, mujer y unisex desde $350 MXN. Recoge en nuestras ópticas en Rosarito, B.C.",
+    `Lentes de sol con protección UV400, todos graduables. Modelos para hombre, mujer y unisex${d.sol ? ` desde ${pesos(d.sol)}` : ""}. Recoge en nuestras ópticas en Rosarito, B.C.`,
   keywords: [
     "lentes de sol Rosarito",
     "lentes de sol graduados Rosarito",
@@ -15,15 +20,16 @@ export const metadata: Metadata = {
     "lentes de sol mujer Rosarito",
   ],
   openGraph: {
-    title: "Lentes de Sol UV400 Graduables | GON Óptica Rosarito",
+    title: "Lentes de Sol UV400 Graduables | GON Ópticas Rosarito",
     description:
       "Protección UV400, todos graduables, polarizado disponible. Modelos para hombre, mujer y unisex. Sin seguro.",
-    url: "https://gonmx.com/sunglasses",
+    url: "https://www.gonmx.com/sunglasses",
   },
   alternates: {
-    canonical: "https://gonmx.com/sunglasses",
+    canonical: "https://www.gonmx.com/sunglasses",
   },
-};
+  };
+}
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -34,7 +40,7 @@ const faqSchema = {
       name: "¿Los lentes de sol de GON se pueden graduar?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Sí. Todos los modelos de lentes de sol de GON Óptica son graduables. Puedes agregar tu graduación (monofocal, bifocal o progresivo) al momento de comprarlos, incluyendo filtros como polarizado o fotocromático.",
+        text: "Sí. Todos los modelos de lentes de sol de GON Ópticas son graduables. Puedes agregar tu graduación (monofocal, bifocal o progresivo) al momento de comprarlos, incluyendo filtros como polarizado o fotocromático.",
       },
     },
     {

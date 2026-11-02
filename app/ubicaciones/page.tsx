@@ -77,7 +77,7 @@ export default function UbicacionesPage() {
       <div style={{ paddingTop: esMobil ? '100px' : '120px', paddingBottom: esMobil ? '2.5rem' : '4rem', borderBottom: '1px solid var(--border)' }}>
         <div style={{ maxWidth: '1360px', margin: '0 auto', padding: esMobil ? '0 1.5rem' : '0 5rem' }}>
           <p style={{ fontSize: '0.57rem', fontWeight: 700, letterSpacing: '0.24em', textTransform: 'uppercase', color: 'var(--accent)', margin: '0 0 1rem' }}>
-            {t('GON ÓPTICA — SUCURSALES', 'GON ÓPTICA — LOCATIONS')}
+            {t('GON ÓPTICAS — SUCURSALES', 'GON ÓPTICAS — LOCATIONS')}
           </p>
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: esMobil ? '3rem' : '5rem', fontWeight: 500, letterSpacing: '-0.03em', margin: '0 0 1rem', lineHeight: 1.0, color: 'var(--charcoal)' }}>
             {t('Encuéntranos en Rosarito', 'Find us in Rosarito')}

@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import CollectionPage from "@/app/components/CollectionPage";
 
 export const metadata: Metadata = {
-  title: "Photochromic Glasses — Prescription Lenses That Adapt | GON Óptica",
+  title: "Photochromic Glasses — Prescription Lenses That Adapt | GON Ópticas",
   description:
     "Prescription photochromic glasses that automatically darken in sunlight and clear indoors. One pair for every environment. Complete from $62 with single vision lenses.",
   keywords: ["photochromic glasses", "photochromic lenses", "transition lenses", "light-adaptive glasses", "prescription photochromic"],
   openGraph: {
-    title: "Photochromic Glasses | GON Óptica",
+    title: "Photochromic Glasses | GON Ópticas",
     description: "Lenses that darken in sunlight and clear indoors. Complete pairs from $62.",
-    url: "https://gonmx.com/photochromic-glasses",
-    siteName: "GON Óptica",
+    url: "https://www.gonmx.com/photochromic-glasses",
+    siteName: "GON Ópticas",
     type: "website",
   },
-  alternates: { canonical: "https://gonmx.com/photochromic-glasses" },
+  alternates: { canonical: "https://www.gonmx.com/photochromic-glasses" },
 };
 
 export default function PhotochromicGlassesPage() {

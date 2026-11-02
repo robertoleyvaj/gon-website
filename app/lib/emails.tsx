@@ -8,8 +8,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const FROM = 'GON Óptica <orders@send.gonmx.com>';
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://gonmx.com';
+const FROM = 'GON Ópticas <orders@send.gonmx.com>';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.gonmx.com';
 
 // Convierte el ID interno al ID visible del pedido
 function orderCode(id: number): string {
@@ -58,7 +58,7 @@ function footer() {
   return `
     <div class="footer">
       <p class="footer-text">
-        GON Óptica<br/>
+        GON Ópticas<br/>
         <a href="mailto:hola@gonmx.com" style="color:#8C8680;">hola@gonmx.com</a>
       </p>
     </div>
@@ -75,7 +75,7 @@ export async function enviarEmailCompra(order_id: number, cliente_email: string,
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
+        <div class="header"><img src="${logo}" alt="GON Ópticas"/></div>
         <div class="body">
           <p class="title">Thank you for<br/>your order, ${cliente_nombre.split(' ')[0]}!</p>
           <p class="text">We've received your order and our team will review it shortly. We'll notify you as soon as we start crafting your lenses.</p>
@@ -118,7 +118,7 @@ export async function enviarEmailFabricacion(order_id: number, cliente_email: st
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
+        <div class="header"><img src="${logo}" alt="GON Ópticas"/></div>
         <div class="body">
           <p class="title">Your lenses are<br/>being crafted</p>
           <p class="text">Hi ${cliente_nombre.split(' ')[0]}, we've reviewed your prescription and started crafting your lenses. This process typically takes 2 to 4 business days.</p>
@@ -156,7 +156,7 @@ export async function enviarEmailEnviado(order_id: number, cliente_email: string
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
+        <div class="header"><img src="${logo}" alt="GON Ópticas"/></div>
         <div class="body">
           <p class="title">Your order<br/>is on its way!</p>
           <p class="text">Hi ${cliente_nombre.split(' ')[0]}, your order has been shipped and is on its way to you. Estimated delivery: 3 to 7 business days.</p>
@@ -199,7 +199,7 @@ export async function enviarEmailEntregado(order_id: number, cliente_email: stri
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
+        <div class="header"><img src="${logo}" alt="GON Ópticas"/></div>
         <div class="body">
           <p class="title">Your order<br/>has been delivered!</p>
           <p class="text">Hi ${cliente_nombre.split(' ')[0]}, we hope you love your new glasses! Remember you have a 90-day warranty and 30-day hassle-free returns.</p>
@@ -246,7 +246,7 @@ export async function enviarEmailSeguimiento(order_id: number, cliente_email: st
     <!DOCTYPE html><html><head><style>${estilos}</style></head><body>
     <div class="wrapper">
       <div class="card">
-        <div class="header"><img src="${logo}" alt="GON Óptica"/></div>
+        <div class="header"><img src="${logo}" alt="GON Ópticas"/></div>
         <div class="body">
           <p class="title">How are your<br/>new glasses?</p>
           <p class="text">Hi ${cliente_nombre.split(' ')[0]}, it's been 30 days since you received your order <span class="code" style="font-size:13px;">${code}</span>. We'd love to hear how everything's going.</p>

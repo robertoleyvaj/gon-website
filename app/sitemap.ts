@@ -5,7 +5,7 @@ import { posts } from "./blog/posts";
 import { sucursales } from "./sucursales/sucursales";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://gonmx.com";
+  const baseUrl = "https://www.gonmx.com";
 
   // Páginas estáticas
   const staticPages: MetadataRoute.Sitemap = [
@@ -38,11 +38,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Armazones individuales
   let armazonPages: MetadataRoute.Sitemap = [];
   try {
-    const { data } = await supabase.from("armazones").select("id, updated_at").eq("activo", true);
+    // Solo los que se venden en GON (antes pedía una columna que no existe y la lista salía vacía)
+    const { data } = await supabase.from("armazones").select("id").eq("activo", true).eq("publicar_gon", true);
     if (data) {
       armazonPages = data.map((a) => ({
         url: `${baseUrl}/armazon/${a.id}`,
-        lastModified: a.updated_at ? new Date(a.updated_at) : new Date(),
+        lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.7,
       }));

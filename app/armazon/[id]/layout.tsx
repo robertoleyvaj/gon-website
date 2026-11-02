@@ -24,15 +24,16 @@ export async function generateMetadata(
   const { id } = await params;
   const data = await getArmazon(id);
 
-  if (!data) return { title: 'Armazón | GON Óptica' };
+  if (!data) return { title: 'Armazón | GON Ópticas' };
 
   const nombre = data.nombre || data.modelo || 'Armazón';
   const forma  = data.forma  ? `${data.forma} ` : '';
   const genero = data.genero === 'hombre' ? 'para hombre' : data.genero === 'mujer' ? 'para mujer' : '';
   const tipo   = data.tipo   ? `${data.tipo} ` : '';
 
-  const title = `${nombre} — Armazón ${forma}${tipo}${genero} | GON Óptica Rosarito`;
-  const description = `Compra el ${nombre} en GON Óptica Rosarito. Armazón ${forma}${genero} con lentes graduados desde $700 MXN. Monofocal, bifocal o progresivo. Recoge el mismo día en cualquiera de nuestras 3 sucursales.`;
+  const title = `${nombre} — Armazón ${forma}${tipo}${genero} | GON Ópticas Rosarito`;
+  const precio = data.precio_gon ? precioGon(data as any) : 0;
+  const description = `${nombre}: armazón ${forma}${genero}${precio ? ` desde $${precio.toLocaleString('es-MX')} MXN con precio web` : ''}. Agrégale micas monofocales, bifocales o progresivas, compra en línea y recoge en cualquiera de nuestras 3 ópticas en Rosarito. Examen de la vista gratis.`;
 
   return {
     title,
@@ -40,12 +41,12 @@ export async function generateMetadata(
     openGraph: {
       title,
       description,
-      url:    `https://gonmx.com/armazon/${id}`,
+      url:    `https://www.gonmx.com/armazon/${id}`,
       images: data.imagen_url
         ? [{ url: data.imagen_url, width: 800, height: 600, alt: nombre }]
         : [],
     },
-    alternates: { canonical: `https://gonmx.com/armazon/${id}` },
+    alternates: { canonical: `https://www.gonmx.com/armazon/${id}` },
   };
 }
 
@@ -63,7 +64,7 @@ export default async function ArmazonLayout({
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: data.nombre || data.modelo || 'Armazón',
-    brand: { '@type': 'Brand', name: 'GON Óptica' },
+    brand: { '@type': 'Brand', name: 'GON Ópticas' },
     category: 'Eyeglasses',
     image: data.imagen_url ? [data.imagen_url] : [],
     offers: {
@@ -71,8 +72,8 @@ export default async function ArmazonLayout({
       priceCurrency: 'MXN',
       price: data.precio_gon ? precioGon(data) : Math.round((data.precio || 0) * 18),
       availability: 'https://schema.org/InStock',
-      seller: { '@type': 'Organization', name: 'Grupo Óptico del Noroeste' },
-      url: `https://gonmx.com/armazon/${id}`,
+      seller: { '@type': 'Organization', name: 'GON Ópticas' },
+      url: `https://www.gonmx.com/armazon/${id}`,
     },
   } : null;
 

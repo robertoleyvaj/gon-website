@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import CollectionPage from "@/app/components/CollectionPage";
 
 export const metadata: Metadata = {
-  title: "Progressive Glasses — No-Line Multifocal Lenses | GON Óptica",
+  title: "Progressive Glasses — No-Line Multifocal Lenses | GON Ópticas",
   description:
     "Affordable progressive glasses online. See clearly at every distance — near, intermediate, and far — with no visible line. Complete pairs from $102 with prescription.",
   keywords: ["progressive glasses", "progressive lenses online", "no-line bifocals", "multifocal glasses", "affordable progressive eyeglasses"],
   openGraph: {
-    title: "Progressive Glasses | GON Óptica",
+    title: "Progressive Glasses | GON Ópticas",
     description: "Affordable progressive lenses from $102 complete. All-distance clarity, no visible line.",
-    url: "https://gonmx.com/progressive-glasses",
-    siteName: "GON Óptica",
+    url: "https://www.gonmx.com/progressive-glasses",
+    siteName: "GON Ópticas",
     type: "website",
   },
-  alternates: { canonical: "https://gonmx.com/progressive-glasses" },
+  alternates: { canonical: "https://www.gonmx.com/progressive-glasses" },
 };
 
 export default function ProgressiveGlassesPage() {

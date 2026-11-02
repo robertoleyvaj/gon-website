@@ -42,8 +42,8 @@ export const sucursales: Sucursal[] = [
     nombre_largo: 'Óptica Baja Visión — GON Rosarito',
     direccion: 'Blvd. Benito Juárez 79B, Playas de Rosarito, B.C.',
     ciudad: 'Playas de Rosarito',
-    lat: 32.3611,
-    lng: -117.0592,
+    lat: 32.3514861,
+    lng: -117.059602,
     mapsUrl: 'https://www.google.com/maps/search/Óptica+Baja+Visión+Blvd+Benito+Juárez+79+Rosarito',
     // 📌 Actualiza esta URL: busca tu negocio en Google Maps → Compartir → Copiar enlace
     googleUrl: 'https://www.google.com/maps/search/Óptica+Baja+Visión+Rosarito+661+104+0873',
@@ -73,44 +73,7 @@ export const sucursales: Sucursal[] = [
       '/sucursales/baja-vision/optometrista.jpg',
     ],
     // ── Pega aquí las reseñas reales de Google ──
-    resenas: [
-      {
-        nombre: 'María García',
-        estrellas: 5,
-        texto: 'Excelente atención, el optometrista fue muy profesional. Mis lentes quedaron listos en tiempo récord. Definitivamente regreso.',
-        fecha: 'mayo 2025',
-      },
-      {
-        nombre: 'Carlos Ramírez',
-        estrellas: 5,
-        texto: 'Muy buena óptica, precios accesibles y la calidad de los lentes es muy buena. El examen de la vista fue rápido y sin cita.',
-        fecha: 'abril 2025',
-      },
-      {
-        nombre: 'Ana Luisa Torres',
-        estrellas: 5,
-        texto: 'Los lentes progresivos me quedaron perfectos desde el primer día. La atención fue muy amable y me explicaron todo con detalle.',
-        fecha: 'marzo 2025',
-      },
-      {
-        nombre: 'Roberto Medina',
-        estrellas: 5,
-        texto: 'Vine desde Tijuana porque me recomendaron esta óptica y no me arrepiento. Precio justo, lentes de calidad.',
-        fecha: 'febrero 2025',
-      },
-      {
-        nombre: 'Sandra López',
-        estrellas: 5,
-        texto: 'Llevé a mis hijos a hacerse el examen y el optometrista fue muy paciente con ellos. Muy recomendada para familias.',
-        fecha: 'enero 2025',
-      },
-      {
-        nombre: 'John Williams',
-        estrellas: 5,
-        texto: 'Crossed from San Diego and saved a lot on my prescription glasses. Great service, they spoke English too. Will be back!',
-        fecha: 'diciembre 2024',
-      },
-    ],
+    resenas: [],  // solo reseñas reales de Google
   },
 
   // ─── SUCURSAL 2: 5 DE MAYO ─────────────────────────────────
@@ -120,16 +83,16 @@ export const sucursales: Sucursal[] = [
     nombre_largo: 'Óptica Rosarito 5 de Mayo — GON',
     direccion: 'C. 5 de Mayo 200, Local 1, Playas de Rosarito, B.C.',
     ciudad: 'Playas de Rosarito',
-    lat: 32.3652,
-    lng: -117.0552,
+    lat: 32.3506259,
+    lng: -117.057464,
     mapsUrl: 'https://www.google.com/maps/search/Optica+Rosarito+5+de+Mayo+200+Local+1+Rosarito+BC',
     // 📌 Actualiza esta URL: busca tu negocio en Google Maps → Compartir → Copiar enlace
     googleUrl: 'https://www.google.com/maps/search/Optica+Rosarito+5+de+Mayo+661+612+0316',
     telefono: '661 612 0316',
     horario_es: 'Lunes a sábado 10:00 — 18:00',
     horario_en: 'Monday to Saturday 10:00 AM — 6:00 PM',
-    descripcion_es: 'Sucursal en el corazón del centro de Rosarito, sobre la calle 5 de Mayo. Fácil acceso, estacionamiento disponible y atención sin cita previa.',
-    descripcion_en: 'Located in the heart of downtown Rosarito on 5 de Mayo Street. Easy access, parking available, and walk-in appointments welcome.',
+    descripcion_es: 'Sucursal en el corazón del centro de Rosarito, sobre la calle 5 de Mayo. Fácil acceso, estacionamiento disponible y atención con o sin cita.',
+    descripcion_en: 'Located in the heart of downtown Rosarito on 5 de Mayo Street. Easy access, parking available, and walk-ins or appointments welcome.',
     keywords_es: [
       'óptica 5 de mayo rosarito',
       'optica centro rosarito',
@@ -147,38 +110,7 @@ export const sucursales: Sucursal[] = [
       '/sucursales/5-de-mayo/armazones.jpg',
       '/sucursales/5-de-mayo/atencion.jpg',
     ],
-    resenas: [
-      {
-        nombre: 'Patricia Flores',
-        estrellas: 5,
-        texto: 'Muy buen servicio, me atendieron de inmediato sin necesitar cita. Los lentes me quedaron perfectos.',
-        fecha: 'mayo 2025',
-      },
-      {
-        nombre: 'Jorge Hernández',
-        estrellas: 5,
-        texto: 'La atención fue excelente y el precio muy accesible. Mis lentes bifocales quedaron listos en menos tiempo del que esperaba.',
-        fecha: 'abril 2025',
-      },
-      {
-        nombre: 'Gabriela Soto',
-        estrellas: 5,
-        texto: 'Llevé mis lentes rotos y los repararon rápidamente. Muy amables y honestos con los precios.',
-        fecha: 'marzo 2025',
-      },
-      {
-        nombre: 'Manuel Castro',
-        estrellas: 5,
-        texto: 'El mejor precio que encontré en Rosarito para lentes progresivos. El optometrista muy profesional.',
-        fecha: 'febrero 2025',
-      },
-      {
-        nombre: 'Laura Vega',
-        estrellas: 5,
-        texto: 'Primera vez que vengo y quedé muy satisfecha. Me asesoraron bien para elegir el armazón y los lentes.',
-        fecha: 'enero 2025',
-      },
-    ],
+    resenas: [],  // solo reseñas reales de Google
   },
 
   // ─── SUCURSAL 3: PLAZA LAURELES ────────────────────────────
@@ -188,8 +120,8 @@ export const sucursales: Sucursal[] = [
     nombre_largo: 'Óptica Plaza Laureles — GON Rosarito',
     direccion: 'C. José María Morelos 118, Plaza Laureles, Playas de Rosarito, B.C.',
     ciudad: 'Playas de Rosarito',
-    lat: 32.3620,
-    lng: -117.0538,
+    lat: 32.3426328,
+    lng: -117.0513124,
     mapsUrl: 'https://www.google.com/maps/search/Óptica+Rosarito+Plaza+Laureles+Morelos+Rosarito+BC',
     // 📌 Actualiza esta URL: busca tu negocio en Google Maps → Compartir → Copiar enlace
     googleUrl: 'https://www.google.com/maps/search/Óptica+Rosarito+Plaza+Laureles+661+104+0431',
@@ -215,38 +147,7 @@ export const sucursales: Sucursal[] = [
       '/sucursales/laureles/armazones.jpg',
       '/sucursales/laureles/atencion.jpg',
     ],
-    resenas: [
-      {
-        nombre: 'Diana Ríos',
-        estrellas: 5,
-        texto: 'Muy cómoda la ubicación en Plaza Laureles. El optometrista fue muy detallado en el examen y los lentes me quedaron perfectos.',
-        fecha: 'mayo 2025',
-      },
-      {
-        nombre: 'Alejandro Núñez',
-        estrellas: 5,
-        texto: 'Vengo desde hace años a esta óptica y siempre salgo satisfecho. La calidad de los lentes es excelente y el precio justo.',
-        fecha: 'abril 2025',
-      },
-      {
-        nombre: 'Claudia Ortega',
-        estrellas: 5,
-        texto: 'Me hicieron el examen gratis y los lentes quedaron listos rápido. Muy recomendada para toda la familia.',
-        fecha: 'marzo 2025',
-      },
-      {
-        nombre: 'Fernando Peña',
-        estrellas: 5,
-        texto: 'Compré mis lentes fotocromáticos aquí y la diferencia es enorme. Muy buena asesoría del personal.',
-        fecha: 'febrero 2025',
-      },
-      {
-        nombre: 'Michelle Carter',
-        estrellas: 5,
-        texto: 'Best optical store in Rosarito. Staff speaks English, very patient. My progressive lenses are perfect.',
-        fecha: 'enero 2025',
-      },
-    ],
+    resenas: [],  // solo reseñas reales de Google
   },
 ];
 

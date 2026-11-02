@@ -23,6 +23,8 @@ function checkLoginRateLimit(ip: string): { allowed: boolean; waitSeconds?: numb
 }
 
 export async function POST(req: NextRequest) {
+  // Panel /admin apagado (ver middleware.ts): ya no se puede iniciar sesión aquí
+  if (process.env.GON_ADMIN_ACTIVO !== '1') return NextResponse.json({ error: 'No disponible' }, { status: 404 });
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
   const { allowed, waitSeconds } = checkLoginRateLimit(ip);
   if (!allowed) {

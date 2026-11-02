@@ -17,8 +17,11 @@ const TC_FALLBACK = 18; // tipo de cambio fallback si no hay precio_gon en armaz
 async function calcularPrecioItem(item: any, L: ListaPrecios): Promise<number> {
   let precioArmazonMXN = 0;
   if (item.armazon_id) {
-    const { data } = await supabase.from('armazones').select('precio, precio_gon, descuento_gon').eq('id', item.armazon_id).eq('activo', true).single();
-    if (data) {
+    const { data } = await supabase.from('armazones').select('precio, precio_gon, descuento_gon, tipo').eq('id', item.armazon_id).eq('activo', true).eq('publicar_gon', true).maybeSingle();
+    // Un armazón que no existe, está inactivo o no se vende en GON no se puede cobrar (antes salía en $0)
+    if (!data) throw new Error('Armazón no disponible');
+    if (item.es_regalo && data.tipo !== 'solar') throw new Error('Regalo no válido');
+    {
       // Mismo precio web que ve el cliente (lista − descuento web), calculado aquí en el servidor
       precioArmazonMXN = (data.precio_gon && data.precio_gon > 0)
         ? precioGon(data)
@@ -60,11 +63,18 @@ export async function POST(req: NextRequest) {
     if (modo === 'anticipo' && items.every((it: any) => it.solo_armazon))
       return NextResponse.json({ error: 'Para un armazón solo puedes pagar todo o apartarlo' }, { status: 400 });
 
+    // Regalo (lentes de sol gratis): máximo uno y solo junto con un par graduado pagado
+    const regalos = items.filter((it: any) => it.es_regalo).length;
+    if (regalos > 1 || (regalos === 1 && !items.some((it: any) => !it.es_regalo && !it.solo_armazon && it.lentes?.vision)))
+      return NextResponse.json({ error: 'Promoción no válida para este carrito' }, { status: 400 });
+    if (items.some((it: any) => !Number(it.armazon_id)))
+      return NextResponse.json({ error: 'Carrito inválido' }, { status: 400 });
+
     // Precios recalculados en el servidor (precio web de armazones y micas)
     const L = await obtenerPreciosLista();
     let totales: number[];
     try { totales = await Promise.all(items.map((it: any) => calcularPrecioItem(it, L))); }
-    catch { return NextResponse.json({ error: 'Combinación de micas no disponible' }, { status: 400 }); }
+    catch (e: any) { return NextResponse.json({ error: e?.message === 'Armazón no disponible' ? 'Uno de los armazones ya no está disponible. Quítalo del carrito.' : e?.message === 'Regalo no válido' ? 'Promoción no válida' : 'Combinación de micas no disponible' }, { status: 400 }); }
     const total = Math.round(totales.reduce((s, t) => s + t, 0));
     if (total <= 0) return NextResponse.json({ error: 'Total inválido' }, { status: 400 });
 
@@ -119,8 +129,8 @@ export async function POST(req: NextRequest) {
         modo, total: String(total), pagado: String(pagar), sucursal,
       },
       payment_intent_data: { metadata: { tienda: 'gon', checkout_session_id: cs.id.toString() } },
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://gonmx.com'}/gracias?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:  `${process.env.NEXT_PUBLIC_BASE_URL || 'https://gonmx.com'}/Tienda`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.gonmx.com'}/gracias?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url:  `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.gonmx.com'}/Tienda`,
     });
 
     await supabase.from('checkout_sessions')

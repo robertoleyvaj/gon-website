@@ -7,10 +7,12 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
 const FROM = 'GON Ópticas <orders@send.gonmx.com>';
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://gonmx.com';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.gonmx.com';
 const WA = 'https://wa.me/526648343018';
 
 export const codigoPedido = (id: number) => `GON-${2846 + id}`;
+// Escapa texto del cliente (nombre, detalle) antes de meterlo al HTML del correo
+const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 const mxn = (n: number) => `$${Math.round(n).toLocaleString('es-MX')}`;
 const fechaLarga = (iso: string) => new Date(iso + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
 
@@ -86,10 +88,10 @@ export async function correoCompraGon(order_id: number, to: string, nombre: stri
       : 'Tu pedido está pagado y ya mandamos a hacer tus lentes. Te avisamos en cuanto estén listos para recoger.';
   const html = marco(`
     <p class="t">${titulo}</p>
-    <p class="p">Hola ${nombre.split(' ')[0] || ''}, ${explica}</p>
+    <p class="p">Hola ${esc(nombre.split(' ')[0] || '')}, ${explica}</p>
     <hr class="hr"/>
     <p class="l">Pedido</p><p class="v"><span class="code">${codigoPedido(order_id)}</span></p>
-    <p class="l">${soloArmazon ? 'Tu armazón' : 'Tus lentes'}</p><p class="v">${detalle.join('<br/>')}</p>
+    <p class="l">${soloArmazon ? 'Tu armazón' : 'Tus lentes'}</p><p class="v">${detalle.map(esc).join('<br/>')}</p>
     <div class="box">
       <p class="l">Total web</p><p class="v">${mxn(pago.total)}</p>
       <p class="l">Pagaste</p><p class="v">${mxn(pago.pagado)}</p>
@@ -109,8 +111,8 @@ export async function correoAvisoGon(order_id: number, cliente: { nombre: string
   const html = marco(`
     <p class="t">🛒 Nueva compra en gonmx.com</p>
     <p class="l">Pedido</p><p class="v"><span class="code">${codigoPedido(order_id)}</span> · ${modo}${faltaExamen ? ' · <b style="color:#c2410c">Falta examen</b>' : ''}</p>
-    <p class="l">Cliente</p><p class="v">${cliente.nombre || '—'}<br/>${cliente.email || ''}${cliente.telefono ? `<br/>${cliente.telefono}` : ''}</p>
-    <p class="l">Lleva</p><p class="v">${detalle.join('<br/>')}</p>
+    <p class="l">Cliente</p><p class="v">${esc(cliente.nombre || '—')}<br/>${esc(cliente.email)}${cliente.telefono ? `<br/>${esc(cliente.telefono)}` : ''}</p>
+    <p class="l">Lleva</p><p class="v">${detalle.map(esc).join('<br/>')}</p>
     <div class="box">
       <p class="l">Total web</p><p class="v">${mxn(pago.total)}</p>
       <p class="l">Pagó en línea</p><p class="v">${mxn(pago.pagado)}</p>
@@ -125,7 +127,7 @@ export async function correoAvisoGon(order_id: number, cliente: { nombre: string
 export async function correoProcesoGon(order_id: number, to: string, nombre: string) {
   const html = marco(`
     <p class="t">Tus lentes ya están en proceso 🔧</p>
-    <p class="p">Hola ${nombre.split(' ')[0] || ''}, ya mandamos a hacer tus lentes. Te avisamos en cuanto estén listos para recoger.</p>
+    <p class="p">Hola ${esc(nombre.split(' ')[0] || '')}, ya mandamos a hacer tus lentes. Te avisamos en cuanto estén listos para recoger.</p>
     <p class="l">Pedido</p><p class="v"><span class="code">${codigoPedido(order_id)}</span></p>`);
   await enviar(order_id, 'fabricacion', to, `Tus lentes están en proceso · ${codigoPedido(order_id)}`, html);
 }
@@ -134,7 +136,7 @@ export async function correoProcesoGon(order_id: number, to: string, nombre: str
 export async function correoListoGon(order_id: number, to: string, nombre: string, pago?: PagoGon | null, soloArmazon = false) {
   const html = marco(`
     <p class="t">${soloArmazon ? '¡Tu armazón está listo! 🎉' : '¡Tus lentes están listos! 🎉'}</p>
-    <p class="p">Hola ${nombre.split(' ')[0] || ''}, ya puedes pasar por ${soloArmazon ? 'él' : 'ellos'}. No olvides traer tu identificación.</p>
+    <p class="p">Hola ${esc(nombre.split(' ')[0] || '')}, ya puedes pasar por ${soloArmazon ? 'él' : 'ellos'}. No olvides traer tu identificación.</p>
     <p class="l">Pedido</p><p class="v"><span class="code">${codigoPedido(order_id)}</span></p>
     ${pago && pago.saldo > 0 ? `<div class="box"><p class="l">Pendiente al recoger</p><p class="v" style="margin:0">${mxn(pago.saldo)}</p></div>` : ''}
     ${pago ? sucursalHtml(pago.sucursal) : ''}`);
@@ -145,7 +147,7 @@ export async function correoListoGon(order_id: number, to: string, nombre: strin
 export async function correoEntregadoGon(order_id: number, to: string, nombre: string) {
   const html = marco(`
     <p class="t">¡Gracias por tu compra!</p>
-    <p class="p">Hola ${nombre.split(' ')[0] || ''}, esperamos que disfrutes tus lentes nuevos. Si algo no te queda bien, escríbenos y te ayudamos.</p>
+    <p class="p">Hola ${esc(nombre.split(' ')[0] || '')}, esperamos que disfrutes tus lentes nuevos. Si algo no te queda bien, escríbenos y te ayudamos.</p>
     <p class="l">Pedido</p><p class="v"><span class="code">${codigoPedido(order_id)}</span></p>`);
   await enviar(order_id, 'entregado', to, `¡Disfruta tus lentes! · ${codigoPedido(order_id)}`, html);
 }

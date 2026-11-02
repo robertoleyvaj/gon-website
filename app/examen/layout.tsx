@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Examen de la Vista Gratis — Agenda tu Cita | GON Óptica Rosarito",
+  title: "Examen de la Vista Gratis — Agenda tu Cita | GON Ópticas Rosarito",
   description:
     "Agenda tu examen de la vista gratis en Rosarito, B.C. Optometristas certificados por la Universidad Xochicalco. 3 sucursales: Baja Visión, 5 de Mayo y Plaza Laureles.",
   keywords: [
@@ -13,13 +13,13 @@ export const metadata: Metadata = {
     "optometrista Baja California",
   ],
   openGraph: {
-    title: "Examen de la Vista Gratis en Rosarito | GON Óptica",
+    title: "Examen de la Vista Gratis en Rosarito | GON Ópticas",
     description:
       "Agenda con nuestros optometristas certificados. Sin costo, sin esperas. 3 ópticas en Rosarito, B.C.",
-    url: "https://gonmx.com/examen",
+    url: "https://www.gonmx.com/examen",
   },
   alternates: {
-    canonical: "https://gonmx.com/examen",
+    canonical: "https://www.gonmx.com/examen",
   },
 };
 

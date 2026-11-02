@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import CollectionPage from "@/app/components/CollectionPage";
 
 export const metadata: Metadata = {
-  title: "Bifocal Glasses — Prescription Eyewear Online | GON Óptica",
+  title: "Bifocal Glasses — Prescription Eyewear Online | GON Ópticas",
   description:
     "Affordable bifocal glasses with prescription lenses. Classic dual-focus design for near and distance vision. Complete pairs from $62 including frame and lenses.",
   keywords: ["bifocal glasses", "bifocal lenses online", "prescription bifocals", "affordable bifocal eyeglasses"],
   openGraph: {
-    title: "Bifocal Glasses | GON Óptica",
+    title: "Bifocal Glasses | GON Ópticas",
     description: "Prescription bifocal glasses from $62 complete. Near and distance vision in one pair.",
-    url: "https://gonmx.com/bifocal-glasses",
-    siteName: "GON Óptica",
+    url: "https://www.gonmx.com/bifocal-glasses",
+    siteName: "GON Ópticas",
     type: "website",
   },
-  alternates: { canonical: "https://gonmx.com/bifocal-glasses" },
+  alternates: { canonical: "https://www.gonmx.com/bifocal-glasses" },
 };
 
 export default function BifocalGlassesPage() {
