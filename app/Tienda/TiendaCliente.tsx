@@ -364,7 +364,7 @@ function TiendaContent({ inicial }: { inicial?: InicialTienda }) {
           <div className="vt-why-grid">
             {[
               { n: '01', h: t('Elige tu armazón', 'Choose your frame'), p: t('Escoge el estilo y el color que te guste.', 'Pick the style and color you like.') },
-              { n: '02', h: t('Apártalo o cómpralo', 'Reserve it or buy online'), p: t('Apártalo por WhatsApp o cómpralo en línea con tus micas.', 'Reserve it on WhatsApp or buy it online with your lenses.') },
+              { n: '02', h: t('Apártalo o cómpralo', 'Reserve it or buy online'), p: t('Paga todo, deja un anticipo o apártalo desde $100 con tu precio web.', 'Pay in full, leave a deposit or reserve it from $100 MXN at your online price.') },
               { n: '03', h: t('Examen gratis y recoge', 'Free eye exam and pick up'), p: t('Te hacemos el examen de la vista gratis en la óptica y recoges tus lentes.', 'We give you a free eye exam at the store and you pick up your glasses.') },
             ].map(s => (
               <div key={s.n} className="vt-step">

@@ -14,6 +14,8 @@ const FUENTES = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.gonmx.com"),
+  // Verificación del dominio en Meta (portafolio GON)
+  verification: { other: { "facebook-domain-verification": "00bz1fcbs2z23fnypn2bm3zxcwdki1" } },
   title: {
     default: "GON Ópticas | Rosarito, B.C.",
     template: "%s",  // cada página ya trae la marca en su título
