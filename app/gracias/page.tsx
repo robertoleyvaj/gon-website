@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import { useLang } from '../components/LanguageContext';
 import { useCart } from '../context/CartContext';
+import { fbTrack } from '../lib/fpixel';
 
 export default function Gracias() {
   const { t, lang } = useLang() as any;
@@ -14,7 +15,19 @@ export default function Gracias() {
   useEffect(() => {
     setTimeout(() => setVisible(true), 100);
     // Llegó de Stripe con pago confirmado: se vacía el carrito
-    if (new URLSearchParams(window.location.search).get('session_id')) clearCart();
+    if (new URLSearchParams(window.location.search).get('session_id')) {
+      clearCart();
+      // Meta: compra confirmada (una sola vez por pago; el valor es el total web de la compra)
+      try {
+        const raw = sessionStorage.getItem('gon_compra');
+        if (raw) {
+          const c = JSON.parse(raw) as { ids: string[]; value: number; pagado: number; modo: string };
+          sessionStorage.removeItem('gon_compra');
+          // El Pixel carga después de la página: se espera un momento antes de mandar el evento
+          setTimeout(() => fbTrack('Purchase', { content_ids: c.ids, content_type: 'product_group', value: c.value, currency: 'MXN', num_items: c.ids.length }), 1500);
+        }
+      } catch { /* sin datos de la compra */ }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

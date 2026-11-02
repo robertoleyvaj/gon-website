@@ -2,6 +2,7 @@
 // Pago en línea de GON: elige sucursal, cómo pagar (Apartar / Anticipo / Liquidar) y cuánto.
 // Las reglas viven en lib/pago-gon.ts y el servidor las vuelve a revisar.
 import { useState, useMemo, useEffect } from 'react';
+import { fbTrack } from '../lib/fpixel';
 import type { CartItem } from '../context/CartContext';
 import { rangoPago, validarPago, SUCURSALES_PAGO, distanciaKm, textoDistancia, DIAS_APARTADO, DIAS_SALDO_FAVOR, type ModoPago } from '../lib/pago-gon';
 
@@ -57,6 +58,10 @@ export default function PagoGon({ items, total, onVolver }: { items: CartItem[];
   const pagar = async () => {
     if (!listo || !modo) return;
     setEnviando(true); setError('');
+    // Meta: inicio de pago. La compra se cuenta en /gracias con lo que se guarda aquí
+    const ids = items.map(it => String(it.armazon_id));
+    fbTrack('InitiateCheckout', { content_ids: ids, content_type: 'product_group', value: Math.round(total), currency: 'MXN', num_items: items.length });
+    try { sessionStorage.setItem('gon_compra', JSON.stringify({ ids, value: Math.round(total), pagado: montoNum, modo })); } catch { /* sin almacenamiento */ }
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },

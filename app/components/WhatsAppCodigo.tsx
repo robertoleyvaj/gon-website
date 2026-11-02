@@ -6,6 +6,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { WHATSAPP_GON } from '../lib/precio-gon';
+import { fbTrack } from '../lib/fpixel';
 
 const DIAS = 30;
 
@@ -20,6 +21,8 @@ export default function WhatsAppCodigo() {
       const a = (e.target as HTMLElement | null)?.closest?.('a') as HTMLAnchorElement | null;
       if (!a || !a.href.includes(`wa.me/${WHATSAPP_GON}`)) return;
       e.preventDefault();
+      // Meta: cada clic a WhatsApp cuenta como contacto (la mayoría de las ventas empiezan ahí)
+      fbTrack('Contact', { content_name: 'whatsapp', ...(a.dataset.armazon ? { content_ids: [String(a.dataset.armazon)], content_type: 'product_group' } : {}) });
 
       // La ventana se abre antes de pedir el código para que el navegador no la bloquee
       const w = window.open('', '_blank');
