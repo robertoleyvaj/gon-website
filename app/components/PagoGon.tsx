@@ -3,7 +3,7 @@
 // Las reglas viven en lib/pago-gon.ts y el servidor las vuelve a revisar.
 import { useState, useMemo, useEffect } from 'react';
 import { fbTrack } from '../lib/fpixel';
-import type { CartItem } from '../context/CartContext';
+import { useCart, type CartItem } from '../context/CartContext';
 import { rangoPago, validarPago, SUCURSALES_PAGO, distanciaKm, textoDistancia, DIAS_APARTADO, DIAS_SALDO_FAVOR, type ModoPago } from '../lib/pago-gon';
 
 // Textos pensados para el cliente: beneficio primero; las reglas solo en el "?"
@@ -25,7 +25,9 @@ const OPCIONES_ARMAZON: typeof OPCIONES = [
 const mxn = (n: number) => `$${Math.round(n).toLocaleString('es-MX')}`;
 
 export default function PagoGon({ items, total, onVolver }: { items: CartItem[]; total: number; onVolver: () => void }) {
-  const [sucursal, setSucursal] = useState('');
+  const { sucursalPref } = useCart();
+  // Si ya eligió sucursal para su examen, viene preseleccionada (la puede cambiar)
+  const [sucursal, setSucursal] = useState(sucursalPref ?? '');
   const [modo, setModo] = useState<ModoPago | ''>('liquidar');
   const [monto, setMonto] = useState(String(Math.round(total)));
   const [ayuda, setAyuda] = useState<ModoPago | null>(null);

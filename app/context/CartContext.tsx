@@ -46,6 +46,8 @@ type CartContextType = {
   setCartOpen: (v: boolean) => void;
   pagoAbierto: boolean;                 // el carrito abre directo en la pantalla de pago
   setPagoAbierto: (v: boolean) => void;
+  sucursalPref: string | null;          // sucursal que eligió para su examen (baja | mayo | plaza): se preselecciona al pagar
+  setSucursalPref: (v: string | null) => void;
   recetasSesion: { paciente: string; receta: CartReceta }[];
 };
 
@@ -56,6 +58,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [promoSolarReclamada, setPromoSolarReclamada] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [pagoAbierto, setPagoAbierto] = useState(false);
+  const [sucursalPref, setSucursalPref] = useState<string | null>(null);
 
   // Cargar desde localStorage al montar
   useEffect(() => {
@@ -119,6 +122,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       promoSolarDisponible, promoSolarReclamada, reclamarPromoSolar,
       cartOpen, setCartOpen,
       pagoAbierto, setPagoAbierto,
+      sucursalPref, setSucursalPref,
       recetasSesion,
     }}>
       {children}

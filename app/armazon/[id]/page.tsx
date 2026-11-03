@@ -13,6 +13,7 @@ import { swatchColor as swatchLib, nombreColor } from '../../lib/colores';
 import { nombreMaterial, nombreBadge } from '../../lib/textos';
 import { FORMAS, normForma, tallaDeMedidas } from '../../lib/armazon-web';
 import { useCart, generateCartId } from '../../context/CartContext';
+import { SUCURSALES_PAGO, distanciaKm, textoDistancia } from '../../lib/pago-gon';
 
 type Armazon = {
   id: number; nombre: string; forma: string; genero: string;
@@ -537,25 +538,39 @@ function Acordeon({ titulo, children }: { titulo: string; children: React.ReactN
   );
 }
 
+// `pago` = clave de la sucursal en el pago (baja | mayo | plaza)
 const SUCURSALES_WA = [
-  { id: 'bajavision', nombre: 'Óptica Baja Visión', nombre_en: 'Óptica Baja Visión', dir: 'Blvd. Benito Juárez 79B' },
-  { id: '5demayo',   nombre: 'Óptica Rosarito 5 de Mayo', nombre_en: 'Óptica Rosarito 5 de Mayo', dir: 'C. 5 de Mayo 200' },
-  { id: 'laureles',  nombre: 'Óptica Rosarito Plaza Laureles', nombre_en: 'Óptica Rosarito Plaza Laureles', dir: 'Plaza Laureles, Morelos 118' },
+  { id: 'bajavision', pago: 'baja',  nombre: 'Óptica Baja Visión', nombre_en: 'Óptica Baja Visión', dir: 'Blvd. Benito Juárez 79B' },
+  { id: '5demayo',   pago: 'mayo',  nombre: 'Óptica Rosarito 5 de Mayo', nombre_en: 'Óptica Rosarito 5 de Mayo', dir: 'C. 5 de Mayo 200' },
+  { id: 'laureles',  pago: 'plaza', nombre: 'Óptica Rosarito Plaza Laureles', nombre_en: 'Óptica Rosarito Plaza Laureles', dir: 'Plaza Laureles, Morelos 118' },
 ];
 
-function InicioDrawer({ esSolar, t, lang, onManual, onFoto, onDespues, onVolverSolar }: {
+function InicioDrawer({ esSolar, t, lang, onManual, onFoto, onDespues, onVolverSolar, onExamenComprar, armazonRef, armazonId, colorSku }: {
   esSolar: boolean; t: (es: string, en: string) => string; lang: string;
   onManual: () => void; onFoto: () => void; onDespues: () => void; onVolverSolar: () => void;
+  onExamenComprar: (sucursalPago: string) => void;
+  armazonRef: string; armazonId?: number; colorSku?: string | null;
 }) {
   const [expandido, setExpandido] = useState<'graduacion' | 'examen' | null>(null);
   const [sucursalSel, setSucursalSel] = useState<string | null>(null);
+  // Distancia a cada óptica (si da permiso de ubicación al abrir "Quiero hacer mi examen")
+  const [yo, setYo] = useState<{ lat: number; lng: number } | null>(null);
+  const pedirUbicacion = () => {
+    if (yo || typeof navigator === 'undefined' || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(p => setYo({ lat: p.coords.latitude, lng: p.coords.longitude }), () => {}, { timeout: 10000, maximumAge: 600000 });
+  };
+  const kmDe = (pago: string) => {
+    const s = SUCURSALES_PAGO.find(x => x.k === pago);
+    return yo && s ? distanciaKm(yo, s) : null;
+  };
+  const masCerca = yo ? [...SUCURSALES_WA].sort((a, b) => (kmDe(a.pago) ?? 999) - (kmDe(b.pago) ?? 999))[0]?.id : null;
 
   const toggleGraduacion = () => setExpandido(prev => prev === 'graduacion' ? null : 'graduacion');
-  const toggleExamen = () => { setExpandido(prev => prev === 'examen' ? null : 'examen'); setSucursalSel(null); };
+  const toggleExamen = () => { setExpandido(prev => prev === 'examen' ? null : 'examen'); setSucursalSel(null); pedirUbicacion(); };
 
   const sucursal = SUCURSALES_WA.find(s => s.id === sucursalSel);
   const msgWA = sucursal
-    ? encodeURIComponent(`Hola, me interesa agendar un examen de la vista en ${lang === 'es' ? sucursal.nombre : sucursal.nombre_en}. ¿Qué horarios tienen disponibles?`)
+    ? encodeURIComponent(`¡Hola GON! 👋 Quiero agendar mi examen de la vista gratis en ${sucursal.nombre}.${armazonRef ? `\n👓 Me gustó: ${armazonRef}` : ''}\n¿Qué horarios tienen?\n\n[[CODIGO]]`)
     : '';
 
   return (
@@ -626,18 +641,27 @@ function InicioDrawer({ esSolar, t, lang, onManual, onFoto, onDespues, onVolverS
                 {SUCURSALES_WA.map(s => (
                   <button key={s.id} onClick={() => setSucursalSel(s.id)} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0.75rem 1rem', borderRadius: '6px', border: `1px solid ${sucursalSel === s.id ? 'var(--accent)' : 'var(--border)'}`, background: sucursalSel === s.id ? 'rgba(45,191,184,0.06)' : 'var(--cream)', cursor: 'pointer', textAlign: 'left', width: '100%', fontFamily: 'var(--font-sans)', transition: 'all 0.15s' }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={sucursalSel === s.id ? 'var(--accent)' : 'var(--warm-gray-light)'} strokeWidth="1.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    <div>
+                    <div style={{ flex: 1 }}>
                       <div style={{ fontSize: '12px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? s.nombre : s.nombre_en}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{s.dir}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--warm-gray)' }}>{s.dir}{kmDe(s.pago) != null ? ` · ${textoDistancia(kmDe(s.pago)!)}` : ''}</div>
                     </div>
+                    {masCerca === s.id && <span style={{ fontSize: '10px', fontWeight: 600, color: '#0f766e', background: 'rgba(43,191,179,0.16)', borderRadius: '999px', padding: '2px 8px', whiteSpace: 'nowrap' }}>{t('Más cerca', 'Closest')}</span>}
                   </button>
                 ))}
               </div>
-              {sucursalSel && (
-                <a href={`https://wa.me/526648343018?text=${msgWA}`} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#25D366', color: 'white', padding: '12px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', textDecoration: 'none' }}>
+              {sucursalSel && sucursal && (
+                <>
+                <button onClick={() => onExamenComprar(sucursal.pago)} style={{ width: '100%', display: 'block', background: 'var(--sage)', color: 'white', border: 'none', padding: '13px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', marginBottom: '4px' }}>
+                  {t('Continuar con mi compra →', 'Continue with my order →')}
+                </button>
+                <p style={{ fontSize: '11px', color: 'var(--warm-gray)', textAlign: 'center', margin: '0 0 10px', lineHeight: 1.5 }}>
+                  {t('Elige tus micas y aparta o paga con tu precio web. Tu examen es gratis y en cuanto tengamos tu graduación mandamos a hacer tus lentes.', 'Choose your lenses and reserve or pay at your online price. Your exam is free; once we have your prescription we make your glasses.')}
+                </p>
+                <a href={`https://wa.me/526648343018?text=${msgWA}`} target="_blank" rel="noopener noreferrer" data-armazon={armazonId || undefined} data-color={colorSku || undefined} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'white', color: 'var(--charcoal)', border: '1.5px solid #25D366', padding: '11px', borderRadius: '6px', fontFamily: 'var(--font-sans)', fontSize: '12.5px', fontWeight: 600, textDecoration: 'none' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.502 3.935 1.385 5.608L0 24l6.572-1.364A11.942 11.942 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.795 9.795 0 0 1-5.032-1.388l-.361-.214-3.741.98.998-3.648-.235-.374A9.755 9.755 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/></svg>
-                  {t('Agendar por WhatsApp', 'Schedule via WhatsApp')}
+                  {t('Solo agendar mi examen por WhatsApp', 'Just book my exam on WhatsApp')}
                 </a>
+                </>
               )}
             </div>
           )}
@@ -669,7 +693,7 @@ export default function DetalleArmazon() {
   const searchParams = useSearchParams();
   const esRegalo = searchParams.get('promo') === 'regalo';
   const { t, lang } = useLang() as any;
-  const { addItem, recetasSesion, items, setPagoAbierto } = useCart();
+  const { addItem, recetasSesion, items, setPagoAbierto, setSucursalPref } = useCart();
   const [armazon, setArmazon] = useState<Armazon | null>(null);
   const [relacionados, setRelacionados] = useState<Armazon[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1120,6 +1144,10 @@ export default function DetalleArmazon() {
             onManual={() => setDrawerEstado('manual')}
             onFoto={() => setDrawerEstado('foto')}
             onDespues={() => { setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); }}
+            onExamenComprar={(suc) => { setSucursalPref(suc); setRecetaEstado('despues'); setDrawerEstado('config'); setPaso(1); }}
+            armazonRef={refArmazon()}
+            armazonId={armazon?.id}
+            colorSku={colorActivo?.sku || null}
             onVolverSolar={() => setDrawerEstado('inicio_solar')}
           />
         )}
