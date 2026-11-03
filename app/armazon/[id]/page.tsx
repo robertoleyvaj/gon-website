@@ -54,7 +54,7 @@ const visionOpts = [
 
 const materialOpts = [
   { id: 'cr39', nombre: 'Essential', nombre_en: 'Essential', desc_es: 'Mica base incluida. Para graduaciones hasta ±2.00.', desc_en: 'Included base lens. For prescriptions up to ±2.00.', precio: 0 },
-  { id: 'hd', nombre: 'Slim HD', nombre_en: 'Slim HD', desc_es: 'Hi-Index 1.60. Más delgado que Poly Plus. Para graduaciones medias.', desc_en: 'Hi-Index 1.60. Thinner than Poly Plus. For mid-range prescriptions.', precio: 397 },
+  { id: 'hd', recomendado: true, nombre: 'Slim HD', nombre_en: 'Slim HD', desc_es: 'Hi-Index 1.60. Más delgado que Poly Plus. Para graduaciones medias.', desc_en: 'Hi-Index 1.60. Thinner than Poly Plus. For mid-range prescriptions.', precio: 397 },
   { id: 'poly', nombre: 'Poly Plus', nombre_en: 'Poly Plus', desc_es: 'Policarbonato 1.58. Muy resistente. Ideal para niños o uso activo.', desc_en: 'Polycarbonate 1.58. Highly resistant. Ideal for kids or active use.', precio: 997 },
   { id: 'hi', nombre: 'Ultra Slim', nombre_en: 'Ultra Slim', desc_es: 'Hi-Index 1.67. Significativamente más delgado y ligero.', desc_en: 'Hi-Index 1.67. Significantly thinner and lighter.', precio: 3197 },
   { id: 'shi', nombre: 'Ultra Slim Pro', nombre_en: 'Ultra Slim Pro', desc_es: 'Hi-Index 1.74. Nuestra opción más delgada para graduaciones altas.', desc_en: 'Hi-Index 1.74. Our thinnest option for high prescriptions.', precio: 4697 },
@@ -62,11 +62,24 @@ const materialOpts = [
 
 const filtroOpts = [
   { id: 'ar', nombre: 'Antirreflejo', nombre_en: 'Anti-Reflective', desc_es: 'Reduce reflejos. Mejor visión de noche y en pantallas.', desc_en: 'Reduces glare. Better vision at night and on screens.', precio: 279 },
-  { id: 'blue', nombre: 'Blue Light', nombre_en: 'Blue Light', desc_es: 'Filtra la luz azul de pantallas. Ideal para uso intenso de celular o compu.', desc_en: 'Filters blue light from screens. Ideal for heavy screen users.', precio: 549 },
-  { id: 'foto', nombre: 'Fotocromático', nombre_en: 'Photochromic', desc_es: 'Se oscurece en exterior y vuelve claro en interior.', desc_en: 'Darkens outdoors and returns clear indoors.', precio: 949 },
+  { id: 'blue', recomendado: true, nombre: 'Blue Light', nombre_en: 'Blue Light', desc_es: 'Filtra la luz azul de pantallas. Ideal para uso intenso de celular o compu.', desc_en: 'Filters blue light from screens. Ideal for heavy screen users.', precio: 549 },
+  { id: 'foto', recomendado: true, nombre: 'Fotocromático', nombre_en: 'Photochromic', desc_es: 'Se oscurece en exterior y vuelve claro en interior.', desc_en: 'Darkens outdoors and returns clear indoors.', precio: 949 },
   { id: 'pol', nombre: 'Polarizado', nombre_en: 'Polarized', desc_es: 'Elimina reflejos intensos. Ideal para manejar o playa.', desc_en: 'Eliminates intense glare. Ideal for driving or beach.', precio: 1699 },
   { id: 'tinte', nombre: 'Tinte', nombre_en: 'Fashion Tint', desc_es: 'Agrega color a tus lentes. Disponible en varios tonos.', desc_en: 'Adds color to your lenses. Available in various shades.', precio: 549 },
 ];
+
+// Resaltado propio: las opciones que queremos impulsar (no se preseleccionan)
+const bordeOpcion = (activo: boolean, recomendado?: boolean) =>
+  activo ? '1.5px solid var(--sage)' : recomendado ? `1.5px solid ${TURQUESA}` : '1px solid var(--border)';
+const fondoOpcion = (activo: boolean, recomendado?: boolean) =>
+  activo ? 'rgba(74,89,64,0.06)' : recomendado ? 'rgba(43,191,179,0.06)' : 'var(--cream)';
+function EtiquetaRecomendado({ lang }: { lang: string }) {
+  return (
+    <span style={{ display: 'inline-block', fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em', color: '#0f766e', background: 'rgba(43,191,179,0.16)', borderRadius: '999px', padding: '2px 8px', marginBottom: '4px' }}>
+      {lang === 'es' ? '✓ Recomendado por nuestros optometristas' : '✓ Recommended by our optometrists'}
+    </span>
+  );
+}
 
 const filtroOptsSolar = [
   { id: 'pol', nombre: 'Polarizado', nombre_en: 'Polarized', desc_es: 'Elimina reflejos intensos. El estándar para lentes de sol de calidad.', desc_en: 'Eliminates intense glare. The standard for quality sunglasses.', precio: 1699 },
@@ -1244,9 +1257,9 @@ export default function DetalleArmazon() {
                       <p style={{ fontSize: '0.78rem', color: 'var(--warm-gray)', marginBottom: '1.25rem' }}>{t('Afecta el grosor y peso.', 'Affects thickness and weight.')}</p>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {materialOpts.filter(o => materialDisponible(listaLentes, vision || 'mono', o.id)).map(o => (
-                          <div key={o.id} onClick={() => setMaterial(o.id)} style={{ border: material === o.id ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: material === o.id ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
+                          <div key={o.id} onClick={() => setMaterial(o.id)} style={{ border: bordeOpcion(material === o.id, (o as any).recomendado), borderRadius: '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: fondoOpcion(material === o.id, (o as any).recomendado), transition: 'all 0.15s' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div><div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
+                              <div>{(o as any).recomendado && <EtiquetaRecomendado lang={lang} />}<div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div><div style={{ fontSize: '12px', color: 'var(--warm-gray)', marginTop: '2px' }}>{t(o.desc_es, o.desc_en)}</div></div>
                               <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--sage)' }}>{pMaterial(o.id) === 0 ? t('Incluido', 'Included') : pxPlus(pMaterial(o.id))}</div>
                             </div>
                           </div>
@@ -1265,11 +1278,12 @@ export default function DetalleArmazon() {
                           const tieneColores = (o.id === 'foto' || o.id === 'pol' || o.id === 'tinte') && filtros.includes(o.id);
                           return (
                             <div key={o.id}>
-                              <div onClick={() => toggleFiltro(o.id)} style={{ border: filtros.includes(o.id) ? '1.5px solid var(--sage)' : '1px solid var(--border)', borderRadius: tieneColores ? '8px 8px 0 0' : '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: filtros.includes(o.id) ? 'rgba(74,89,64,0.06)' : 'var(--cream)', transition: 'all 0.15s' }}>
+                              <div onClick={() => toggleFiltro(o.id)} style={{ border: bordeOpcion(filtros.includes(o.id), (o as any).recomendado && !esSolar), borderRadius: tieneColores ? '8px 8px 0 0' : '8px', padding: '1rem 1.1rem', cursor: 'pointer', background: fondoOpcion(filtros.includes(o.id), (o as any).recomendado && !esSolar), transition: 'all 0.15s' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: '1.5px solid', borderColor: filtros.includes(o.id) ? 'var(--sage)' : 'var(--border)', background: filtros.includes(o.id) ? 'var(--sage)' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '10px', flexShrink: 0 }}>{filtros.includes(o.id) ? '✓' : ''}</div>
                                     <div>
+                                      {(o as any).recomendado && !esSolar && <EtiquetaRecomendado lang={lang} />}
                                       <div style={{ fontSize: '13px', fontWeight: 500, color: 'var(--charcoal)' }}>{lang === 'es' ? o.nombre : o.nombre_en}</div>
                                       <div style={{ fontSize: '12px', color: 'var(--warm-gray)' }}>{t(o.desc_es, o.desc_en)}</div>
                                     </div>
