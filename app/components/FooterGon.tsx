@@ -36,6 +36,7 @@ export default function FooterGon() {
             { href: '/examen', label: t('Examen de la vista', 'Eye exam') },
             { href: '/nosotros', label: t('Nosotros', 'About us') },
             { href: '/blog', label: 'Blog' },
+            { href: '/terminos', label: t('Términos y garantías', 'Terms & warranty') },
           ])}
         </div>
         <div className="gft-base">© {new Date().getFullYear()} GON Ópticas</div>
