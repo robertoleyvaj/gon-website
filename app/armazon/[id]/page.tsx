@@ -1518,9 +1518,20 @@ export default function DetalleArmazon() {
 
           {/* Dónde está el armazón (para que vaya a la óptica correcta o pida que se lo llevemos) */}
           {!colorAgotado && ubicaciones.length > 0 && (
-            <div className="va-ubic">
-              <p><b>📍 {t('Disponible en', 'Available at')}: {ubicaciones.join(' · ')}</b></p>
-              <p>{t('¿Te lo quieres probar? Visítanos ahí. ¿Lo quieres recoger en otra óptica? Te lo llevamos.', 'Want to try it on? Visit us there. Prefer another location? We’ll send it there for you.')}</p>
+            <div className="va-pick">
+              <p className="va-pick-t">{t('Pruébatelo en tienda', 'Try it on in store')}</p>
+              <ul>
+                {UBIC_OPTICA.map(([k, n]) => {
+                  const hay = ubicaciones.includes(n);
+                  return (
+                    <li key={k} className={hay ? 'si' : ''}>
+                      <span className="dot" />
+                      <span className="n">{n}</span>
+                      <span className="e">{hay ? t('En exhibición', 'In store') : t('Te lo llevamos', 'We’ll bring it')}</span>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           )}
 
@@ -1641,8 +1652,19 @@ export default function DetalleArmazon() {
         .va-agotado{font-size:12.5px;color:#a33;margin:10px 0 0}
         .va-tache{position:absolute;left:50%;top:-4px;bottom:-4px;width:1.5px;background:var(--charcoal);transform:rotate(45deg)}
         .va-agotado{font-size:12.5px;color:#a33;margin:10px 0 0}
-        .va-ubic{margin:4px 0 14px;padding:10px 12px;border-radius:8px;background:rgba(45,191,184,0.07);border:1px solid rgba(45,191,184,0.25);font-size:12.5px;line-height:1.45}
-        .va-ubic p{margin:0}.va-ubic p+p{margin-top:3px;color:var(--warm-gray)}
+        .va-pick{margin:2px 0 20px}
+        .va-pick-t{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm-gray);font-weight:600;margin:0 0 8px}
+        .va-pick ul{list-style:none;margin:0;padding:0}
+        .va-pick li{display:flex;align-items:center;gap:12px;padding:9px 0;font-size:14px;color:var(--warm-gray);border-bottom:1px solid rgba(0,0,0,.06)}
+        .va-pick li:last-child{border-bottom:0}
+        .va-pick .n{flex:1}
+        .va-pick .e{font-size:12px;letter-spacing:.01em}
+        .va-pick .dot{width:8px;height:8px;border-radius:50%;border:1.5px solid #c8c8c8;flex:none}
+        .va-pick li.si{color:var(--charcoal)}
+        .va-pick li.si .dot{background:#1f9d6a;border-color:#1f9d6a;animation:vaPulso 2.2s ease-out infinite}
+        .va-pick li.si .e{color:#17805a;font-weight:600}
+        @keyframes vaPulso{0%{box-shadow:0 0 0 0 rgba(31,157,106,.45)}70%{box-shadow:0 0 0 8px rgba(31,157,106,0)}100%{box-shadow:0 0 0 0 rgba(31,157,106,0)}}
+        @media (prefers-reduced-motion: reduce){.va-pick li.si .dot{animation:none}}
         .va-cta{display:block;width:100%;background:var(--sage);color:#fff;border:0;border-radius:999px;padding:17px;font-size:15px;font-weight:500;cursor:pointer;font-family:var(--font-sans);margin:6px 0 14px;transition:background .2s}
         .va-cta:hover{background:var(--sage-light)}
         .va-cta:disabled{opacity:.4;cursor:default}
