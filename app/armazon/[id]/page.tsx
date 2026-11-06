@@ -999,6 +999,12 @@ export default function DetalleArmazon() {
   const colorAgotado = agotado(colorActivo);
   // ¿En qué óptica está? Inventario nuevo: piezas del color; catálogo viejo: piezas del modelo (mismas que ve el POS)
   const UBIC_OPTICA: [string, string][] = [['stock_baja', 'Baja Visión'], ['stock_mayo', '5 de Mayo'], ['stock_plaza', 'Plaza Laureles']];
+  // Google Maps de cada óptica (mismos links que /sucursales)
+  const MAPA_OPTICA: Record<string, string> = {
+    stock_baja: 'https://www.google.com/maps/search/Óptica+Baja+Visión+Blvd+Benito+Juárez+79+Rosarito',
+    stock_mayo: 'https://www.google.com/maps/search/Optica+Rosarito+5+de+Mayo+200+Local+1+Rosarito+BC',
+    stock_plaza: 'https://www.google.com/maps/search/Óptica+Rosarito+Plaza+Laureles+Morelos+Rosarito+BC',
+  };
   const fuenteStock: any = colorActivo && ['bodega', 'stock_baja', 'stock_mayo', 'stock_plaza'].some(k => (colorActivo as any)[k] != null) ? colorActivo : armazon;
   const ubicaciones: string[] = fuenteStock ? UBIC_OPTICA.filter(([k]) => Number(fuenteStock[k]) > 0).map(([, n]) => n) : [];
   const lineaUbicacion = () => ubicaciones.length ? `📍 Está en: ${ubicaciones.join(' y ')}` : '';
@@ -1521,13 +1527,14 @@ export default function DetalleArmazon() {
             <div className="va-pick">
               <p className="va-pick-t">{t('Pruébatelo en tienda', 'Try it on in store')}</p>
               <ul>
-                {UBIC_OPTICA.map(([k, n]) => {
-                  const hay = ubicaciones.includes(n);
+                {UBIC_OPTICA.filter(([, n]) => ubicaciones.includes(n)).map(([k, n]) => {
                   return (
-                    <li key={k} className={hay ? 'si' : ''}>
+                    <li key={k} className="si">
                       <span className="dot" />
-                      <span className="n">{n}</span>
-                      <span className="e">{hay ? t('En exhibición', 'In store') : t('Te lo llevamos', 'We’ll bring it')}</span>
+                      <a className="n" href={MAPA_OPTICA[k]} target="_blank" rel="noopener noreferrer" title={t('Ver en Google Maps', 'Open in Google Maps')}>
+                        {n}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                      </a>
+                      <span className="e">{t('Disponible', 'Available')}</span>
                     </li>
                   );
                 })}
@@ -1657,7 +1664,10 @@ export default function DetalleArmazon() {
         .va-pick ul{list-style:none;margin:0;padding:0}
         .va-pick li{display:flex;align-items:center;gap:12px;padding:9px 0;font-size:14px;color:var(--warm-gray);border-bottom:1px solid rgba(0,0,0,.06)}
         .va-pick li:last-child{border-bottom:0}
-        .va-pick .n{flex:1}
+        .va-pick .n{flex:1;display:inline-flex;align-items:center;gap:5px;color:inherit;text-decoration:none}
+        .va-pick .n svg{opacity:.35;transition:opacity .15s,transform .15s}
+        .va-pick .n:hover{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+        .va-pick .n:hover svg{opacity:.9;transform:translate(1px,-1px)}
         .va-pick .e{font-size:12px;letter-spacing:.01em}
         .va-pick .dot{width:8px;height:8px;border-radius:50%;border:1.5px solid #c8c8c8;flex:none}
         .va-pick li.si{color:var(--charcoal)}
