@@ -930,6 +930,7 @@ export default function DetalleArmazon() {
     '',
     `👓 ${refArmazon()}`,
     precioArmazonMXN > 0 ? `💰 Precio web: $${precioArmazonMXN.toLocaleString('es-MX')}` : '',
+    lineaUbicacion(),
     '',
     '[[CODIGO]]',
     `gonmx.com/armazon/${armazon?.id}`,
@@ -962,6 +963,7 @@ export default function DetalleArmazon() {
       `¡Hola GON! 👋 Armé mis lentes en su página${paciente.trim() ? ` (para ${paciente.trim()})` : ''}, ¿me los pueden guardar?`,
       '',
       `👓 Armazón: ${refArmazon()}`,
+      lineaUbicacion(),
       ...(soloArmazon ? ['🕶️ Solo el armazón'] : [
         nomV ? `🔍 Micas: ${nomV}${nomM ? ` ${nomM}` : ''}` : '',
         fs.length ? `✨ Extras: ${fs.join(', ')}` : '',
@@ -995,6 +997,11 @@ export default function DetalleArmazon() {
   const piezasColor = (c: ColorPub) => ['bodega', 'stock_baja', 'stock_mayo', 'stock_plaza'].reduce((s, k) => s + (Number((c as any)[k]) || 0), 0);
   const agotado = (c: ColorPub | null) => !!c && inventarioNuevo && piezasColor(c) <= 0;
   const colorAgotado = agotado(colorActivo);
+  // ¿En qué óptica está? Inventario nuevo: piezas del color; catálogo viejo: piezas del modelo (mismas que ve el POS)
+  const UBIC_OPTICA: [string, string][] = [['stock_baja', 'Baja Visión'], ['stock_mayo', '5 de Mayo'], ['stock_plaza', 'Plaza Laureles']];
+  const fuenteStock: any = colorActivo && ['bodega', 'stock_baja', 'stock_mayo', 'stock_plaza'].some(k => (colorActivo as any)[k] != null) ? colorActivo : armazon;
+  const ubicaciones: string[] = fuenteStock ? UBIC_OPTICA.filter(([k]) => Number(fuenteStock[k]) > 0).map(([, n]) => n) : [];
+  const lineaUbicacion = () => ubicaciones.length ? `📍 Está en: ${ubicaciones.join(' y ')}` : '';
   const ambiente = colorActivo?.portada_url || null;
   const fotosColor = colorActivo ? [colorActivo.imagen_url, colorActivo.imagen2_url, colorActivo.imagen3_url, colorActivo.imagen4_url, ambiente].filter(Boolean) as string[] : [];
   const fotos = (fotosColor.length > 0
@@ -1509,6 +1516,14 @@ export default function DetalleArmazon() {
             </div>
           )}
 
+          {/* Dónde está el armazón (para que vaya a la óptica correcta o pida que se lo llevemos) */}
+          {!colorAgotado && ubicaciones.length > 0 && (
+            <div className="va-ubic">
+              <p><b>📍 {t('Disponible en', 'Available at')}: {ubicaciones.join(' · ')}</b></p>
+              <p>{t('¿Te lo quieres probar? Visítanos ahí. ¿Lo quieres recoger en otra óptica? Te lo llevamos.', 'Want to try it on? Visit us there. Prefer another location? We’ll send it there for you.')}</p>
+            </div>
+          )}
+
           {medidas && (
             <div className="va-bloque">
               <p className="va-lbl">{t('Talla', 'Size')}: <b>{medidas.talla}</b> <span>· {armazon.medidas}</span></p>
@@ -1626,6 +1641,8 @@ export default function DetalleArmazon() {
         .va-agotado{font-size:12.5px;color:#a33;margin:10px 0 0}
         .va-tache{position:absolute;left:50%;top:-4px;bottom:-4px;width:1.5px;background:var(--charcoal);transform:rotate(45deg)}
         .va-agotado{font-size:12.5px;color:#a33;margin:10px 0 0}
+        .va-ubic{margin:4px 0 14px;padding:10px 12px;border-radius:8px;background:rgba(45,191,184,0.07);border:1px solid rgba(45,191,184,0.25);font-size:12.5px;line-height:1.45}
+        .va-ubic p{margin:0}.va-ubic p+p{margin-top:3px;color:var(--warm-gray)}
         .va-cta{display:block;width:100%;background:var(--sage);color:#fff;border:0;border-radius:999px;padding:17px;font-size:15px;font-weight:500;cursor:pointer;font-family:var(--font-sans);margin:6px 0 14px;transition:background .2s}
         .va-cta:hover{background:var(--sage-light)}
         .va-cta:disabled{opacity:.4;cursor:default}
