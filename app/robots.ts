@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api/", "/lab"],
+        disallow: ["/admin", "/api/", "/borrador"],
       },
     ],
     sitemap: "https://www.gonmx.com/sitemap.xml",
